@@ -198,7 +198,13 @@ button.peligro{border-color:#b5444b;color:#b5444b}
 @media (max-width:520px){.accesos{grid-template-columns:1fr}}
 .leyenda-paso{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 0;font-size:calc(13px * var(--esc,1));color:var(--muted)}.leyenda-paso[hidden]{display:none}
 .lp-prev,.lp-act{display:inline-block;width:28px;border-radius:2px}.lp-prev{height:2px;background:#a7a196}.lp-act{height:5px;background:#1d4ed8;margin-left:10px}
-.capas{display:grid}.capas>*{grid-area:1/1;min-width:0}
+.capas{display:grid}
+@media (max-width:900px){#tab-colorear>.stage{position:sticky;top:var(--alto-tabs,62px);z-index:5;box-shadow:0 6px 10px -8px rgba(0,0,0,.25)}#tab-colorear>.stage svg{max-height:32vh}}
+details.tesela>summary{list-style:none;cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px;font:600 calc(15px * var(--esc,1)) Inter,system-ui,sans-serif}
+details.tesela>summary::-webkit-details-marker{display:none}
+details.tesela>summary::after{content:"›";margin-left:auto;font-size:22px;transition:transform .2s;color:var(--muted)}
+details.tesela[open]>summary::after{transform:rotate(90deg)}
+details.tesela>summary small{font-weight:400;color:var(--muted)}.capas>*{grid-area:1/1;min-width:0}
 .row[hidden]{display:none}
 .galeria{display:flex;gap:8px;overflow-x:auto;margin:6px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
 .galeria::after{content:'';flex:none;width:20px}
@@ -593,8 +599,8 @@ const IK = (function(){
       </div>
       <div class="ops" id="ts-forma" role="group" aria-label="Módulo" hidden style="margin-top:10px"><button data-forma="hex">⬡ Hexágono</button><button data-forma="tri">△ Triángulo (mínimo)</button></div>
       <div class="row"><label for="ts-marcar">Marcar los módulos</label><input type="checkbox" id="ts-marcar" checked></div>
-      <div class="tesela">
-        <h3 class="grupo-ts">Tu tesela</h3>
+      <details class="tesela" id="ts-tesela">
+        <summary>✏️ Tu tesela <small>· dibuja y se repite</small></summary>
         <p class="hint" style="margin:0 0 8px">Dibuja sobre el dibujo y tu trazo se repite en todos los módulos.</p>
         <div class="ops"><button id="ts-dib" aria-pressed="false">✏️ Dibujar</button><button id="ts-undo">↶ Deshacer</button><button id="ts-borrar">Borrar</button></div>
         <div id="ts-herr" class="ops" role="group" aria-label="Color y grosor del trazo" style="margin-top:8px">
@@ -604,7 +610,7 @@ const IK = (function(){
         <div class="row"><label for="ts-color">Con mis colores de Colorear</label><input type="checkbox" id="ts-color"></div>
         <div class="ops"><button id="ts-fondo">📱 Fondo de pantalla</button></div>
         <p class="msg" id="ts-msg" role="status" aria-live="polite"></p>
-      </div>
+      </details>
 
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
       <div class="row" style="justify-content:flex-start;gap:8px;margin-top:10px"><button id="ts-ant">← Trazar</button><button id="ts-sig" class="on">Siguiente: colorear →</button></div>
@@ -721,6 +727,8 @@ const IK = (function(){
 <script>
 // ---------- Inglés (v1.5): textos fijos de la página ----------
 const ES_EN={
+ "✏️ Tu tesela":"✏️ Your tile",
+ "· dibuja y se repite":"· draw and it repeats",
  "🎨 Otro color":"🎨 Other colors",
  "Mismo dibujo, otro color":"Same design, other colors",
  "La trama es la misma en todos; solo cambia cómo se reparten los colores. Fíjate en qué figuras aparecen: estrellas, rosetas, cintas… Toca uno para usarlo.":"The pattern is the same in all of them; only the way the colors are shared out changes. Look at which shapes appear: stars, rosettes, straps… Tap one to use it.",
@@ -2761,7 +2769,7 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y comp
       html=`${miniatura(p).replace('width="48" height="48"','width="44" height="44"')}<span><small>${tr('Seguir donde lo dejaste','Continue where you left off')}</small><b>${p.nombre} · ${e}</b></span>`;}
     else if(c){const k=CONS.L.find(x=>x.id===c[1]);if(k)html=`${mini(k)}<span><small>${tr('Seguir donde lo dejaste','Continue where you left off')}</small><b>${lt(k.nombre)}</b></span>`;}}
   $('seguir').hidden=!html;if(html){$('seguir').innerHTML=html;$('seguir').href='#'+u;}
-  $('ic-aprender').innerHTML=mini(CONS.L.find(x=>x.id==='cuad-oct-circ'));
+  $('ic-aprender').innerHTML=`<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="#1f5f5b"/><circle cx="20" cy="20" r="13" fill="none" stroke="#e2a93b" stroke-width="1.6" stroke-dasharray="2.4 1.6"/><rect x="10.8" y="10.8" width="18.4" height="18.4" fill="none" stroke="#fbf4e2" stroke-width="2.2"/><rect x="10.8" y="10.8" width="18.4" height="18.4" fill="none" stroke="#fbf4e2" stroke-width="2.2" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="1.8" fill="#e2a93b"/></svg>`;
   $('ic-mis').innerHTML=`<svg viewBox="0 0 2 2" width="40" height="40"><rect width="1" height="1" fill="#1f5f5b"/><rect x="1" width="1" height="1" fill="#c98b2b"/><rect y="1" width="1" height="1" fill="#2f4fa3"/><rect x="1" y="1" width="1" height="1" fill="#161616"/></svg>`;
   const banda=(p,x0,y0,w,h)=>{const pal=Object.values(p.paletas)[0];return renderLazo(datos(p),{x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');};
   if(!$('portada-img').firstChild)$('portada-img').innerHTML=banda(PATS.felipe,0,4,72,27);
@@ -2865,6 +2873,7 @@ function tesCapa(red,vb){const T=tesTrazos();if(!T.length&&!TS.actual)return '';
   for(let i=Math.floor(Math.min(...is))-2;i<=Math.ceil(Math.max(...is))+1;i++)for(let j=Math.floor(Math.min(...js))-2;j<=Math.ceil(Math.max(...js))+1;j++)
     g+=`<g transform="translate(${(O[0]+i*A[0]+j*B[0]).toFixed(3)} ${(O[1]+i*A[1]+j*B[1]).toFixed(3)})">${camino}</g>`;
   return `<g id="ts-capa" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none">${g}</g>`;}
+{const alto=()=>{const b=document.getElementById('barra-etapas');if(b&&!b.hidden)document.documentElement.style.setProperty('--alto-tabs',b.offsetHeight+'px');};addEventListener('resize',alto);addEventListener('hashchange',()=>setTimeout(alto,50));setTimeout(alto,300);}
 window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent=EX.r;
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');
   if(M&&M.tipo==='hex')document.querySelectorAll('#ts-forma [data-forma]').forEach(b=>{const on=b.dataset.forma===(TS.forma||'hex');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
@@ -2885,6 +2894,7 @@ $('ts-marcar').addEventListener('change',e=>{TS.marcar=e.target.checked;pintarTe
   tz.addEventListener('pointermove',e=>{if(e.pointerId!==pid||!TS.actual)return;const q=punto(e),u=TS.actual.p[TS.actual.p.length-1];if(Math.hypot(q[0]-u[0],q[1]-u[1])<0.004)return;TS.actual.p.push(q);capa();});
   const fin=e=>{if(e.pointerId!==pid)return;pid=null;if(TS.actual&&TS.actual.p.length>1){tesTrazos().push(TS.actual);tesGuardar();}TS.actual=null;pintarTeselar();};
   tz.addEventListener('pointerup',fin);tz.addEventListener('pointercancel',fin);}
+$('ts-tesela').addEventListener('toggle',e=>{if(!e.target.open&&TS.dibujar)$('ts-dib').click();});
 $('ts-dib').onclick=()=>{TS.dibujar=!TS.dibujar;$('ts-dib').setAttribute('aria-pressed',TS.dibujar);$('ts-dib').classList.toggle('on',TS.dibujar);
   $('ts-msg').textContent=TS.dibujar?tr('Dibuja con el dedo, el lápiz o el ratón sobre el dibujo.','Draw with your finger, a stylus or the mouse on the drawing.'):'';pintarTeselar();};
 $('ts-undo').onclick=()=>{tesTrazos().pop();tesGuardar();pintarTeselar();};
@@ -2933,7 +2943,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
-    ["2.6.1",["👆 In Tessellate, Color and Print the drawing is higher up: the long introduction only appears in Draw","🔧 Small fixes: Alhambra colors in the goal step, “Mark the modules” next to columns and rows"]],
+    ["2.6.1",["👆 In Tessellate, Color and Print the drawing is higher up: the long introduction only appears in Draw","📌 Color on the phone: the drawing stays at the top while you scroll through the options","✏️ “Your tile” folds away until you open it","🔧 Small fixes: Alhambra colors in the goal step, “Mark the modules” next to columns and rows"]],
     ["2.6",["✏️ Your tile: in Tessellate, draw on the design and your stroke repeats in every module. Choose color and width, use your colors and save it as a phone wallpaper","🎨 Same design, other colors: in Color, see the pattern colored in several ways and discover how stars and rosettes appear"]],
     ["2.5.4",["△ Tessellate the twelve-pointed stars with the hexagon or with the book’s minimal triangle, which is reflected into a rhombus"]],
     ["2.5.3",["⚙️ New settings button, with sliders","🧩 Color › Module now shows the book’s minimal module: the 8 × 8 square for the eight-pointed stars and the hexagon for the twelve-pointed ones"]],
@@ -2958,7 +2968,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
-    ["2.6.1",["👆 En Teselar, Colorear e Imprimir el dibujo queda más arriba: la presentación larga solo sale en Trazar","🔧 Arreglos: colores de la Alhambra en el objetivo, «Marcar los módulos» junto a columnas y filas"]],
+    ["2.6.1",["👆 En Teselar, Colorear e Imprimir el dibujo queda más arriba: la presentación larga solo sale en Trazar","📌 Colorear en el móvil: el dibujo se queda arriba mientras bajas por las opciones","✏️ «Tu tesela» va plegada hasta que la abras","🔧 Arreglos: colores de la Alhambra en el objetivo, «Marcar los módulos» junto a columnas y filas"]],
     ["2.6",["✏️ Tu tesela: en Teselar, dibuja sobre el dibujo y tu trazo se repite en todos los módulos. Elige color y grosor, usa tus colores y guárdalo como fondo de pantalla del móvil","🎨 Mismo dibujo, otro color: en Colorear, mira la trama coloreada de varias maneras y descubre cómo aparecen estrellas y rosetas"]],
     ["2.5.4",["△ Teselar las estrellas de doce con el hexágono o con el triángulo mínimo del libro, que se refleja formando un rombo"]],
     ["2.5.3",["⚙️ Botón de ajustes nuevo, con deslizadores","🧩 Colorear › Módulo enseña ahora el módulo mínimo del libro: el cuadrado de 8 × 8 en las estrellas de ocho y el hexágono en las de doce"]],

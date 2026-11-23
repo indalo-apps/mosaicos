@@ -1519,7 +1519,7 @@ P.zaguan2=escalar({id:'zaguan2',nombre:'Estrellas de seis y de ocho',lugar:'Zagu
     'Terracota':{cols:['#b8694d','#f0cdb8','#d98e6e','#d98e6e','#8a4b36','#8a4b36','#e8b49a','#e8b49a'],ribbon:'#fbf4ec',outline:'#8a4b36'},
     'Para colorear':{cols:Array(8).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
 });
-Object.assign(P.zaguan2,{rw:0.75,ow:0.07});
+Object.assign(P.zaguan2,{rw:0.75,ow:0.07,modulo:{m:12,cx:6,cy:6}}); // el bloque de 16 lleva 4 módulos (para alternar colores)
 
 // ===== Salón del techo de Felipe II: rueda de ocho sesgada (págs. 110-114) =====
 // Circunferencia de radio √2 (el cuadrado inscrito, de lado 2, es el módulo). Dos octógonos estrellados
@@ -1555,7 +1555,7 @@ P.felipe=escalar({id:'felipe',nombre:'Rueda de ocho sesgada',lugar:'Salón del t
 });
 // Paso 8 del libro: la línea interior de la cinta pasa por los puntos medios de los lados del cuadrado inicial, (0,±1) y (±1,0).
 // La cinta del rombo |x|+|y|=q queda a (q-1)/√2 de ese punto: medio ancho. En unidades de la app (×6).
-Object.assign(P.felipe,{rw:+(2*(q-1)/s2*6).toFixed(4),ow:0.07,G:{R,dA,dB,rho,s,K,c,q}});
+Object.assign(P.felipe,{modulo:{m:12,cx:6,cy:6},rw:+(2*(q-1)/s2*6).toFixed(4),ow:0.07,G:{R,dA,dB,rho,s,K,c,q}});
 })();
 
 // ===== LA ALHAMBRA · Sala de la Barca, zócalo 1 (alicatado n.º 16) =====
@@ -1581,7 +1581,8 @@ P.barca=escalar({id:'barca',coleccion:'alhambra',num:16,nombre:'Estrellas de och
     'Para colorear':{cols:Array(6).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
 });
 // Paso 8: la cinta mide 2B, con B = A/10 y A la distancia entre las rectas x = ±(1+√2/2) del paso 4
-Object.assign(P.barca,{rw:+(2*(2*a/10)*P.barca.k).toFixed(4),ow:0.07,giro:-45,Gb:{S,a,b,c3,U}});
+Object.assign(P.barca,{rw:+(2*(2*a/10)*P.barca.k).toFixed(4),ow:0.07,giro:-45,Gb:{S,a,b,c3,U},
+  modulo:{m:8*P.barca.k,cx:6,cy:6,giro:-45}}); // módulo mínimo: el cuadrado de 8 × 8 del libro, girado en el muro
 })();
 
 // ---------- Textos y pasos del trazado ----------
@@ -2672,6 +2673,16 @@ const TS={marcar:true};
 window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent=EX.r;
   const mos=PAT.tipo==='mosaico',blanco=Array(PAT.nombres.length).fill('#ffffff'),k=PAT.W/24;
   const o=mos?{cols:blanco,over:{},ribbon:'#4a4a4a',outline:'#4a4a4a',rw:0.1*k,ow:0,wc:false,grid:false,construct:false}:{cols:blanco,over:{},ribbon:'#ffffff',outline:'#3a3a3a',ow:0.07,wc:false,grid:false,construct:false};
+  const M=PAT.modulo;
+  if(M){ // módulo mínimo distinto del bloque de color (o girado en el muro): se teselan módulos de lado m
+    const m=M.m,c=EX.c,r=EX.r,w=c*m,h=r*m,g=(M.giro||0)*Math.PI/180,dx=c%2?0:m/2,dy=r%2?0:m/2;
+    const P=[M.cx+dx*Math.cos(-g)-dy*Math.sin(-g),M.cy+dx*Math.sin(-g)+dy*Math.cos(-g)],x0=P[0]-w/2,y0=P[1]-h/2,R=Math.hypot(w,h)/2+2;
+    datos(PAT);const key=[c,r].join('x');PAT.Dts=PAT.Dts||{};if(!PAT.Dts[key])PAT.Dts[key]=MOTOR.zona(PAT,PAT.prep,P[0]-R,P[1]-R,P[0]+R,P[1]+R);
+    let sv=renderLazo(PAT.Dts[key],Object.assign({},o,{x0,y0,w,h,rw:mos?o.rw:PAT.rw,interlace:!mos,giro:M.giro?[M.giro,P[0],P[1]]:null}));
+    if(TS.marcar){const sw=w/250;let q=`<g fill="none" stroke="#e0a526" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}">`;
+      for(let i=1;i<c;i++)q+=`<line x1="${x0+i*m}" y1="${y0}" x2="${x0+i*m}" y2="${y0+h}"/>`;for(let j=1;j<r;j++)q+=`<line x1="${x0}" y1="${y0+j*m}" x2="${x0+w}" y2="${y0+j*m}"/>`;
+      q+=`</g><rect x="${x0}" y="${y0}" width="${m}" height="${m}" fill="#e0a526" fill-opacity="0.12" stroke="#e0a526" stroke-width="${sw*2.2}"/>`;sv=sv.replace(/<\/svg>$/,q+'</svg>');}
+    $('tssvg').innerHTML=sv;$('ts-chip').textContent=tr(`${c} × ${r} módulos · el primero, resaltado`,`${c} × ${r} modules · the first one highlighted`)+(M.giro?tr(' · derecho, como en el libro',' · upright, as in the book'):'');return;}
   let sv=svgColor(EX.c,EX.r,'100%','100%',o).replace(/ width="100%" height="100%"/,' width="100%"');
   if(TS.marcar){const W=PAT.W,H=PAT.H,w=EX.c*W,h=EX.r*H,sw=w/250;let g=`<g fill="none" stroke="#e0a526" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}">`;
     for(let i=1;i<EX.c;i++)g+=`<line x1="${i*W}" y1="0" x2="${i*W}" y2="${h}"/>`;for(let j=1;j<EX.r;j++)g+=`<line x1="0" y1="${j*H}" x2="${w}" y2="${j*H}"/>`;
@@ -2713,7 +2724,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
-    ["2.4.1",["✏️ Draw: what is already drawn turns light gray and the current step is drawn in black and thicker, so it stands out without relying on color","🏛️ “The Alhambra of Granada”"]],
+    ["2.4.1",["✏️ Draw: what is already drawn turns light gray and the current step is drawn in black and thicker, so it stands out without relying on color","🏛️ “The Alhambra of Granada”","🧱 Tessellate: the eight-pointed stars of the Alhambra, the skewed rosette and the six- and eight-pointed stars now repeat their minimal module, one by one"]],
     ["2.4",["🏛️ New home screen with the two monuments: the Royal Alcázar of Seville and the Alhambra","🧩 First Alhambra tile pattern: eight-pointed stars and Y pieces from the Hall of the Boat (no. 16), with its 11 steps from the book","📖 The glossary button now says “Glossary”"]],
     ["2.3",["▦ Skewed rosette: a second way to draw it, on the 5-9-9-5 grid (p. 113), next to the compass one","🔁 “Repeat the module” now shows several rosettes"]],
     ["2.2.1",["🧭 The back button now says where it takes you: “‹ Home”, “‹ Learn to draw” or “‹ Tile patterns”"]],
@@ -2731,7 +2742,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
-    ["2.4.1",["✏️ Trazar: lo ya trazado pasa a gris claro y el paso actual se dibuja en negro y más grueso, para distinguirlo sin depender del color","🏛️ «La Alhambra de Granada»"]],
+    ["2.4.1",["✏️ Trazar: lo ya trazado pasa a gris claro y el paso actual se dibuja en negro y más grueso, para distinguirlo sin depender del color","🏛️ «La Alhambra de Granada»","🧱 Teselar: las estrellas de ocho de la Alhambra, la rueda sesgada y las estrellas de seis y de ocho repiten ahora su módulo mínimo, de uno en uno"]],
     ["2.4",["🏛️ Portada nueva con los dos monumentos: el Real Alcázar de Sevilla y la Alhambra","🧩 Primer alicatado de la Alhambra: estrellas de ocho y piezas en Y de la Sala de la Barca (n.º 16), con sus 11 pasos del libro","📖 El botón del glosario dice ahora «Glosario»"]],
     ["2.3",["▦ Rueda sesgada: segunda forma de trazarla, con la cuadrícula 5-9-9-5 (pág. 113), junto a la del compás","🔁 «Repetir el módulo» enseña ahora varias ruedas"]],
     ["2.2.1",["🧭 El botón de volver dice ahora a dónde vuelves: «‹ Inicio», «‹ Aprender a trazar» o «‹ Alicatados»"]],

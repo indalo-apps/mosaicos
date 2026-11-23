@@ -1658,7 +1658,10 @@ function dibujarPaso(p,n,render){const vt=p.vt,[x0,y0,w,h]=vt,s=p.pasos[n-1],pad
     const o={x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:s.tipo==='color'?p.rw:0.1,ow:s.tipo==='color'?p.ow:0,interlace:p.tipo!=='mosaico',frame:true};
     return `<div class="fade">${render(p.D,o).replace('<svg ','<svg style="pointer-events:none" ')}</div>`;}
   let g='';
-  p.pasos.slice(0,n).forEach((q,i)=>{if(!q.guia)return;const cur=i===n-1;g+=`<g class="${cur?(q.anim||'fade'):''}${s.tipo==='remarcar'?' dim':''}">${q.guia(p,vt)}</g>`;});
+  p.pasos.slice(0,n).forEach((q,i)=>{if(!q.guia)return;const cur=i===n-1;let gq=q.guia(p,vt);
+    // los pasos anteriores ya están dibujados: sin animación, solo el paso actual se traza
+    if(!cur)gq=gq.replace(/ class="(draw|fade)"/g,'');
+    g+=`<g class="${cur?(q.anim||'fade'):''}${s.tipo==='remarcar'?' dim':''}">${gq}</g>`;});
   if(s.tipo==='remarcar'){const L=[];for(const [cl,pts] of p.D.S)for(let k=0;k+2<pts.length+(cl?2:0);k+=2){const a=k,b=(k+2)%pts.length;
       const sg=[pts[a],pts[a+1],pts[b],pts[b+1]];if(Math.max(sg[0],sg[2])<x0-1||Math.min(sg[0],sg[2])>x0+w+1||Math.max(sg[1],sg[3])<y0-1||Math.min(sg[1],sg[3])>y0+h+1)continue;L.push(sg);}
     const cx=x0+w/2,cy=y0+h/2;L.sort((a,b)=>Math.hypot((a[0]+a[2])/2-cx,(a[1]+a[3])/2-cy)-Math.hypot((b[0]+b[2])/2-cx,(b[1]+b[3])/2-cy));
@@ -2395,7 +2398,7 @@ function alicatados(){mostrar('alicatados');cab(tr('Alicatados del Alcázar','Al
 // ---- Alicatado en 4 etapas
 function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}if(!ETAPAS.includes(etapa))etapa='trazado';
   const antes=MODO.c;MODO.c=null;mostrar('a');
-  if(PAT.id!==id)cambiarPatron(id);else if(antes)window.trazadoCambio();
+  if(PAT.id!==id)cambiarPatron(id);else if(antes||!$('dots').children.length)window.trazadoCambio();
   cab(PAT.nombre,`${PAT.lugar} · ${tr('Real Alcázar de Sevilla','Royal Alcázar of Seville')}`,'#alicatados',PAT.intro);
   window.tabEtapa(etapa,true);if(etapa==='colorear')draw();store.set(ULT,'a/'+id+'/'+etapa);}
 // ---- Mis dibujos
@@ -2457,7 +2460,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
-    ["2.1.1",["📏 Skewed rosette: the strap width and steps 6 to 9 now follow the book exactly (pp. 111–112)"]],
+    ["2.1.1",["📏 Skewed rosette: the strap width and steps 6 to 9 now follow the book exactly (pp. 111–112)","✏️ Draw: going to the next step only draws the new lines; the earlier ones stay in place","🐞 Opening a link straight to the eight-fold knot no longer shows an empty drawing"]],
     ["2.1",["🧩 New tile pattern: the skewed eight-fold rosette from the Hall of the Philip II Ceiling (pp. 110–114), with its eight-step drawing, tessellation and colors"]],
     ["2.0",["🏠 New name, Mosaicos, and a home screen: Continue, Learn to draw, Alcázar tile patterns and My drawings","📐 Learn to draw: the 23 basic ruler-and-compass constructions from the book (pp. 164–175), step by step","🖼️ Each drawing starts with the finished figure, so you know the goal","4️⃣ Each tile pattern in four stages: Draw → Tessellate → Color → Print","🧱 New Tessellate stage: repeat the module and see how it covers the wall","📖 Glossary of terms, with search"]],
     ["1.6.2",["🔠 Larger text on phones and tablets, following the system text size"]],
@@ -2470,7 +2473,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
-    ["2.1.1",["📏 Rueda sesgada: el ancho de la cinta y los pasos 6 a 9 siguen ahora exactamente al libro (págs. 111 y 112)"]],
+    ["2.1.1",["📏 Rueda sesgada: el ancho de la cinta y los pasos 6 a 9 siguen ahora exactamente al libro (págs. 111 y 112)","✏️ Trazar: al pasar de paso solo se dibujan las líneas nuevas; las anteriores se quedan quietas","🐞 Al abrir un enlace directo al lazo de 8 ya no sale el dibujo vacío"]],
     ["2.1",["🧩 Alicatado nuevo: la rueda de ocho sesgada del Salón del techo de Felipe II (págs. 110 a 114), con su trazado en ocho pasos, el teselado y los colores del zócalo"]],
     ["2.0",["🏠 La app pasa a llamarse Mosaicos y estrena portada: Seguir, Aprender a trazar, Alicatados del Alcázar y Mis dibujos","📐 Aprender a trazar: las 23 construcciones básicas con regla y compás del libro (págs. 164 a 175), paso a paso","🖼️ Cada dibujo empieza por la figura terminada, para saber cuál es el objetivo","4️⃣ Cada alicatado en cuatro etapas: Trazar → Teselar → Colorear → Imprimir","🧱 Etapa nueva, Teselar: repite el módulo y mira cómo cubre la pared","📖 Glosario de términos, con buscador"]],
     ["1.6.2",["🔠 Letra más grande en el móvil y la tablet, que sigue el tamaño de texto del sistema"]],

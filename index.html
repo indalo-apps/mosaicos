@@ -7,7 +7,7 @@
   Lacería · Alicatados del Alcázar
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="1.6.1">
+<meta name="app-version" content="1.6.2">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -134,6 +134,8 @@ footer{padding:0 28px 30px;color:var(--muted);font-size:12.5px;max-width:900px}
 #svg,#tzsvg{background:#fffdf8;border-radius:6px}
 /* ===== Tamaño de letra ===== */
 :root[data-letra="grande"]{--esc:1.14}:root[data-letra="muy-grande"]{--esc:1.3}
+/* v1.6.2 (guía de Apple): en pantallas táctiles el texto parte de unos 17 pt y sigue el tamaño de texto del sistema (lo ajusta el JS) */
+@media (pointer:coarse){:root{--esc:var(--esc-sis,1.2)}:root[data-letra="grande"]{--esc:calc(var(--esc-sis,1.2) * 1.15)}:root[data-letra="muy-grande"]{--esc:calc(var(--esc-sis,1.2) * 1.3)}}
 .card h2:not(.steph){font-size:calc(13px * var(--esc))}.hint,.msg,footer{font-size:calc(12.5px * var(--esc))}
 /* ===== Accesibilidad: foco visible, botones de 44 pt en pantallas táctiles, movimiento reducido ===== */
 button:focus-visible,input:focus-visible{outline:3px solid #e0a526;outline-offset:2px}
@@ -463,7 +465,7 @@ const IK = (function(){
   </aside>
 </div>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.6.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.6.2 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -1830,6 +1832,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["1.6.2",["🔠 Larger text on phones and tablets, following the system text size"]],
     ["1.6.1",["↶ Undo in Color","⬇️ Export is now right under the drawing","🧭 The Step-by-step / Color tabs stay at the top","👉 Swipe the drawing to change step","🔢 The step number is shown on the drawing","🛡️ Reset asks for a second tap"]],
     ["1.6",["🎨 In Palettes, choose the brand (Van Gogh, Daniel Smith or Winsor & Newton Cotman): the colors switch to its paints, with name and reference","🧾 “What to paint with”: the paints your coloring uses, the pieces each one goes on and a shopping list to copy or share","🔁 Switch your colors (or any palette) to the nearest paint in the chart","📄 The sheet to paint can include the list of paints"]],
     ["1.5",["🧩 New tile pattern: six- and eight-pointed stars from the second room of the zaguán, with its step-by-step drawing","✏️ Trace by hand: go over each step with your finger or a stylus; your lines are saved","📄 Sheet to paint: A4 or A3 PDF with the drawing in line only, ready for watercolor","🌍 The app is now in English too (Settings › Language)"]],
@@ -1839,6 +1842,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["1.6.2",["🔠 Letra más grande en el móvil y la tablet, que sigue el tamaño de texto del sistema"]],
     ["1.6.1",["↶ Deshacer en Colorear","⬇️ Exportar está ahora justo debajo del dibujo","🧭 Las pestañas Trazado y Colorear se quedan fijas arriba","👉 Desliza el dibujo para cambiar de paso","🔢 El número del paso se ve sobre el dibujo","🛡️ Restablecer pide un segundo toque"]],
     ["1.6",["🎨 En Paletas, elige la marca (Van Gogh, Daniel Smith o Cotman de Winsor & Newton): los colores pasan a sus pinturas, con nombre y referencia","🧾 «Con qué pintar»: las pinturas que usa tu coloreado, en qué piezas va cada una y la lista de la compra para copiar o compartir","🔁 Pasa tus colores (o cualquier paleta) a la pintura más parecida de la carta","📄 La lámina para pintar puede llevar la lista de pinturas"]],
     ["1.5",["🧩 Alicatado nuevo: estrellas de seis y de ocho de la segunda sala del zaguán, con su trazado paso a paso","✏️ Repasar a mano: repasa cada paso con el dedo o el lápiz; tu trazo se guarda","📄 Lámina para pintar: PDF en A4 o A3 con el dibujo solo en línea, lista para la acuarela","🌍 La app ya está también en inglés (Ajustes › Idioma)","🧵 Los cruces de las cintas se ven más limpios"]],
@@ -1856,6 +1860,9 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   function aplicarPref(){
     const r=document.documentElement;
     if(PREF.letra==='normal')r.removeAttribute('data-letra');else r.setAttribute('data-letra',PREF.letra);
+    // Tamaño de texto del sistema (Dynamic Type en iPhone/iPad): 17 pt por defecto
+    try{const t=document.createElement('span');t.style.font='-apple-system-body';if(t.style.font){t.style.position='absolute';t.style.visibility='hidden';document.body.appendChild(t);const fs=parseFloat(getComputedStyle(t).fontSize);t.remove();
+      if(fs>0)r.style.setProperty('--esc-sis',Math.min(1.9,Math.max(1.2,fs/14.2)).toFixed(3));}}catch(e){}
     if(PREF.tema==='auto')r.removeAttribute('data-tema');else r.setAttribute('data-tema',PREF.tema);
     document.querySelectorAll('meta[name="theme-color"]').forEach((m,i)=>m.setAttribute('content',PREF.tema==='claro'?'#1f5f5b':PREF.tema==='oscuro'?'#15191a':(i?'#15191a':'#1f5f5b')));
     document.querySelectorAll('[data-op]').forEach(g=>g.querySelectorAll('button').forEach(b=>{const on=b.dataset.val===PREF[g.dataset.op];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)}));

@@ -2,9 +2,11 @@
 
 © 2026 **Adela Moreno Vega** y **Carlos Moreno Otto**. Todos los derechos reservados (ver [LICENSE](LICENSE)).
 
-App de dibujo geométrico con alicatados del Real Alcázar de Sevilla. Cada uno tiene su trazado paso a paso y una pestaña para colorearlo como un alicatado y exportarlo: SVG en color, imagen PNG y archivos para corte láser (piezas del mosaico o celosía), con tantas repeticiones del módulo como se quiera.
+App de dibujo geométrico con alicatados del Real Alcázar de Sevilla. Cada uno tiene su trazado paso a paso, que se puede repasar a mano con el dedo o el lápiz, y una pestaña para colorearlo como un alicatado y exportarlo: SVG en color, imagen PNG, lámina para pintar en PDF (A4 o A3, solo en línea) y archivos para corte láser (piezas del mosaico o celosía), con tantas repeticiones del módulo como se quiera.
 
-Alicatados (versión 1.4):
+Está en español y en inglés (Ajustes › Idioma; «Automático» sigue al idioma del móvil). Los textos en inglés de cada alicatado están en `PAT_EN` y los de la página, en `ES_EN`.
+
+Alicatados (versión 1.5):
 
 | Alicatado | Lugar | Páginas del libro |
 | --- | --- | --- |
@@ -17,6 +19,7 @@ Alicatados (versión 1.4):
 | Estrellas de ocho alargadas | Cenador de Carlos V | 147 a 149 |
 | Estrellas de cuatro y alfardones | Patio de las Muñecas | 138 a 141 |
 | Octógonos y estrellas de cuatro | Rodapié de los zócalos | 158 y 159 |
+| Estrellas de seis y de ocho | Zaguán, segunda sala | 32 a 35 |
 
 El lazo de 8 lleva sus piezas calculadas de antemano. Los demás se describen en el `index.html` (objeto `PATRONES`) solo con las líneas de un módulo; el motor (`MOTOR`) corta las líneas en sus cruces, saca las piezas, encadena las cintas y, en los de cinta, decide qué cinta pasa por encima en cada cruce. Para añadir un alicatado basta con sus líneas, los nombres de sus piezas, sus paletas y los pasos del trazado. Con `?patron=<id>` en el enlace se abre directamente uno de ellos.
 
@@ -31,7 +34,7 @@ Sigue la «Guía común para nuestras apps» (proyecto APPS de Claude): se insta
 2. Añadir sus novedades arriba del todo en `NOVEDADES` (index.html).
 3. El mensaje del commit empieza por la versión: `v1.2: …`.
 
-La app comprueba la versión al abrirse, al volver a ella y cada 90 segundos, y se recarga sola cuando no hay ninguna ventana abierta. El coloreado y el paso del trazado se guardan en el móvil, así que no se pierden al actualizar.
+La app comprueba la versión al abrirse, al volver a ella y cada 90 segundos, y se recarga sola cuando no hay ninguna ventana abierta. El coloreado, el paso del trazado y lo repasado a mano se guardan en el móvil, así que no se pierden al actualizar.
 
 ## Autores
 Adela Moreno Vega y Carlos Moreno Otto.

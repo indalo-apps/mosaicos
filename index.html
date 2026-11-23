@@ -7,7 +7,7 @@
   Lacería · Alicatados del Alcázar
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="1.4.2">
+<meta name="app-version" content="1.5">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -85,6 +85,12 @@ h1 .sub{display:block;font:500 calc(15px * var(--esc))/1.3 Inter,system-ui,sans-
 .tip{background:var(--tipbg);border-radius:7px;padding:8px 10px;font-size:calc(13px * var(--esc));color:var(--tipt)}
 .tip:empty{display:none}
 #tzsvg svg{display:block;max-height:calc(100vh - 190px);margin:auto}
+/* Modo práctica: el dibujo se atenúa y se repasa encima con el dedo o el lápiz */
+#tzsvg.practicando{touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none}
+#tzsvg.practicando svg>:not(.trazos){opacity:.38}
+#tzsvg.practicando .fade>svg>:not(.trazos){opacity:.38}
+.practica{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+button.peligro{border-color:#b5444b;color:#b5444b}
 .draw line,.draw polygon,.draw path{stroke-dasharray:1;stroke-dashoffset:1;animation:dr .9s ease forwards}
 @keyframes dr{to{stroke-dashoffset:0}}
 .fade{opacity:0;animation:fd .8s ease forwards}
@@ -189,6 +195,13 @@ button:disabled{opacity:.55}
 @media (prefers-reduced-motion:no-preference){.ik-sheet{animation:ik-up .22s ease-out}@keyframes ik-up{from{transform:translateY(30px);opacity:0}}}
 </style>
 <script>
+/* ===== Idioma (v1.5): español o inglés. «Automático» sigue al móvil (español, catalán, gallego y vasco → español) ===== */
+const IDIOMA=(function(){let p='auto';try{p=(JSON.parse(localStorage.getItem('laceria-pref-v1')||'{}').idioma)||'auto';}catch(e){}
+  if(p==='es'||p==='en')return p;const l=(navigator.languages&&navigator.languages[0])||navigator.language||'es';return /^(es|ca|gl|eu)\b/i.test(l)?'es':'en';})();
+const EN=IDIOMA==='en',tr=(es,en)=>EN?en:es;
+document.documentElement.lang=IDIOMA;
+</script>
+<script>
 /* ===== Kit común de las apps de indalo-apps (copiado de la Tabla periódica) =====
    Ayuda para instalar según el móvil, aviso para instalar y búsqueda de versión.
    Uso: IK.init({nombre, clave, version, onBuscar, esInicio})                        */
@@ -220,39 +233,53 @@ const IK = (function(){
 
   function pasos(){
     const n = cfg.nombre;
-    if (IN_APP) return `<p>Has abierto el enlace dentro de otra app. Para instalarla, ábrela primero en el navegador:</p>
+    if (IN_APP) return tr(`<p>Has abierto el enlace dentro de otra app. Para instalarla, ábrela primero en el navegador:</p>
       <ol class="ik-steps"><li>Toca el menú ${DOTS} o el botón ${SHARE} de esta pantalla.</li>
       <li>Elige <b>«Abrir en ${IS_IOS ? "Safari" : "Chrome"}»</b> (o «Abrir en el navegador»).</li>
-      <li>Allí, vuelve a <b>Ajustes → Cómo añadirla a la pantalla de inicio</b>.</li></ol>`;
+      <li>Allí, vuelve a <b>Ajustes → Cómo añadirla a la pantalla de inicio</b>.</li></ol>`,
+      `<p>You opened the link inside another app. To install it, first open it in the browser:</p>
+      <ol class="ik-steps"><li>Tap the ${DOTS} menu or the ${SHARE} button on this screen.</li>
+      <li>Choose <b>“Open in ${IS_IOS ? "Safari" : "Chrome"}”</b> (or “Open in browser”).</li>
+      <li>There, go back to <b>Settings → How to add it to the Home Screen</b>.</li></ol>`);
     if (IS_IOS){
       const [maj, min] = iosVersion(), dev = IS_IPAD ? "iPad" : "iPhone";
-      const ver = maj ? `<p class="ik-nota">Tu ${dev} tiene <b>iOS ${maj}${min ? "." + min : ""}</b>. Estos son los pasos para esa versión.</p>` : "";
-      const fin = `<li>Si aparece <b>«Abrir como app web»</b>, déjalo activado y pulsa <span class="ik-kbd">Añadir</span> (arriba a la derecha).</li>
-        <li>Listo: el icono <b>${n}</b> aparecerá en tu pantalla de inicio. Ábrela siempre desde ahí.</li>`;
+      const ver = maj ? tr(`<p class="ik-nota">Tu ${dev} tiene <b>iOS ${maj}${min ? "." + min : ""}</b>. Estos son los pasos para esa versión.</p>`,
+        `<p class="ik-nota">Your ${dev} has <b>iOS ${maj}${min ? "." + min : ""}</b>. These are the steps for that version.</p>`) : "";
+      const fin = tr(`<li>Si aparece <b>«Abrir como app web»</b>, déjalo activado y pulsa <span class="ik-kbd">Añadir</span> (arriba a la derecha).</li>
+        <li>Listo: el icono <b>${n}</b> aparecerá en tu pantalla de inicio. Ábrela siempre desde ahí.</li>`,
+        `<li>If you see <b>“Open as Web App”</b>, leave it on and tap <span class="ik-kbd">Add</span> (top right).</li>
+        <li>Done: the <b>${n}</b> icon will appear on your Home Screen. Always open it from there.</li>`);
+      const ADD = tr("«Añadir a pantalla de inicio»", "“Add to Home Screen”");
       if (maj && (maj < 16 || (maj === 16 && min < 4)) && IOS_OTHER)
-        return ver + `<p>En esta versión de iOS solo se puede instalar desde <b>Safari</b>:</p>
-          <ol class="ik-steps"><li>Copia el enlace y ábrelo en <b>Safari</b>. <button class="ik-btn ik-ghost" data-ik="copiar">Copiar enlace</button></li>
-          <li>Toca el botón <b>Compartir</b> ${SHARE} de la barra de abajo.</li>
-          <li>Elige <b>«Añadir a pantalla de inicio»</b> ${PLUS}.</li>${fin}</ol>`;
+        return ver + tr(`<p>En esta versión de iOS solo se puede instalar desde <b>Safari</b>:</p>`, `<p>On this iOS version it can only be installed from <b>Safari</b>:</p>`) +
+          `<ol class="ik-steps"><li>${tr("Copia el enlace y ábrelo en <b>Safari</b>.", "Copy the link and open it in <b>Safari</b>.")} <button class="ik-btn ik-ghost" data-ik="copiar">${tr("Copiar enlace", "Copy link")}</button></li>
+          <li>${tr(`Toca el botón <b>Compartir</b> ${SHARE} de la barra de abajo.`, `Tap the <b>Share</b> button ${SHARE} in the bottom bar.`)}</li>
+          <li>${tr("Elige", "Choose")} <b>${ADD}</b> ${PLUS}.</li>${fin}</ol>`;
       if (IOS_OTHER)
-        return ver + `<p>Desde este navegador (o desde Safari):</p>
-          <ol class="ik-steps"><li>Toca el botón <b>Compartir</b> ${SHARE}, en la barra de direcciones (arriba a la derecha) o en el menú del navegador.</li>
-          <li>Elige <b>«Añadir a pantalla de inicio»</b> ${PLUS}. Si no está, toca <b>«Más»</b> o baja en la lista.</li>${fin}</ol>`;
+        return ver + `<p>${tr("Desde este navegador (o desde Safari):", "From this browser (or from Safari):")}</p>
+          <ol class="ik-steps"><li>${tr(`Toca el botón <b>Compartir</b> ${SHARE}, en la barra de direcciones (arriba a la derecha) o en el menú del navegador.`, `Tap the <b>Share</b> button ${SHARE}, in the address bar (top right) or in the browser menu.`)}</li>
+          <li>${tr("Elige", "Choose")} <b>${ADD}</b> ${PLUS}. ${tr("Si no está, toca <b>«Más»</b> o baja en la lista.", "If it isn't there, tap <b>“More”</b> or scroll down the list.")}</li>${fin}</ol>`;
       if (maj >= 26)
         return ver + `<ol class="ik-steps">
-          <li>Toca el botón <b>···</b> ${HDOTS} que está a la derecha de la barra de la dirección${IS_IPAD ? " (arriba)" : " (abajo)"}.</li>
-          <li>Toca <b>«Compartir»</b> ${SHARE}.</li>
-          <li>Toca <b>«Ver más»</b> si hace falta, baja en la lista y elige <b>«Añadir a pantalla de inicio»</b> ${PLUS}.</li>${fin}</ol>`;
+          <li>${tr(`Toca el botón <b>···</b> ${HDOTS} que está a la derecha de la barra de la dirección${IS_IPAD ? " (arriba)" : " (abajo)"}.`, `Tap the <b>···</b> button ${HDOTS} to the right of the address bar${IS_IPAD ? " (at the top)" : " (at the bottom)"}.`)}</li>
+          <li>${tr(`Toca <b>«Compartir»</b> ${SHARE}.`, `Tap <b>“Share”</b> ${SHARE}.`)}</li>
+          <li>${tr("Toca <b>«Ver más»</b> si hace falta, baja en la lista y elige", "Tap <b>“View More”</b> if needed, scroll down and choose")} <b>${ADD}</b> ${PLUS}.</li>${fin}</ol>`;
       return ver + `<ol class="ik-steps">
-        <li>Toca el botón <b>Compartir</b> ${SHARE}${IS_IPAD ? ", arriba a la derecha." : ", en el centro de la barra de abajo. Si no ves la barra, desliza un poco la página hacia arriba."}</li>
-        <li>Baja en la lista y elige <b>«Añadir a pantalla de inicio»</b> ${PLUS}.</li>${fin}</ol>`;
+        <li>${tr(`Toca el botón <b>Compartir</b> ${SHARE}${IS_IPAD ? ", arriba a la derecha." : ", en el centro de la barra de abajo. Si no ves la barra, desliza un poco la página hacia arriba."}`, `Tap the <b>Share</b> button ${SHARE}${IS_IPAD ? ", at the top right." : ", in the middle of the bottom bar. If you can't see the bar, scroll the page up a little."}`)}</li>
+        <li>${tr("Baja en la lista y elige", "Scroll down the list and choose")} <b>${ADD}</b> ${PLUS}.</li>${fin}</ol>`;
     }
-    if (IS_ANDROID) return `<p>En el móvil o la tablet Android, con Chrome:</p>
+    if (IS_ANDROID) return tr(`<p>En el móvil o la tablet Android, con Chrome:</p>
       <ol class="ik-steps"><li>Toca el menú ${DOTS} (arriba a la derecha).</li>
       <li>Elige <b>«Añadir a pantalla de inicio»</b> o <b>«Instalar aplicación»</b>.</li>
-      <li>Pulsa <span class="ik-kbd">Instalar</span>. El icono aparecerá en tu pantalla de inicio.</li></ol>`;
-    return `<p>Está pensada para el móvil o la tablet: abre este mismo enlace allí y sigue los pasos que salen.</p>
-      <ol class="ik-steps"><li>En el ordenador también se puede instalar con Chrome o Edge: busca el icono de instalar ${PLUS} a la derecha de la barra de direcciones.</li></ol>`;
+      <li>Pulsa <span class="ik-kbd">Instalar</span>. El icono aparecerá en tu pantalla de inicio.</li></ol>`,
+      `<p>On an Android phone or tablet, with Chrome:</p>
+      <ol class="ik-steps"><li>Tap the ${DOTS} menu (top right).</li>
+      <li>Choose <b>“Add to Home screen”</b> or <b>“Install app”</b>.</li>
+      <li>Tap <span class="ik-kbd">Install</span>. The icon will appear on your Home screen.</li></ol>`);
+    return tr(`<p>Está pensada para el móvil o la tablet: abre este mismo enlace allí y sigue los pasos que salen.</p>
+      <ol class="ik-steps"><li>En el ordenador también se puede instalar con Chrome o Edge: busca el icono de instalar ${PLUS} a la derecha de la barra de direcciones.</li></ol>`,
+      `<p>It is designed for phones and tablets: open this same link there and follow the steps shown.</p>
+      <ol class="ik-steps"><li>On a computer you can also install it with Chrome or Edge: look for the install icon ${PLUS} at the right of the address bar.</li></ol>`);
   }
 
   function cerrar(){ const s = document.getElementById("ik-sheet"); if (s) s.remove(); }
@@ -260,14 +287,14 @@ const IK = (function(){
     cerrar();
     const s = document.createElement("div");
     s.id = "ik-sheet"; s.className = "ik-bg";
-    s.innerHTML = `<div class="ik-sheet" role="dialog" aria-modal="true" aria-label="${etiqueta}"><button class="ik-x" data-ik="cerrar" aria-label="Cerrar">✕</button>${html}</div>`;
+    s.innerHTML = `<div class="ik-sheet" role="dialog" aria-modal="true" aria-label="${etiqueta}"><button class="ik-x" data-ik="cerrar" aria-label="${tr("Cerrar","Close")}">✕</button>${html}</div>`;
     s.addEventListener("click", ev => {
       if (ev.target === s || ev.target.closest('[data-ik="cerrar"]')) { cerrar(); return; }
       const b = ev.target.closest("[data-ik]"); if (!b) return;
       if (b.dataset.ik === "ya") instalarYa();
       if (b.dataset.ik === "copiar"){
         const u = location.origin + location.pathname;
-        (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => { b.textContent = "✓ Enlace copiado"; }).catch(() => { b.textContent = u; });
+        (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => { b.textContent = tr("✓ Enlace copiado", "✓ Link copied"); }).catch(() => { b.textContent = u; });
       }
     });
     document.body.appendChild(s);
@@ -279,12 +306,13 @@ const IK = (function(){
     deferred = null; cerrar();
   }
   function abrirInstalar(){
-    if (instalada()){ abrir(`<h2>Ya está instalada</h2><p>✓ Ya la estás usando como app instalada. Ábrela siempre desde su icono.</p><div class="ik-nav"><button class="ik-btn" data-ik="cerrar">Entendido</button></div>`, "Instalar"); return; }
+    if (instalada()){ abrir(tr(`<h2>Ya está instalada</h2><p>✓ Ya la estás usando como app instalada. Ábrela siempre desde su icono.</p><div class="ik-nav"><button class="ik-btn" data-ik="cerrar">Entendido</button></div>`,
+      `<h2>Already installed</h2><p>✓ You are already using it as an installed app. Always open it from its icon.</p><div class="ik-nav"><button class="ik-btn" data-ik="cerrar">Got it</button></div>`), tr("Instalar", "Install")); return; }
     if (deferred && !IS_IOS && !IN_APP){ instalarYa(); return; }
-    abrir(`<div class="ik-head"><img src="icon-192.png" alt=""><div><h2>Instalar la app</h2><span class="ik-muted">Gratis, sin tienda y sin registrarse</span></div></div>
+    abrir(`<div class="ik-head"><img src="icon-192.png" alt=""><div><h2>${tr("Instalar la app", "Install the app")}</h2><span class="ik-muted">${tr("Gratis, sin tienda y sin registrarse", "Free, no app store, no sign-up")}</span></div></div>
       ${pasos()}
-      <p class="ik-muted">Una vez instalada se abre a pantalla completa, funciona sin conexión y se actualiza sola.</p>
-      <div class="ik-nav">${deferred ? '<button class="ik-btn" data-ik="ya">Instalar ahora</button>' : '<button class="ik-btn" data-ik="cerrar">Entendido</button>'}</div>`, "Instalar en el móvil");
+      <p class="ik-muted">${tr("Una vez instalada se abre a pantalla completa, funciona sin conexión y se actualiza sola.", "Once installed it opens full screen, works offline and updates itself.")}</p>
+      <div class="ik-nav">${deferred ? `<button class="ik-btn" data-ik="ya">${tr("Instalar ahora", "Install now")}</button>` : `<button class="ik-btn" data-ik="cerrar">${tr("Entendido", "Got it")}</button>`}</div>`, tr("Instalar en el móvil", "Install on your phone"));
   }
 
   // Aviso amarillo «Instálala en tu móvil» (solo en móvil o tablet, si no está instalada y no se ha cerrado)
@@ -295,9 +323,9 @@ const IK = (function(){
     if (!toca){ if (viejo) viejo.remove(); return; }
     if (viejo) return;
     const b = document.createElement("div");
-    b.id = "ik-banner"; b.className = "ik-banner"; b.setAttribute("role", "region"); b.setAttribute("aria-label", "Instalar la app");
-    b.innerHTML = `<img src="icon-192.png" alt=""><div><b>📲 Instálala en tu ${IS_IPAD ? "iPad" : "móvil"}</b>Tenla en la pantalla de inicio, como una app.</div>
-      <button class="ik-btn" data-b="ver">${deferred && !IS_IOS ? "Instalar" : "Ver cómo"}</button><button class="ik-bx" data-b="x" aria-label="No mostrar más">×</button>`;
+    b.id = "ik-banner"; b.className = "ik-banner"; b.setAttribute("role", "region"); b.setAttribute("aria-label", tr("Instalar la app", "Install the app"));
+    b.innerHTML = `<img src="icon-192.png" alt=""><div><b>📲 ${tr("Instálala en tu", "Install it on your")} ${IS_IPAD ? "iPad" : tr("móvil", "phone")}</b>${tr("Tenla en la pantalla de inicio, como una app.", "Keep it on your Home Screen, like an app.")}</div>
+      <button class="ik-btn" data-b="ver">${deferred && !IS_IOS ? tr("Instalar", "Install") : tr("Ver cómo", "Show me how")}</button><button class="ik-bx" data-b="x" aria-label="${tr("No mostrar más", "Don't show again")}">×</button>`;
     b.addEventListener("click", ev => {
       const t = ev.target.closest("[data-b]"); if (!t) return;
       if (t.dataset.b === "ver") abrirInstalar();
@@ -320,14 +348,14 @@ const IK = (function(){
   // Botón «Buscar actualizaciones»: escribe el resultado en el elemento msg
   async function buscar(boton, msg){
     if (boton) boton.disabled = true;
-    if (msg) msg.textContent = "Comprobando…";
+    if (msg) msg.textContent = tr("Comprobando…", "Checking…");
     const v = await versionPublicada();
     if (boton) boton.disabled = false;
     if (!msg) return v;
-    if (!EN_WEB) msg.textContent = "Solo se puede comprobar en la app publicada.";
-    else if (v == null) msg.textContent = "No se ha podido comprobar. ¿Tienes conexión a internet?";
-    else if (verCmp(v, cfg.version) > 0){ msg.textContent = `Hay una versión nueva (${v}). Se instalará en cuanto cierres esta ventana.`; if (cfg.onNueva) cfg.onNueva(v); }
-    else msg.textContent = `✓ Tienes la última versión (${cfg.version}).`;
+    if (!EN_WEB) msg.textContent = tr("Solo se puede comprobar en la app publicada.", "This can only be checked in the published app.");
+    else if (v == null) msg.textContent = tr("No se ha podido comprobar. ¿Tienes conexión a internet?", "Couldn't check. Are you connected to the internet?");
+    else if (verCmp(v, cfg.version) > 0){ msg.textContent = tr(`Hay una versión nueva (${v}). Se instalará en cuanto cierres esta ventana.`, `There is a new version (${v}). It will be installed as soon as you close this window.`); if (cfg.onNueva) cfg.onNueva(v); }
+    else msg.textContent = tr(`✓ Tienes la última versión (${cfg.version}).`, `✓ You have the latest version (${cfg.version}).`);
     return v;
   }
 
@@ -362,6 +390,8 @@ const IK = (function(){
       <div class="dots" id="dots"></div>
       <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div>
         <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div>
+        <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
+        <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
       </div>
       <p class="hint">También puedes avanzar con las flechas del teclado.</p>
     </div>
@@ -403,7 +433,7 @@ const IK = (function(){
   </aside>
 </div>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.4.2 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.5 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -411,7 +441,8 @@ const IK = (function(){
   <h2 id="aj-tit">Ajustes</h2>
   <div class="grupo"><h3>Apariencia</h3>
    <p>Tamaño de letra</p><div class="ops" data-op="letra" role="group" aria-label="Tamaño de letra"><button data-val="normal">Normal</button><button data-val="grande">Grande</button><button data-val="muy-grande">Muy grande</button></div>
-   <p style="margin-top:10px">Tema</p><div class="ops" data-op="tema" role="group" aria-label="Tema"><button data-val="auto">Automático</button><button data-val="claro">Claro</button><button data-val="oscuro">Oscuro</button></div></div>
+   <p style="margin-top:10px">Tema</p><div class="ops" data-op="tema" role="group" aria-label="Tema"><button data-val="auto">Automático</button><button data-val="claro">Claro</button><button data-val="oscuro">Oscuro</button></div>
+   <p style="margin-top:10px">Idioma · Language</p><div class="ops" data-op="idioma" role="group" aria-label="Idioma · Language"><button data-val="auto">Automático</button><button data-val="es" lang="es">Español</button><button data-val="en" lang="en">English</button></div></div>
   <div class="grupo"><h3>Instalar en el móvil</h3>
    <div class="ops"><button id="aj-instalar">📲 Cómo añadirla a la pantalla de inicio</button></div></div>
   <div class="grupo"><h3>Acerca de</h3>
@@ -440,7 +471,7 @@ const IK = (function(){
   <button class="x" id="ex-x" aria-label="Cerrar">✕</button>
   <h2 id="ex-tit">Exportar</h2>
   <div class="grupo"><h3>Qué quieres</h3>
-   <div class="ops" data-ex="modo" role="group" aria-label="Tipo de archivo"><button data-val="svg">🎨 Color (SVG)</button><button data-val="png">🖼️ Imagen (PNG)</button><button data-val="piezas">✂️ Láser: piezas</button><button data-val="celosia">✂️ Láser: celosía</button></div>
+   <div class="ops" data-ex="modo" role="group" aria-label="Tipo de archivo"><button data-val="svg">🎨 Color (SVG)</button><button data-val="png">🖼️ Imagen (PNG)</button><button data-val="piezas">✂️ Láser: piezas</button><button data-val="celosia">✂️ Láser: celosía</button><button data-val="lamina">📄 Lámina para pintar (PDF)</button></div>
    <p class="muted" id="ex-ayuda" style="margin-top:8px"></p></div>
   <div class="grupo"><h3>Repeticiones del módulo</h3>
    <div class="ex-rep">
@@ -450,6 +481,11 @@ const IK = (function(){
    <p class="muted" style="margin-top:8px">El dibujo encaja sin costuras: puedes repetirlo como un azulejo.</p></div>
   <div class="grupo" id="ex-g-mm"><h3>Tamaño</h3>
    <div class="row"><label for="ex-mm">Ancho de cada módulo (mm)</label><input type="number" id="ex-mm" min="10" max="1000" step="1" inputmode="decimal"></div></div>
+  <div class="grupo" id="ex-g-lam" hidden><h3>Lámina</h3>
+   <p>Papel</p><div class="ops" data-ex="papel" role="group" aria-label="Papel"><button data-val="A4">A4</button><button data-val="A3">A3</button></div>
+   <p style="margin-top:10px">Orientación</p><div class="ops" data-ex="ori" role="group" aria-label="Orientación"><button data-val="v">Vertical</button><button data-val="h">Horizontal</button></div>
+   <p style="margin-top:10px">Línea</p><div class="ops" data-ex="linea" role="group" aria-label="Línea"><button data-val="gris">Gris suave</button><button data-val="negra">Negra</button></div>
+   <p class="muted" style="margin-top:8px">Con la línea gris suave, el trazo casi desaparece bajo la acuarela.</p></div>
   <div class="grupo" id="ex-g-px" hidden><h3>Resolución</h3>
    <div class="ops" data-ex="px" role="group" aria-label="Resolución"><button data-val="2000">2000 px</button><button data-val="4000">4000 px</button></div></div>
   <div class="ex-vista" id="ex-vista" aria-hidden="true"></div>
@@ -461,6 +497,43 @@ const IK = (function(){
 </div>
 <div class="barra-act" id="barra-act" hidden role="status">Actualizando a la versión nueva…</div>
 <script>
+// ---------- Inglés (v1.5): textos fijos de la página ----------
+const ES_EN={
+ 'Ajustes':'Settings','Lazo de 8':'Eight-fold knot','Patio de las Muñecas · Real Alcázar de Sevilla':'Patio de las Muñecas · Royal Alcázar of Seville',
+ 'Elige el alicatado':'Choose the tile pattern','Modo':'Mode','Trazado paso a paso':'Step-by-step drawing','Colorear':'Color',
+ 'Dibujo del paso':'Step drawing','← Anterior':'← Back','Siguiente →':'Next →','Ir a colorear →':'Go to coloring →','Repetir la animación':'Replay the animation',
+ '✏️ Repasar a mano':'✏️ Trace by hand','↶ Deshacer':'↶ Undo','Borrar mi dibujo':'Clear my drawing',
+ 'Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.':'Trace over the drawing with your finger, a stylus or the mouse. Your lines are saved and stay there when you change step. If you use a stylus, your finger won’t draw.',
+ 'También puedes avanzar con las flechas del teclado.':'You can also move through the steps with the arrow keys.',
+ 'Vista':'View','Módulo (29×29)':'Module (29×29)','Zócalo 3 × 2':'Dado 3 × 2','dibujo':'drawing',
+ 'Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla.':'Drawing to color. Use the arrow keys to choose a piece and Enter to paint it.',
+ 'Paletas':'Palettes','Pincel':'Brush','Pintar solo la pieza pulsada':'Paint only the piece you tap',
+ 'Elige un color y toca una pieza (con el teclado: entra en el dibujo con Tab, muévete con las flechas y pinta con Intro). Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.':'Choose a color and tap a piece (with the keyboard: Tab into the drawing, move with the arrow keys and paint with Enter). With this option off, every piece of the same type is painted, as when tiling.',
+ 'Tipos de pieza':'Piece types','Quitar retoques sueltos':'Remove single-piece touches','Cinta':'Strapwork','Color de la cinta':'Strap color','Contorno':'Outline','Ancho de la cinta':'Strap width',
+ 'Entrelazado (sobre/bajo)':'Interlacing (over/under)','Ver':'Show','Simular acuarela':'Watercolor effect','Cuadrícula':'Grid','Trazado (5-7 y diagonales)':'Construction (5-7 and diagonals)',
+ '⬇️ Exportar…':'⬇️ Export…','Restablecer':'Reset','Cerrar':'Close','Apariencia':'Appearance','Tamaño de letra':'Text size','Normal':'Normal','Grande':'Large','Muy grande':'Extra large',
+ 'Tema':'Theme','Automático':'Automatic','Claro':'Light','Oscuro':'Dark','Instalar en el móvil':'Install on your phone','📲 Cómo añadirla a la pantalla de inicio':'📲 How to add it to the Home Screen',
+ 'Acerca de':'About','Versión':'Version','Creada por':'Made by','y':'and',
+ '© 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.':'© 2026 Adela Moreno Vega and Carlos Moreno Otto. All rights reserved. Free for personal and educational use.',
+ '© 2026 Adela Moreno Vega y Carlos Moreno Otto.':'© 2026 Adela Moreno Vega and Carlos Moreno Otto.',
+ 'Aviso':'Notice','Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable es el libro':'This app is an aid for practicing geometric drawing and may contain mistakes. If in doubt, the reliable source is the book',
+ '. Se actualiza sola cuando hay una versión nueva.':'. It updates itself when there is a new version.',
+ '🔄 Buscar actualizaciones':'🔄 Check for updates','Ver novedades':'What’s new','Listo':'Done','Novedades':'What’s new','Entendido':'Got it',
+ 'Exportar':'Export','Qué quieres':'What you want','Tipo de archivo':'File type','🎨 Color (SVG)':'🎨 Color (SVG)','🖼️ Imagen (PNG)':'🖼️ Image (PNG)','✂️ Láser: piezas':'✂️ Laser: pieces','✂️ Láser: celosía':'✂️ Laser: lattice',
+ '📄 Lámina para pintar (PDF)':'📄 Sheet to paint (PDF)','Repeticiones del módulo':'Module repeats','Columnas':'Columns','Una columna menos':'One column fewer','Una columna más':'One more column',
+ 'Filas':'Rows','Una fila menos':'One row fewer','Una fila más':'One more row','El dibujo encaja sin costuras: puedes repetirlo como un azulejo.':'The drawing repeats seamlessly, like a tile.',
+ 'Tamaño':'Size','Ancho de cada módulo (mm)':'Width of each module (mm)','Lámina':'Sheet','Papel':'Paper','Orientación':'Orientation','Vertical':'Portrait','Horizontal':'Landscape',
+ 'Línea':'Line','Gris suave':'Soft gray','Negra':'Black','Con la línea gris suave, el trazo casi desaparece bajo la acuarela.':'With the soft gray line, the drawing almost disappears under watercolor.',
+ 'Resolución':'Resolution','⬇️ Descargar':'⬇️ Download','Copiar SVG':'Copy SVG','Actualizando a la versión nueva…':'Updating to the new version…'
+};
+function traducirPagina(){
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const L=[];while(w.nextNode())L.push(w.currentNode);
+  for(const n of L){if(n.parentNode&&/^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName))continue;const t=n.nodeValue.replace(/\s+/g,' ').trim();if(!t||!(t in ES_EN))continue;
+    const m=n.nodeValue.match(/^\s*/)[0],z=n.nodeValue.match(/\s*$/)[0];n.nodeValue=m+ES_EN[t]+z;}
+  document.querySelectorAll('[aria-label],[title],[aria-roledescription]').forEach(el=>{for(const a of ['aria-label','title','aria-roledescription']){const v=el.getAttribute(a);if(v&&v in ES_EN)el.setAttribute(a,ES_EN[v]);}});
+}
+if(EN)traducirPagina();
+
 // Shared renderer: builds the lazo SVG as a string (used in the page and with node for the PDFs)
 function renderLazo(D, o) {
   const f = n => +n.toFixed(3);
@@ -517,7 +590,9 @@ function renderLazo(D, o) {
       const L = W / sn + W * cs / sn + 0.02;
       const a = `x1="${f(x - dx * L / 2)}" y1="${f(y - dy * L / 2)}" x2="${f(x + dx * L / 2)}" y2="${f(y + dy * L / 2)}"`;
       if (o.ow > 0) s += `<line ${a} stroke="${o.outline}" stroke-width="${f(W)}"/>`;
-      s += `<line ${a} stroke="${o.ribbon}" stroke-width="${f(o.rw)}"/>`;
+      // la cinta clara un poco más larga que su contorno tapa la costura del extremo
+      const e = 0.03, a2 = `x1="${f(x - dx * (L / 2 + e))}" y1="${f(y - dy * (L / 2 + e))}" x2="${f(x + dx * (L / 2 + e))}" y2="${f(y + dy * (L / 2 + e))}"`;
+      s += `<line ${a2} stroke="${o.ribbon}" stroke-width="${f(o.rw)}"/>`;
     });
   }
   s += `</g>`;
@@ -887,6 +962,34 @@ P.octogonos=escalar({id:'octogonos',nombre:'Octógonos y estrellas de cuatro',lu
     'Para colorear':{cols:Array(3).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
 });
 
+// ===== Zaguán, segunda sala: estrellas de seis y de ocho (págs. 32-35) =====
+// Módulo de 8 × 8 cuadros con centro (4,4); se dibuja un periodo de 16 × 16 para alternar
+// los colores de las estrellas de ocho y de cuatro, como en el zócalo.
+P.zaguan2=escalar({id:'zaguan2',nombre:'Estrellas de seis y de ocho',lugar:'Zaguán, segunda sala',pags:'32 a 35',tipo:'cinta',
+  W:16,H:16,
+  lineas(){const r2=Math.SQRT2,pD=(4-2/s3)/(1+1/s3);
+    const F=[[0,r2,r2-1,1],[r2-1,1,4-1/s3,1],[4-1/s3,1,3+s3,5-s3],[3+s3,5-s3,7,4+1/s3],[4-2/s3,0,pD,pD]];
+    const G=[(x,y)=>[x,y],(x,y)=>[8-x,y],(x,y)=>[x,8-y],(x,y)=>[8-x,8-y],(x,y)=>[y,x],(x,y)=>[8-y,x],(x,y)=>[y,8-x],(x,y)=>[8-y,8-x]];
+    const L=[],vis=new Set();
+    for(const g of G)for(const q of F){const a=g(q[0],q[1]),b=g(q[2],q[3]),k=[a,b].map(v=>v.map(n=>n.toFixed(4)).join(',')).sort().join('|');if(vis.has(k))continue;vis.add(k);
+      for(const dx of [0,8])for(const dy of [0,8])L.push([a[0]+dx,a[1]+dy,b[0]+dx,b[1]+dy]);}
+    return L;},
+  clase(Q,[x,y]){const n=Q.length,d0=v=>Math.min(mod(v,8),8-mod(v,8))<0.4,d4=v=>Math.abs(mod(v,8)-4)<0.4;
+    if(n===16)return (Math.round(x/8)+Math.round(y/8))%2?5:4;   // estrella de ocho: negra / melada
+    if(n===12)return 0;                                           // estrella de seis
+    if(n===8&&d4(x)&&d4(y))return (Math.floor(x/8)+Math.floor(y/8))%2?3:2; // estrella de cuatro: melada / verde
+    if(n===4)return 7;                                            // pieza pequeña
+    if(n===8&&(d0(x)||d0(y)))return 6;                            // pieza en V
+    return 1;},                                                   // octógono grande
+  nombres:['Estrella de seis','Octógono grande','Estrella de cuatro melada','Estrella de cuatro verde','Estrella de ocho negra','Estrella de ocho melada','Pieza en V','Pieza pequeña'],
+  paletas:{
+    'Alcázar':{cols:['#2f4fa3','#161616','#c98b2b','#1f5f5b','#161616','#c98b2b','#2f4fa3','#2f4fa3'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Verde y melado':{cols:['#1f5f5b','#161616','#c98b2b','#c98b2b','#c98b2b','#161616','#1f5f5b','#1f5f5b'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Terracota':{cols:['#b8694d','#f0cdb8','#d98e6e','#d98e6e','#8a4b36','#8a4b36','#e8b49a','#e8b49a'],ribbon:'#fbf4ec',outline:'#8a4b36'},
+    'Para colorear':{cols:Array(8).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
+});
+Object.assign(P.zaguan2,{rw:0.75,ow:0.07});
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -997,6 +1100,24 @@ Object.assign(P.octogonos,{vt:[0,0,72,72],
     {h:'Las piezas',t:'Dos piezas: el octógono y la estrella de cuatro puntas.',c:'En los bordes del panel se usan medias estrellas y cuartos de estrella.',tipo:'piezas'},
     {h:'Colorear',t:'Las filas de octógonos se alternan en verde y negro, y las estrellas siempre son blancas.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
 
+Object.assign(P.zaguan2,{vt:[0,0,12,12],
+  resumen:'Estrellas de ocho en las esquinas del módulo, de seis en el centro de sus lados y de cuatro en el centro, unidas por una cinta blanca que se entrelaza.',
+  pie:'Todo sale de un cuadrado de 8 × 8 con cinco circunferencias de radio 2: los lados de cuatro triángulos equiláteros, ocho rectas desde los bordes y una recta a 45° en cada esquina.',
+  pasos:[
+    {h:'Cuadrado de 8 × 8 y circunferencias',t:'Dibuja un cuadrado dividido en 8 × 8 cuadros. Con centro en el punto medio de cada lado traza una semicircunferencia de radio 2 cuadros, y otra circunferencia igual con centro en el del cuadrado.',c:'La circunferencia del centro toca a las cuatro semicircunferencias.',
+     guia(p,vt){const k=p.k;return cuadricula(p,vt,1,false)+circulos([[4,0],[0,4],[8,4],[4,8],[4,4]].map(([x,y])=>[x*k,y*k]),2*k,RO,0.05);}},
+    {h:'Cuatro triángulos',t:'Las líneas de la cuadrícula cortan la circunferencia del centro en doce puntos repartidos por igual. Únelos de cuatro en cuatro: salen cuatro triángulos equiláteros. Prolonga sus lados hasta el borde del cuadrado.',c:'Cada lado queda a un cuadro del centro; cuatro de ellos coinciden con líneas de la cuadrícula.',anim:'draw',
+     guia(p,vt){const k=p.k,b=[0,0,8*k,8*k],L=[];for(let i=0;i<12;i++){const a=rad(30*i),n=[Math.cos(a),Math.sin(a)];const s=recta([(4+n[0])*k,(4+n[1])*k],[-n[1],n[0]],b);if(s)L.push(s);}return animar(L,RO,0.06);}},
+    {h:'Rectas desde los bordes',t:'Marca dónde cortan las semicircunferencias a las líneas de la cuadrícula más próximas al borde. Traza una recta por cada uno de esos puntos y por el extremo más cercano de los lados prolongados.',c:'Salen ocho rectas, dos por cada lado del cuadrado, inclinadas como los lados de los triángulos.',anim:'draw',
+     guia(p,vt){const k=p.k,b=[0,0,8*k,8*k],L=[],A=[4-2/s3,0],B=[4-s3,1];
+       const G=[(x,y)=>[x,y],(x,y)=>[8-x,y],(x,y)=>[x,8-y],(x,y)=>[8-x,8-y],(x,y)=>[y,x],(x,y)=>[8-y,x],(x,y)=>[y,8-x],(x,y)=>[8-y,8-x]];
+       for(const g of G){const a=g(...A),c=g(...B),s=recta([a[0]*k,a[1]*k],[c[0]-a[0],c[1]-a[1]],b);if(s)L.push(s);}return animar(L,'#2b4f73',0.06);}},
+    {h:'Las esquinas',t:'Con centro en cada esquina traza un cuarto de circunferencia de radio igual a la diagonal de un cuadro. Une los extremos de cada arco con una recta a 45°.',c:'Esas rectas cierran las puntas de las estrellas de ocho de las esquinas.',anim:'draw',
+     guia(p,vt){const k=p.k,r=Math.SQRT2,C=[[0,0],[8,0],[0,8],[8,8]];const L=C.map(([x,y])=>[x*k,(y?y-r:y+r)*k,(x?x-r:x+r)*k,y*k]);return circulos(C.map(([x,y])=>[x*k,y*k]),r*k,RO,0.05)+animar(L,RO,0.08);}},
+    {h:'Remarcar',t:'Remarca solo los trazos del dibujo: una estrella de ocho puntas alrededor de cada esquina, una de seis en el centro de cada lado y una de cuatro en el centro. Las líneas se enlazan en una red continua.',c:'Las puntas de la estrella de cuatro tocan la circunferencia del centro.',tipo:'remarcar'},
+    {h:'Las piezas',t:'Salen seis piezas distintas: las estrellas de ocho, de seis y de cuatro puntas, el octógono grande, la pieza en V y una pieza pequeña de cuatro lados.',c:'El módulo se repite por traslación. Al repetirlo, las estrellas de ocho y de cuatro alternan sus colores.',tipo:'piezas'},
+    {h:'La cinta y el color',t:'Da ancho a la cinta con dos paralelas a cada línea y alterna los cruces por encima y por debajo. En el zaguán, las estrellas de seis y las piezas pequeñas son azules y los octógonos, negros. Las estrellas de ocho alternan negro y melado, y las de cuatro, melado y verde.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
+
 // Dibuja un paso del trazado de un patrón nuevo
 function dibujarPaso(p,n,render){const vt=p.vt,[x0,y0,w,h]=vt,s=p.pasos[n-1],pad=w*0.03;
   const marco=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="#2b2b2b" stroke-width="0.08"/>`;
@@ -1010,7 +1131,7 @@ function dibujarPaso(p,n,render){const vt=p.vt,[x0,y0,w,h]=vt,s=p.pasos[n-1],pad
       const sg=[pts[a],pts[a+1],pts[b],pts[b+1]];if(Math.max(sg[0],sg[2])<x0-1||Math.min(sg[0],sg[2])>x0+w+1||Math.max(sg[1],sg[3])<y0-1||Math.min(sg[1],sg[3])>y0+h+1)continue;L.push(sg);}
     const cx=x0+w/2,cy=y0+h/2;L.sort((a,b)=>Math.hypot((a[0]+a[2])/2-cx,(a[1]+a[3])/2-cy)-Math.hypot((b[0]+b[2])/2-cx,(b[1]+b[3])/2-cy));
     g+=animar(L,'#1b1b1b',0.17);}
-  const fz=Math.max(w,h)/24;if(fz>1.2){g=g.replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(v*fz).toFixed(3)}"`).replace(/stroke-dasharray="([\d. ]+)"/g,(m,v)=>`stroke-dasharray="${v.split(' ').map(n=>+(n*fz).toFixed(3)).join(' ')}"`);}
+  const fz=Math.max(w,h)/24;if(Math.abs(fz-1)>0.2){g=g.replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(v*fz).toFixed(3)}"`).replace(/stroke-dasharray="([\d. ]+)"/g,(m,v)=>`stroke-dasharray="${v.split(' ').map(n=>+(n*fz).toFixed(3)).join(' ')}"`);}
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${y0-pad} ${w+2*pad} ${h+2*pad}" width="100%"><rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#fffefa"/><defs><clipPath id="tzclip2"><rect x="${x0}" y="${y0}" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#tzclip2)">${g}</g>${marco}</svg>`;}
 return {P,recta,redTriangulos,poligono,contorno,dibujarPaso};
 })();
@@ -1025,7 +1146,7 @@ const PRESETS={
  'Para colorear':{cols:Array(9).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}
 };
 const BRUSH=['#161616','#1f5f5b','#2f4fa3','#c98b2b','#6f8f45','#b8694d','#e8b49a','#9ab6dc','#d4a83c','#7a2e3a','#ffffff'];
-const BRUSH_N=['Negro','Verde','Azul cobalto','Melado','Verde oliva','Terracota','Rosa claro','Azul claro','Oro','Granate','Blanco'];
+const BRUSH_N=EN?['Black','Green','Cobalt blue','Honey','Olive green','Terracotta','Light pink','Light blue','Gold','Garnet','White']:['Negro','Verde','Azul cobalto','Melado','Verde oliva','Terracota','Rosa claro','Azul claro','Oro','Granate','Blanco'];
 const VIEWS={mod:[-2.5,-2.5,29,29],'2x2':[0,0,48,48],'3x2':[0,0,72,48],'4x3':[0,0,96,72]};
 // ---------- Patrones (v1.3): el lazo de 8 y los alicatados nuevos ----------
 const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',pags:'133 a 136',tipo:'cinta',W:24,H:24,D:D_LAZO,nombres:NAMES,paletas:PRESETS,vistas:VIEWS,rw:0.62,ow:0.07,
@@ -1035,6 +1156,122 @@ const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',p
 for(const p of Object.values(PATRONES.P)){const m=+(p.W*0.06).toFixed(2);
   PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H]},
     titulo:p.nombre+' · '+p.lugar,intro:`Es el alicatado de las páginas ${p.pags} de <em>El Real Alcázar de Sevilla con regla y compás</em>. ${p.resumen}`});}
+// ---------- Inglés (v1.5): nombres, textos y pasos de cada alicatado ----------
+const LIBRO_EN='<em>El Real Alcázar de Sevilla con regla y compás</em> (“The Royal Alcázar of Seville with ruler and compass”)';
+const PAL_EN={'Alcázar':'Alcázar','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
+const PAT_EN={
+ lazo8:{nombre:'Eight-fold knot',lugar:'Patio de las Muñecas',
+  nombres:['Corner star','Small piece by the star','Alfardón (long hexagon)','Side V piece','Triangle by the alfardón','Triangle by the central star','Edge star','Central V piece','Central star'],
+  intro:'The module on pages 133–136 of '+LIBRO_EN+', drawn on the 5-7-5-7 grid.',
+  pie:'The geometry comes from the book’s grid: eight-pointed stars every 12 squares, with a square of 5 and a rhombus of radius 3.5, extended and inked as in step 3 on page 136. The dashed red lines are the construction diagonals and the dark blue ones, the 5-7 divisions.',
+  pasos:[
+   {h:'The grid',t:'Draw a grid of 29 × 29 squares. Mark the divisions alternating 5 and 7 squares: 5-7-5-7-5. This gives nine 5 × 5 squares, one at each crossing of the narrow bands.',c:'With 6.5 mm squares the module is about 19 cm wide and fits on A4. Use a hard pencil (2H) and a very light touch.'},
+   {h:'The eight-pointed stars',t:'In each 5-square draw a star: the square itself and, on top, a rhombus with the same center turned 45°, whose points stick out one square on each side (3.5 squares from the center).',c:'It is the grid version of the two-square star that the book draws with a compass on page 133.'},
+   {h:'Extend the sides',t:'Extend the sides of the stars. The sides of the square coincide with the 5-7 lines you already have. Those of the rhombus become diagonals that cross the whole module.',c:'Every line of the final drawing lies on this network: horizontals, verticals and 45° diagonals.'},
+   {h:'Ink: straight lines',t:'Start inking the knot. First the horizontal and vertical stretches: they go around the stars and form the square around the central star.',c:'Ink with a softer pencil (HB or 2B). The construction lines stay faded.'},
+   {h:'Ink: long diagonals',t:'Ink the long diagonals. They start at the points of the corner rhombuses and cross the module to the stars on the sides.',c:'Notice that each diagonal passes exactly through the point of a neighboring star.'},
+   {h:'Ink: short joins',t:'Add the short joins at 45°. They link the straight lines with the diagonals and draw the V points of the stars. Now the knot forms continuous, closed straps.',c:'If a line is left loose, a join is missing: every strap must run without breaks.'},
+   {h:'Give the strap its width',t:'Turn each line into a strap: draw a parallel on each side of the line, at the same distance. Then erase the center line and the construction lines.',c:'A strap a little over half a square wide matches the tilework. Work out the width with the box on page 134.'},
+   {h:'Interlace',t:'At each crossing one strap goes over and the other under. Follow each strap alternating: over, under, over… and erase the parts of the strap that goes under.',c:'If you alternate correctly along one strap, the others fall into place.'},
+   {h:'Color',t:'Now you can paint. Stars and alfardones in black and the V pieces in green reproduce the dado of the patio.',c:'Try out combinations first in the Color tab.'}]},
+ zaguan:{nombre:'Squares and straps',lugar:'Zaguán (entrance hall)',
+  nombres:['Black square','Green square','Honey square','Small black square','Small green square','Small honey square','Strap (rectangle)'],
+  resumen:'White straps crossing at right angles, large squares in the gaps and small squares at the crossings.',
+  pie:'It all comes from a grid turned 45°: the lines are inked with the rhythm 1-2-1-2, a one-square lane for the strap and a two-square gap for the square.',
+  pasos:[
+   {h:'A turned grid',t:'Draw a grid of equal squares turned 45°, like a board standing on a corner. The side of each square will be the width of the white straps.',c:'If it is easier, turn the paper and work with the grid straight: it is the same drawing.'},
+   {h:'The 1-2 rhythm',t:'Ink the lines with the rhythm 1-2-1-2…: a one-square lane and a two-square gap, in both directions. The lanes will be the straps; the gaps, the large squares.',c:'Count under your breath: ink, ink, skip two.'},
+   {h:'The pieces',t:'Three pieces appear: 2 × 2 squares in the gaps, 1 × 1 squares where the lanes cross and 1 × 2 rectangles that make the straps.',c:'On the dado the straps are white and the squares black, green and honey.'},
+   {h:'Color',t:'The black and honey squares are grouped in fours around a small square of the same color, in alternating rows. Everything else is green and the straps, white.',c:'Try other combinations in the Color tab.'}]},
+ munecas17:{nombre:'Octagons and squares',lugar:'Patio de las Muñecas',
+  nombres:['Central band rectangle','Trapezium','Square between octagons'],
+  resumen:'Octagons with unequal sides split into three bands, turning 90° from one to the next, with green squares between them.',
+  pie:'Each tile is a 3 × 3 square with an octagon joining the points that divide its sides into thirds; the tile repeats turned 90° around a corner.',
+  pasos:[
+   {h:'A 3 × 3 square',t:'Draw a square and divide it into 3 × 3 squares. Also draw the diagonals of the squares.',c:'With 2 cm squares each tile is 6 cm and the four-tile block, 12 cm.'},
+   {h:'The octagon',t:'Join the points that divide each side into three: you get an octagon with four long sides and four short ones, which are diagonals of the corner squares. Also ink the two lines that split it into three equal bands.',c:'The leftover corners of the square are triangles: four of them together make a square.'},
+   {h:'Turn 90°',t:'Repeat the tile turning it 90° around one of its corners. The bands alternate, horizontal and vertical, and four tiles make the repeating module.',c:'Notice that a square standing on its corner is left between four octagons.'},
+   {h:'The pieces',t:'There are three pieces: the rectangle of the central band, two trapeziums beside it and the square left between four octagons.',c:'All of them have sides of one square or one square’s diagonal.'},
+   {h:'Color',t:'On the dado the rectangles are black, the trapeziums white and the squares green. The drawing looks like a weave of crossing straps.',c:'Try other combinations in the Color tab.'}]},
+ toledanos:{nombre:'Hexagons and triangles',lugar:'Toledanos and Sevillanos rooms',
+  nombres:['Black hexagon','Green hexagon','Honey hexagon','Triangle'],
+  resumen:'Hexagons touching at their corners with white triangles between them; the colors are grouped in rhombuses.',
+  pie:'The whole drawing sits on a network of equilateral triangles: the hexagons are groups of six triangles and one triangle is left free between every three hexagons.',
+  pasos:[
+   {h:'Triangle network',t:'Draw a network of equilateral triangles. You can build it with circles of the same radius, each centered on a crossing of the previous one, or with set squares.',c:'Here the lines of the network are vertical and at 30°, so the hexagons stand on a corner.'},
+   {h:'Hexagons',t:'Ink hexagons of six triangles touching at their corners. One triangle is left free between every three hexagons.',c:'If you start with a row, the next one is shifted half a hexagon.'},
+   {h:'The pieces',t:'There are only two pieces: the hexagon and the triangle, both with the same side.',c:'It is one of the simplest tile patterns in the Alcázar.'},
+   {h:'Color',t:'The color is arranged in rhombuses of 3 × 3 hexagons: a honey one in the middle surrounded by six black ones, and green ones in the acute corners. The triangles are white.',c:'Try other combinations in the Color tab.'}]},
+ cenador6:{nombre:'Six-pointed stars',lugar:'Pavilion of Charles V',
+  nombres:['Black star','Honey star','Green star','Blue star','Rhombus','Alfardón (long hexagon)'],
+  resumen:'Colored six-pointed stars point to point, with white rhombuses and alfardones between them.',
+  pie:'Each star is twelve triangles of a network of equilateral triangles: a hexagon and a point on each side. The stars touch at their points.',
+  pasos:[
+   {h:'Triangle network',t:'Draw a network of equilateral triangles with one family of lines horizontal.',c:'Use a hard pencil and a very light line: the network is only a guide.'},
+   {h:'Six-pointed stars',t:'Ink stars of twelve triangles: a hexagon and a point on each side. Place them in rows, point to point, and put each row right under the previous one so they also touch top to bottom.',c:'Between the centers of two neighboring stars in a row there are three triangle sides.'},
+   {h:'The pieces',t:'A rhombus is left between two stars in a row, and an alfardón between two rows: a long hexagon of ten triangles.',c:'The three pieces appear by themselves when you draw the stars: no extra line is needed.'},
+   {h:'Color',t:'The stars are black, honey, green and blue, and the rhombuses and alfardones white.',c:'In the book there is a variant from the Audience Hall of the Upper Royal Quarters with triangles instead of rhombuses.'}]},
+ cubos:{nombre:'Cubes',lugar:'Pavilion of Charles V',
+  nombres:['Green square','Honey square','Black square','Top face (white)','Side face (blue)'],
+  resumen:'Colored squares with two parallelogram faces, white and blue: they look like cubes seen in perspective.',
+  pie:'It is a grid with its descending diagonals: in each row one square in three is left whole and the others are split along the diagonal.',
+  pasos:[
+   {h:'Grid and diagonals',t:'Draw a grid and in each square draw the diagonal that goes down from left to right.',c:'With 1.5 cm squares, the 3 × 3 module is 4.5 cm.'},
+   {h:'Whole squares and faces',t:'In each row leave one square in three whole, moving it one square to the left in the row below. Ink the diagonals of the others and erase the lines joining two triangles of the same face: above each square there is a lying parallelogram and to its left, a standing one.',c:'Each cube is a whole square, the top face and the side face.'},
+   {h:'The pieces',t:'Three pieces appear: the square (the front face), the lying parallelogram (the top) and the standing parallelogram (the side).',c:'The two parallelograms are equal; only their position changes.'},
+   {h:'Color',t:'The top faces are white and the side faces blue. The squares change color on each staircase: green, honey and black.',c:'Try other combinations in the Color tab.'}]},
+ alargadas:{nombre:'Long eight-pointed stars',lugar:'Pavilion of Charles V',
+  nombres:['Blue long star','Black long star','Honey long star','White long star (standing)','Dark triangle','Light triangle'],
+  resumen:'Colored long eight-pointed stars lying down, and white standing ones, with small squares split in a cross between them.',
+  pie:'The base is a network of equal circles, tangent in fours. The pieces come from extending some sides of the eight-pointed stars inscribed in them.',
+  pasos:[
+   {h:'Grid and circles',t:'Draw a grid with its diagonals. With centers on every other crossing, draw circles that touch in fours: their radius is the side of a square.',c:'The circles are tangent to each other and to the sides of the large 2 × 2 squares.'},
+   {h:'Eight-pointed stars',t:'In each circle inscribe an eight-pointed star made of two squares: one with horizontal and vertical sides, and another turned 45°. Extend the horizontal and vertical sides.',c:'The extended sides form a network of lanes; small squares will appear at their crossings.'},
+   {h:'Ink',t:'Ink the long stars: around one circle, lying down (with one point up and one down); around its neighbors, standing. A small square is left between four stars; draw its diagonals.',c:'Each long star fits its neighbors with no gaps: the point of one goes into the notch of the other.'},
+   {h:'The pieces',t:'There are two pieces: the long star, the same lying down or standing, and the triangle of the small square split in a cross.',c:'At the edges of the panel the stars are cut.'},
+   {h:'Color',t:'The standing stars are white. The lying ones go in rows: one of honey stars and another alternating blue and black. In the small squares, the top and bottom triangles are dark.',c:'Try other combinations in the Color tab.'}]},
+ alfardones:{nombre:'Four-pointed stars and alfardones',lugar:'Patio de las Muñecas',
+  nombres:['Lying alfardón','Standing alfardón','Four-pointed star'],
+  resumen:'Alfardones (long hexagons) lying and standing that interweave like a fabric, with white four-pointed stars between them.',
+  pie:'It comes from second-crossing eight-pointed stars drawn on a grid with the rhythm 3.5-5-3.5: from each star only the strokes forming the alfardones and the four-pointed star are inked.',
+  pasos:[
+   {h:'3.5-5-3.5 grid',t:'Draw a grid and ink the lines with the rhythm 3.5 - 5 - 3.5 squares. Each group of 12 squares will hold one star.',c:'The half squares are marked by eye in the middle of the square.'},
+   {h:'Eight-pointed stars',t:'In each 12-square draw a second-crossing eight-pointed star: the horizontal and vertical sides run along the inked lines and the slanted ones, at 45°, join the points two by two. Neighboring stars touch at their points.',c:'Each point is 6 squares from the center of its star.'},
+   {h:'Ink',t:'From each star ink only the strokes forming the alfardones: long hexagons with 45° ends, lying and standing alternately. The end of each alfardón touches the long side of its neighbor. What is left between them are the four-pointed stars.',c:'Each star mirrors the next: if one turns right, its neighbor turns left.'},
+   {h:'The pieces',t:'There are only two pieces: the alfardón, the same lying or standing, and the four-pointed star.',c:'It is the same motif as in the palace entrance, among the tiles of the zaguán.'},
+   {h:'Color',t:'On the door jambs almost all the alfardones are black, with some green or honey rows drawing a cross in the middle of the panel. The stars are white.',c:'Try other combinations in the Color tab.'}]},
+ octogonos:{nombre:'Octagons and four-pointed stars',lugar:'Skirting of the dados',
+  nombres:['Octagon of the dark rows','Octagon of the green rows','Four-pointed star'],
+  resumen:'Regular octagons touching at their corners, in dark and green rows, with white four-pointed stars in the gaps.',
+  pie:'The base is a grid with its diagonals: a circle is inscribed in each square and in it, a regular octagon.',
+  pasos:[
+   {h:'Grid and circles',t:'Draw a grid with its diagonals and, in each square, the inscribed circle.',c:'The axes and diagonals divide each circle into eight equal parts.'},
+   {h:'Octagons',t:'Join in order the eight points where the axes and diagonals cut each circle: you get a regular octagon with one point up. Neighboring octagons touch at their points.',c:'The gaps left between four octagons are four-pointed stars.'},
+   {h:'The pieces',t:'Two pieces: the octagon and the four-pointed star.',c:'At the edges of the panel half stars and quarter stars are used.'},
+   {h:'Color',t:'The rows of octagons alternate green and black, and the stars are always white.',c:'Try other combinations in the Color tab.'}]},
+ zaguan2:{nombre:'Six- and eight-pointed stars',lugar:'Zaguán, second room',
+  nombres:['Six-pointed star','Large octagon','Honey four-pointed star','Green four-pointed star','Black eight-pointed star','Honey eight-pointed star','V piece','Small piece'],
+  resumen:'Eight-pointed stars at the corners of the module, six-pointed ones at the middle of its sides and a four-pointed one in the center, joined by an interlacing white strap.',
+  pie:'It all comes from an 8 × 8 square with five circles of radius 2: the sides of four equilateral triangles, eight lines from the edges and a 45° line at each corner.',
+  pasos:[
+   {h:'8 × 8 square and circles',t:'Draw a square divided into 8 × 8 squares. Centered on the midpoint of each side draw a semicircle with a radius of 2 squares, and another equal circle centered on the square’s center.',c:'The central circle touches the four semicircles.'},
+   {h:'Four triangles',t:'The grid lines cut the central circle at twelve evenly spaced points. Join them every fourth point: you get four equilateral triangles. Extend their sides to the edge of the square.',c:'Each side is one square away from the center; four of them lie on grid lines.'},
+   {h:'Lines from the edges',t:'Mark where the semicircles cut the grid lines nearest the edge. Draw a line through each of those points and the nearest end of the extended sides.',c:'You get eight lines, two for each side of the square, slanted like the sides of the triangles.'},
+   {h:'The corners',t:'Centered on each corner draw a quarter circle with a radius equal to the diagonal of one square. Join the ends of each arc with a 45° line.',c:'These lines close the points of the eight-pointed stars at the corners.'},
+   {h:'Ink',t:'Ink only the strokes of the design: an eight-pointed star around each corner, a six-pointed one at the middle of each side and a four-pointed one in the center. The lines link into one continuous network.',c:'The points of the four-pointed star touch the central circle.'},
+   {h:'The pieces',t:'Six different pieces appear: the eight-, six- and four-pointed stars, the large octagon, the V piece and a small four-sided piece.',c:'The module repeats by translation. When it repeats, the eight- and four-pointed stars alternate their colors.'},
+   {h:'Strap and color',t:'Give the strap its width with two parallels to each line and alternate the crossings over and under. In the zaguán the six-pointed stars and the small pieces are blue and the octagons, black. The eight-pointed stars alternate black and honey, and the four-pointed ones, honey and green.',c:'Try other combinations in the Color tab.'}]}
+};
+if(EN){
+  for(const [id,e] of Object.entries(PAT_EN)){const p=PATS[id];if(!p)continue;
+    for(const k of ['nombre','lugar','resumen','pie','intro'])if(e[k])p[k]=e[k];
+    if(e.nombres&&e.nombres.length===p.nombres.length)p.nombres=e.nombres;
+    if(e.pasos&&p.pasos)p.pasos=p.pasos.map((q,i)=>Object.assign({},q,e.pasos[i]||{}));
+    p.titulo=p.nombre+' · '+p.lugar;
+    if(id!=='lazo8')p.intro=`The tile pattern on pages ${p.pags.replace(/ (a|y) /,'–')} of ${LIBRO_EN}. ${p.resumen}`;}
+}
+const palNombre=n=>EN?(PAL_EN[n]||n):n;
+
 // Las piezas y cintas de los patrones nuevos se calculan la primera vez que se abren
 function datos(p){if(!p.D){p.prep=MOTOR.preparar(p);const mx=p.W*0.1,my=p.H*0.1;p.D=MOTOR.zona(p,p.prep,-mx,-my,4*p.W+mx,3*p.H+my);}return p.D;}
 let PAT=PATS.lazo8,D=D_LAZO,st,CELDA=null;
@@ -1054,14 +1291,14 @@ function draw(){
   $('svg').innerHTML=renderLazo(D,opts());
   document.querySelectorAll('[data-v]').forEach(b=>{const on=b.dataset.v===st.view;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   const mos=PAT.tipo==='mosaico',lazo=PAT.id==='lazo8';
-  document.querySelector('[data-v="mod"]').textContent=lazo?'Módulo (29×29)':'Módulo';
+  document.querySelector('[data-v="mod"]').textContent=(lazo?tr('Módulo (29×29)','Module (29×29)'):tr('Módulo','Module'));
   $('row-outline').hidden=mos;$('row-interlace').hidden=mos;$('row-grid').hidden=!lazo;$('row-construct').hidden=!lazo;
-  $('h-cinta').textContent=mos?'Juntas':'Cinta';$('l-ribbon').textContent=mos?'Color de las juntas':'Color de la cinta';$('l-rw').textContent=mos?'Ancho de las juntas':'Ancho de la cinta';
-  $('rw').min=mos?0.04:0.3;$('rw').max=mos?0.5:0.85;
+  $('h-cinta').textContent=mos?tr('Juntas','Joints'):tr('Cinta','Strapwork');$('l-ribbon').textContent=mos?tr('Color de las juntas','Joint color'):tr('Color de la cinta','Strap color');$('l-rw').textContent=mos?tr('Ancho de las juntas','Joint width'):tr('Ancho de la cinta','Strap width');
+  $('rw').min=mos?0.04:+(PAT.rw*0.48).toFixed(2);$('rw').max=mos?0.5:+(PAT.rw*1.37).toFixed(2);
   $('types').innerHTML=PAT.nombres.map((n,i)=>`<div class="row"><label for="t${i}">${n}</label><input type="color" id="t${i}" data-t="${i}" value="${st.cols[i]}"></div>`).join('');
   $('ribbon').value=st.ribbon;$('outline').value=st.outline;$('rw').value=st.rw;
   ['interlace','wc','grid','construct','solo'].forEach(k=>$(k).checked=st[k]);
-  $('brush').innerHTML=BRUSH.map((c,i)=>`<button class="sw${c===st.brush?' sel':''}" style="background:${c}" data-c="${c}" title="${BRUSH_N[i]}" aria-label="${BRUSH_N[i]}" aria-pressed="${c===st.brush}"></button>`).join('')+`<input type="color" id="brushc" value="${st.brush}" title="Otro color" aria-label="Otro color del pincel">`;
+  $('brush').innerHTML=BRUSH.map((c,i)=>`<button class="sw${c===st.brush?' sel':''}" style="background:${c}" data-c="${c}" title="${BRUSH_N[i]}" aria-label="${BRUSH_N[i]}" aria-pressed="${c===st.brush}"></button>`).join('')+`<input type="color" id="brushc" value="${st.brush}" title="${tr('Otro color','Other color')}" aria-label="${tr('Otro color del pincel','Other brush color')}">`;
   marcarPieza();
 }
 // ---------- Pintar con el teclado: flechas para elegir pieza, Intro o espacio para pintar ----------
@@ -1083,7 +1320,7 @@ $('svg').addEventListener('keydown',e=>{const dirs={ArrowRight:[1,0],ArrowLeft:[
   let best=null,bd=1e9;for(const v of V){if(v[0]===SEL)continue;const dx=v[1]-c[1],dy=v[2]-c[2],a=dx*d[0]+dy*d[1];if(a<=1e-6)continue;
     const lat=Math.abs(dx*d[1]-dy*d[0]);if(lat>a*1.2)continue;const s=a+2*lat;if(s<bd){bd=s;best=v[0];}}
   if(best!=null){SEL=best;marcarPieza();anunciar();}});
-function pintarPaletas(){$('presets').innerHTML=Object.entries(PAT.paletas).map(([n,p])=>`<button class="preset" data-p="${n}">${n}<i>${[...new Set(p.cols)].slice(0,5).map(c=>`<b style="background:${c}"></b>`).join('')}</i></button>`).join('');}
+function pintarPaletas(){$('presets').innerHTML=Object.entries(PAT.paletas).map(([n,p])=>`<button class="preset" data-p="${n}">${palNombre(n)}<i>${[...new Set(p.cols)].slice(0,5).map(c=>`<b style="background:${c}"></b>`).join('')}</i></button>`).join('');}
 document.addEventListener('click',e=>{
   const t=e.target;
   if(t.dataset.v){st.view=t.dataset.v;draw();}
@@ -1106,16 +1343,16 @@ $('reset').onclick=()=>{st=fresh(PAT);draw();};
 // Cada patrón se repite cada W × H (un módulo). Se exporta un rectángulo de c × r módulos que encaja sin costuras.
 const fx=n=>+(+n).toFixed(3);
 const EX_KEY='laceria-export-v1';
-let EX={modo:'svg',c:2,r:2,mm:60,px:4000};
+let EX={modo:'svg',c:2,r:2,mm:60,px:4000,papel:'A4',ori:'v',linea:'gris'};
 try{EX=Object.assign(EX,JSON.parse(localStorage.getItem(EX_KEY)||'{}'));}catch(e){}
 function exGuardar(){try{localStorage.setItem(EX_KEY,JSON.stringify(EX))}catch(e){}}
 const interior=s=>s.slice(s.indexOf('>')+1,s.lastIndexOf('</svg>'));
 
 // Dibujo en color. Hasta 4 × 3 módulos se dibuja tal cual (con los retoques sueltos);
 // si es mayor, se repite ese bloque, que encaja porque mide un número entero de módulos.
-function svgColor(c,r,ancho,alto){
+function svgColor(c,r,ancho,alto,extra){
   const w=c*PAT.W,h=r*PAT.H,bw=Math.min(w,4*PAT.W),bh=Math.min(h,3*PAT.H);
-  const o=opts();Object.assign(o,{x0:0,y0:0,w:bw,h:bh});
+  const o=opts();Object.assign(o,extra||{},{x0:0,y0:0,w:bw,h:bh});
   const base=interior(renderLazo(D,o));
   let s=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${w} ${h}" width="${ancho}" height="${alto}">`;
   if(bw===w&&bh===h)return s+base+'</svg>';
@@ -1188,12 +1425,67 @@ function svgLaser(modo,c,r,mm,vista){
 }
 if(typeof module!=='undefined')module.exports.ex={svgLaser,celda,encoger,piezas,area};
 
+// ---------- Lámina para pintar (v1.5): PDF A4 o A3 con el dibujo solo en línea ----------
+const PAPEL={A4:[210,297],A3:[297,420]};
+function lamina(){ // medidas en mm de la hoja y del dibujo
+  let [pw,ph]=PAPEL[EX.papel]||PAPEL.A4;if(EX.ori==='h')[pw,ph]=[ph,pw];
+  const m=12,pie=8,aw=pw-2*m,ah=ph-2*m-pie,w=EX.c*PAT.W,h=EX.r*PAT.H,e=Math.min(aw/w,ah/h),dw=w*e,dh=h*e;
+  return {pw,ph,m,pie,dw,dh,dx:(pw-dw)/2,dy:m+(ah-dh)/2,umm:e};
+}
+function svgLamina(L){ // dibujo en línea, con el grosor de línea en milímetros reales
+  const col=EX.linea==='negra'?'#222222':'#8c8c8c',lw=(EX.linea==='negra'?0.35:0.3)/L.umm,mos=PAT.tipo==='mosaico';
+  const blanco=Array(PAT.nombres.length).fill('#ffffff');
+  const o=mos?{cols:blanco,over:{},ribbon:col,outline:col,rw:lw,ow:0,wc:false,grid:false,construct:false}
+             :{cols:blanco,over:{},ribbon:'#ffffff',outline:col,ow:lw,wc:false,grid:false,construct:false};
+  return svgColor(EX.c,EX.r,fx(L.dw)+'mm',fx(L.dh)+'mm',o);
+}
+function laminaVista(){const L=lamina();const d=svgLamina(L).replace(/^<svg /,`<svg x="${fx(L.dx)}" y="${fx(L.dy)}" `).replace(/width="[^"]*mm" height="[^"]*mm"/,`width="${fx(L.dw)}" height="${fx(L.dh)}"`);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${L.pw} ${L.ph}" style="max-height:240px;width:auto"><rect width="${L.pw}" height="${L.ph}" fill="#fff" stroke="#c9c2b5" stroke-width="0.8"/>${d}<text x="${L.m}" y="${L.ph-L.m}" font-size="3" fill="#8c8c8c" font-family="Inter,sans-serif">${PAT.nombre} · ${PAT.lugar}</text></svg>`;}
+// PDF de una página con una imagen JPEG (sin librerías: funciona sin conexión)
+function pdfJpeg(jpg,wpx,hpx,wpt,hpt){
+  const enc=new TextEncoder(),partes=[],off=[];let pos=0;
+  const add=b=>{const u=typeof b==='string'?enc.encode(b):b;partes.push(u);pos+=u.length;};
+  const obj=(n,cuerpo,flujo)=>{off[n]=pos;add(`${n} 0 obj\n${cuerpo}\n`);if(flujo){add('stream\n');add(flujo);add('\nendstream\n');}add('endobj\n');};
+  const cont=`q ${wpt.toFixed(2)} 0 0 ${hpt.toFixed(2)} 0 0 cm /Im0 Do Q`;
+  add('%PDF-1.4\n%\xe2\xe3\xcf\xd3\n');
+  obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+  obj(3,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${wpt.toFixed(2)} ${hpt.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+  obj(4,`<< /Type /XObject /Subtype /Image /Width ${wpx} /Height ${hpx} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>`,jpg);
+  obj(5,`<< /Length ${cont.length} >>`,enc.encode(cont));
+  obj(6,'<< /Creator (Laceria - indalo-apps) /Producer (Laceria) >>');
+  const xref=pos;let x='xref\n0 7\n0000000000 65535 f \n';for(let n=1;n<=6;n++)x+=String(off[n]).padStart(10,'0')+' 00000 n \n';
+  add(x+`trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(partes,{type:'application/pdf'});
+}
+function cargarImg(svg){return new Promise((ok,mal)=>{const img=new Image();img.onload=()=>ok(img);img.onerror=()=>mal(new Error('svg'));img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);});}
+async function crearLamina(){
+  const L=lamina(),dpi=EX.papel==='A3'?250:300,mmPx=dpi/25.4,W=Math.round(L.pw*mmPx),H=Math.round(L.ph*mmPx);
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');
+  cx.fillStyle='#ffffff';cx.fillRect(0,0,W,H);
+  const img=await cargarImg(svgLamina(L).replace(/width="[^"]*mm" height="[^"]*mm"/,`width="${Math.round(L.dw*mmPx)}" height="${Math.round(L.dh*mmPx)}"`));
+  cx.drawImage(img,Math.round(L.dx*mmPx),Math.round(L.dy*mmPx),Math.round(L.dw*mmPx),Math.round(L.dh*mmPx));
+  cx.fillStyle='#8c8c8c';cx.font=`${Math.round(3*mmPx)}px Inter, system-ui, sans-serif`;cx.textBaseline='alphabetic';
+  cx.textAlign='left';cx.fillText(`${PAT.nombre} · ${PAT.lugar} · ${tr('Real Alcázar de Sevilla','Royal Alcázar of Seville')}`,L.m*mmPx,(L.ph-L.m)*mmPx);
+  cx.textAlign='right';cx.fillText('Lacería · indalo-apps.github.io/laceria',(L.pw-L.m)*mmPx,(L.ph-L.m)*mmPx);
+  const jpg=await new Promise((ok,mal)=>cv.toBlob(b=>b?ok(b):mal(new Error('jpg')),'image/jpeg',0.92));
+  const bytes=new Uint8Array(await jpg.arrayBuffer());cv.width=cv.height=1;
+  return pdfJpeg(bytes,W,H,L.pw*72/25.4,L.ph*72/25.4);
+}
+
 // Ventana de exportar
-const EX_AYUDA={
+const EX_AYUDA=EN?{
+  svg:'Vector file just as you see it, for Inkscape or Illustrator, printing at any size or cutting colored vinyl.',
+  png:'High-resolution image for wallpapers, social media or printing.',
+  piezas:'Red 0.1 mm cutting lines with the pieces fitted together like a mosaic (marquetry, tiling, stencils). Each line is cut only once.',
+  celosia:'The holes of the pieces are cut out and the strap remains as a one-piece lattice, with a frame. It uses the strap width from the Color tab.',
+  lamina:'A sheet ready to print with the drawing in line only, to paint in watercolor or colored pencils. The drawing fits the paper.'
+}:{
   svg:'Archivo vectorial tal como lo ves, para Inkscape, Illustrator, imprimir a cualquier tamaño o cortar vinilo de colores.',
   png:'Imagen en alta resolución para fondos de pantalla, redes o imprimir.',
   piezas:'Líneas de corte rojas de 0,1 mm con las piezas encajadas como un mosaico (marquetería, alicatado, plantillas). Cada línea se corta una sola vez.',
-  celosia:'Se cortan los huecos de las piezas y queda la cinta como una celosía de una sola pieza, con marco. Usa el ancho de la cinta de la pestaña Colorear.'
+  celosia:'Se cortan los huecos de las piezas y queda la cinta como una celosía de una sola pieza, con marco. Usa el ancho de la cinta de la pestaña Colorear.',
+  lamina:'Una hoja lista para imprimir con el dibujo solo en línea, para pintarla a la acuarela o con lápices de colores. El dibujo se ajusta al papel.'
 };
 function exDims(){const w=EX.c*PAT.W,h=EX.r*PAT.H,lado=EX.px;return w>=h?[lado,Math.round(lado*h/w)]:[Math.round(lado*w/h),lado];}
 function exSvg(vista){
@@ -1201,31 +1493,32 @@ function exSvg(vista){
   if(EX.modo==='png'){const [W,H]=exDims();return svgColor(EX.c,EX.r,W,H);}
   return svgColor(EX.c,EX.r,fx(EX.c*EX.mm)+'mm',fx(EX.r*EX.mm)+'mm');
 }
-function exNombre(ext){const t={svg:'',png:'',piezas:'-laser-piezas',celosia:'-laser-celosia'}[EX.modo];return `laceria-${PAT.id}${t}-${EX.c}x${EX.r}.${ext}`;}
-const mmTxt=n=>(Math.round(n*10)/10).toLocaleString('es-ES');
+function exNombre(ext){const t={svg:'',png:'',piezas:'-laser-piezas',celosia:'-laser-celosia',lamina:'-lamina-'+EX.papel}[EX.modo];return `laceria-${PAT.id}${t}-${EX.c}x${EX.r}.${ext}`;}
+const mmTxt=n=>(Math.round(n*10)/10).toLocaleString(EN?'en-US':'es-ES');
 function exPintar(){
   document.querySelectorAll('[data-ex]').forEach(g=>g.querySelectorAll('button').forEach(b=>{const on=String(EX[g.dataset.ex])===b.dataset.val;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);}));
   $('ex-c').textContent=EX.c;$('ex-r').textContent=EX.r;
   if(document.activeElement!==$('ex-mm'))$('ex-mm').value=EX.mm;
-  const png=EX.modo==='png';
-  $('ex-g-mm').hidden=png;$('ex-g-px').hidden=!png;$('ex-copiar').hidden=png;
+  const png=EX.modo==='png',lam=EX.modo==='lamina';
+  $('ex-g-mm').hidden=png||lam;$('ex-g-px').hidden=!png;$('ex-g-lam').hidden=!lam;$('ex-copiar').hidden=png||lam;
   $('ex-ayuda').textContent=EX_AYUDA[EX.modo];
   let info;
-  if(png){const [W,H]=exDims();info=`${EX.c} × ${EX.r} módulos · ${W} × ${H} píxeles`;}
-  else info=`${EX.c} × ${EX.r} módulos · ${mmTxt(EX.c*EX.mm)} × ${mmTxt(EX.r*EX.mm*PAT.H/PAT.W)} mm`;
-  if((EX.modo==='svg'||png)&&(EX.c>4||EX.r>3)&&Object.keys(st.over).length)info+=' · Los retoques sueltos se repiten cada 4 × 3 módulos.';
+  if(png){const [W,H]=exDims();info=`${EX.c} × ${EX.r} ${tr('módulos','modules')} · ${W} × ${H} ${tr('píxeles','pixels')}`;}
+  else if(lam){const L=lamina();info=`${EX.c} × ${EX.r} ${tr('módulos','modules')} · ${tr('cada módulo mide','each module is')} ${mmTxt(PAT.W*L.umm)} × ${mmTxt(PAT.H*L.umm)} mm · ${EX.papel} ${EX.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')}`;}
+  else info=`${EX.c} × ${EX.r} ${tr('módulos','modules')} · ${mmTxt(EX.c*EX.mm)} × ${mmTxt(EX.r*EX.mm*PAT.H/PAT.W)} mm`;
+  if((EX.modo==='svg'||png)&&(EX.c>4||EX.r>3)&&Object.keys(st.over).length)info+=tr(' · Los retoques sueltos se repiten cada 4 × 3 módulos.',' · Single-piece touches repeat every 4 × 3 modules.');
   $('ex-info').textContent=info;
-  $('ex-vista').innerHTML=exSvg(true);
+  $('ex-vista').innerHTML=lam?laminaVista():exSvg(true);
   $('ex-msg').textContent='';
 }
 async function entregar(blob,nombre){
   const tactil=matchMedia('(pointer:coarse)').matches;
   try{const file=new File([blob],nombre,{type:blob.type});
-    if(tactil&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return 'Listo: elige «Guardar en Archivos», «Guardar imagen» o la app donde quieras usarlo.';}}
+    if(tactil&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return tr('Listo: elige «Guardar en Archivos», «Guardar imagen» o la app donde quieras usarlo.','Done: choose “Save to Files”, “Save Image” or the app where you want to use it.');}}
   catch(e){if(e&&e.name==='AbortError')return '';}
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},5000);
-  return `Descargado: ${nombre}`;
+  return tr('Descargado: ','Downloaded: ')+nombre;
 }
 function aPng(svg,W,H){return new Promise((ok,mal)=>{const img=new Image();
   img.onload=()=>{try{const cv=document.createElement('canvas');cv.width=W;cv.height=H;cv.getContext('2d').drawImage(img,0,0,W,H);cv.toBlob(b=>b?ok(b):mal(new Error('png')),'image/png');}catch(e){mal(e);}};
@@ -1235,27 +1528,28 @@ $('exportar').onclick=()=>{exPintar();window.abrirDlg('dlg-exportar');};
 $('dlg-exportar').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
   const g=b.closest('[data-ex]');
-  if(g){EX[g.dataset.ex]=g.dataset.ex==='px'?+b.dataset.val:b.dataset.val;exGuardar();exPintar();}
+  if(g){EX[g.dataset.ex]=g.dataset.ex==='px'?+b.dataset.val:b.dataset.val;exGuardar();exPintar();b.focus();}
   else if(b.dataset.rep){const k=b.dataset.rep;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();exPintar();}
 });
 $('ex-mm').addEventListener('input',()=>{const v=+$('ex-mm').value;if(v>=10&&v<=1000){EX.mm=v;exGuardar();exPintar();}});
 $('ex-mm').addEventListener('change',()=>{$('ex-mm').value=EX.mm;});
 $('ex-bajar').onclick=async()=>{
-  const btn=$('ex-bajar');btn.disabled=true;$('ex-msg').textContent=EX.modo==='png'?'Preparando la imagen…':'';
+  const btn=$('ex-bajar');btn.disabled=true;$('ex-msg').textContent=EX.modo==='png'?tr('Preparando la imagen…','Preparing the image…'):'';
   try{let blob,nombre;
-    if(EX.modo==='png'){const [W,H]=exDims();blob=await aPng(exSvg(false),W,H);nombre=exNombre('png');}
+    if(EX.modo==='lamina'){$('ex-msg').textContent=tr('Preparando la lámina…','Preparing the sheet…');blob=await crearLamina();nombre=exNombre('pdf');}
+    else if(EX.modo==='png'){const [W,H]=exDims();blob=await aPng(exSvg(false),W,H);nombre=exNombre('png');}
     else{blob=new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n'+exSvg(false)],{type:'image/svg+xml'});nombre=exNombre('svg');}
     $('ex-msg').textContent=await entregar(blob,nombre);
-  }catch(e){$('ex-msg').textContent='No se ha podido crear el archivo. Prueba con menos repeticiones o con 2000 píxeles.';}
+  }catch(e){$('ex-msg').textContent=tr('No se ha podido crear el archivo. Prueba con menos repeticiones o con 2000 píxeles.','The file could not be created. Try fewer repeats or 2000 pixels.');}
   btn.disabled=false;
 };
-$('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(false));$('ex-msg').textContent='SVG copiado. Pégalo en un archivo .svg, en Inkscape o en tu programa de corte.';}catch(err){$('ex-msg').textContent='El navegador no ha dejado copiar. Usa «Descargar».';}};
+$('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(false));$('ex-msg').textContent=tr('SVG copiado. Pégalo en un archivo .svg, en Inkscape o en tu programa de corte.','SVG copied. Paste it into an .svg file, Inkscape or your cutting software.');}catch(err){$('ex-msg').textContent=tr('El navegador no ha dejado copiar. Usa «Descargar».','The browser did not allow copying. Use “Download”.');}};
 
 // ---------- Galería de patrones ----------
 function miniatura(p){const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
   return renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');}
 function pintarGaleria(){$('galeria').innerHTML=Object.values(PATS).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small></span></button>`).join('');}
-function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · Real Alcázar de Sevilla</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
+function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${tr('Real Alcázar de Sevilla','Royal Alcázar of Seville')}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
 function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
 $('galeria').addEventListener('click',e=>{const b=e.target.closest('[data-pat]');if(b)cambiarPatron(b.dataset.pat);});
@@ -1324,6 +1618,7 @@ const STEPS=[
  {h:'Entrelazar',t:'En cada cruce, una cinta pasa por encima y la otra por debajo. Recorre cada cinta alternando: encima, debajo, encima… y borra los trozos de la que queda debajo.',c:'Si alternas bien en una cinta, las demás encajan solas.'},
  {h:'Colorear',t:'Ya puedes pintar. Las estrellas y los alfardones en negro y las piezas en V en verde reproducen el zócalo del patio.',c:'Prueba antes las combinaciones en la pestaña Colorear.'}
 ];
+if(EN&&PAT_EN.lazo8)STEPS.forEach((q,i)=>Object.assign(q,PAT_EN.lazo8.pasos[i]||{}));
 let step=1;
 const pasos=()=>PAT.id==='lazo8'?STEPS:PAT.pasos,clave=()=>PAT.id==='lazo8'?'laceria-paso':'laceria-paso-'+PAT.id;
 function leerPaso(){step=1;try{const s=+localStorage.getItem(clave());if(s>=1&&s<=pasos().length)step=s;}catch(e){}}
@@ -1333,7 +1628,7 @@ function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;
   try{localStorage.setItem(clave(),step)}catch(e){}
   const s=PS[step-1];
-  document.getElementById('stepn').textContent=`Paso ${step} de ${N}`;
+  document.getElementById('stepn').textContent=tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
   document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c;
   let svg;
   if(PAT.id!=='lazo8')svg=PATRONES.dibujarPaso(PAT,step,renderLazo);
@@ -1343,12 +1638,48 @@ function show(){
     svg=`<div class="fade">${renderLazo(D_LAZO,o).replace('<svg ','<svg style="pointer-events:none" ')}</div>`;}
   document.getElementById('tzsvg').innerHTML=svg;
   const foco=document.activeElement&&document.activeElement.id;
-  document.getElementById('dots').innerHTML=PS.map((_,i)=>`<button data-step="${i+1}" class="${i+1===step?'on':''}" title="${PS[i].h}" aria-label="Paso ${i+1}: ${PS[i].h}"${i+1===step?' aria-current="step"':''}>${i+1}</button>`).join('');
-  document.getElementById('tzsvg').setAttribute('aria-label',`Dibujo del paso ${step}: ${s.h}`);
+  document.getElementById('dots').innerHTML=PS.map((_,i)=>`<button data-step="${i+1}" class="${i+1===step?'on':''}" title="${PS[i].h}" aria-label="${tr('Paso','Step')} ${i+1}: ${PS[i].h}"${i+1===step?' aria-current="step"':''}>${i+1}</button>`).join('');
+  document.getElementById('tzsvg').setAttribute('aria-label',tr(`Dibujo del paso ${step}: ${s.h}`,`Drawing for step ${step}: ${s.h}`));
   document.getElementById('prev').disabled=step===1;
   const ult=step===N;document.getElementById('next').hidden=ult;document.getElementById('gocolor').hidden=!ult;
   if(ult&&foco==='next')document.getElementById('gocolor').focus();
+  if(typeof pintarTrazos==='function')pintarTrazos();
 }
+// ---------- Repasar a mano (v1.5): trazos guardados por patrón, en las coordenadas del dibujo ----------
+const PR_KEY='laceria-practica-v1';let PR={},practicando=false,lapiz=false,actual=null;
+try{PR=JSON.parse(localStorage.getItem(PR_KEY)||'{}')||{};}catch(e){PR={};}
+const trazos=()=>PR[PAT.id]||(PR[PAT.id]=[]);
+function prGuardar(){try{localStorage.setItem(PR_KEY,JSON.stringify(PR))}catch(e){}}
+function prSvg(){return document.querySelector('#tzsvg svg');}
+function prAncho(sv){const vb=sv.viewBox.baseVal;return Math.max(vb.width,vb.height)/170;}
+const pathD=pts=>{let d='M'+pts[0]+' '+pts[1];for(let i=2;i<pts.length;i+=2)d+='L'+pts[i]+' '+pts[i+1];return pts.length===2?d+'l0.001 0':d;};
+function pintarTrazos(){const sv=prSvg();if(!sv)return;let g=sv.querySelector('.trazos');if(g)g.remove();
+  g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','trazos');g.setAttribute('fill','none');g.setAttribute('stroke','#1f5f5b');
+  g.setAttribute('stroke-width',prAncho(sv).toFixed(3));g.setAttribute('stroke-linecap','round');g.setAttribute('stroke-linejoin','round');
+  g.innerHTML=trazos().map(t=>`<path d="${pathD(t)}"/>`).join('');sv.appendChild(g);
+  const hay=trazos().length>0;$pr('pr-undo').hidden=!practicando&&!hay;$pr('pr-clear').hidden=!practicando&&!hay;$pr('pr-undo').disabled=!hay;$pr('pr-clear').disabled=!hay;}
+const $pr=id=>document.getElementById(id);
+function punto(e,sv){const m=sv.getScreenCTM();if(!m)return null;const p=sv.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(m.inverse());return[+q.x.toFixed(2),+q.y.toFixed(2)];}
+function prModo(on){practicando=on;$pr('tzsvg').classList.toggle('practicando',on);$pr('pr-on').setAttribute('aria-pressed',on);$pr('pr-on').classList.toggle('on',on);
+  $pr('pr-on').textContent=on?tr('✓ Terminar de repasar','✓ Stop tracing'):tr('✏️ Repasar a mano','✏️ Trace by hand');$pr('pr-hint').hidden=!on;pintarTrazos();}
+const tz=$pr('tzsvg');
+tz.addEventListener('pointerdown',e=>{if(!practicando)return;if(e.pointerType==='pen')lapiz=true;if(lapiz&&e.pointerType==='touch')return;
+  const sv=prSvg();if(!sv)return;const q=punto(e,sv);if(!q)return;e.preventDefault();try{tz.setPointerCapture(e.pointerId)}catch(err){}
+  actual={id:e.pointerId,pts:[...q],el:document.createElementNS('http://www.w3.org/2000/svg','path')};
+  let g=sv.querySelector('.trazos');if(!g){pintarTrazos();g=sv.querySelector('.trazos');}g.appendChild(actual.el);actual.el.setAttribute('d',pathD(actual.pts));});
+tz.addEventListener('pointermove',e=>{if(!actual||e.pointerId!==actual.id)return;const sv=prSvg();if(!sv)return;
+  const ev=e.getCoalescedEvents?e.getCoalescedEvents():[e];for(const c of (ev.length?ev:[e])){const q=punto(c,sv);if(!q)continue;const n=actual.pts.length;
+    if(Math.hypot(q[0]-actual.pts[n-2],q[1]-actual.pts[n-1])<prAncho(sv)*0.35)continue;actual.pts.push(...q);}
+  actual.el.setAttribute('d',pathD(actual.pts));});
+function prFin(e){if(!actual||e.pointerId!==actual.id)return;const t=trazos();t.push(actual.pts);if(t.length>400)t.shift();actual=null;prGuardar();pintarTrazos();}
+tz.addEventListener('pointerup',prFin);tz.addEventListener('pointercancel',prFin);
+let borrarArmado=0;
+$pr('pr-on').onclick=()=>prModo(!practicando);
+$pr('pr-undo').onclick=()=>{trazos().pop();prGuardar();pintarTrazos();};
+$pr('pr-clear').onclick=()=>{const b=$pr('pr-clear');
+  if(Date.now()-borrarArmado>4000){borrarArmado=Date.now();b.classList.add('peligro');b.textContent=tr('¿Borrar todo? Toca otra vez','Clear it all? Tap again');
+    setTimeout(()=>{if(Date.now()-borrarArmado>=3900){b.classList.remove('peligro');b.textContent=tr('Borrar mi dibujo','Clear my drawing');}},4000);return;}
+  borrarArmado=0;PR[PAT.id]=[];prGuardar();b.classList.remove('peligro');b.textContent=tr('Borrar mi dibujo','Clear my drawing');pintarTrazos();};
 document.addEventListener('click',e=>{const t=e.target;
   if(t.dataset.step){step=+t.dataset.step;show();}
   else if(t.id==='prev'&&step>1){step--;show();}
@@ -1376,7 +1707,15 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const q=s=>document.querySelector(s);
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
-  const NOVEDADES=[
+  const NOVEDADES=EN?[
+    ["1.5",["🧩 New tile pattern: six- and eight-pointed stars from the second room of the zaguán, with its step-by-step drawing","✏️ Trace by hand: go over each step with your finger or a stylus; your lines are saved","📄 Sheet to paint: A4 or A3 PDF with the drawing in line only, ready for watercolor","🌍 The app is now in English too (Settings › Language)"]],
+    ["1.4.2",["♿ Paint piece by piece with the keyboard","🗣️ The screen reader announces each step, tab, view and brush color","👆 Easier to tap controls on phones","🌗 The chosen theme also applies to the install help"]],
+    ["1.4",["🧩 Four more tile patterns from the Pavilion of Charles V, the Patio de las Muñecas and the skirting","✏️ Each with its step-by-step drawing"]],
+    ["1.3",["🧩 Four new tile patterns from the Alcázar","🖼️ Choose the pattern in the gallery at the top","🎨 Color and export any of them"]],
+    ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
+    ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
+  ]:[
+    ["1.5",["🧩 Alicatado nuevo: estrellas de seis y de ocho de la segunda sala del zaguán, con su trazado paso a paso","✏️ Repasar a mano: repasa cada paso con el dedo o el lápiz; tu trazo se guarda","📄 Lámina para pintar: PDF en A4 o A3 con el dibujo solo en línea, lista para la acuarela","🌍 La app ya está también en inglés (Ajustes › Idioma)","🧵 Los cruces de las cintas se ven más limpios"]],
     ["1.4.2",["♿ Se puede pintar pieza a pieza con el teclado: flechas para moverse e Intro para pintar","🗣️ El lector de pantalla anuncia cada paso, la pestaña, la vista y el color del pincel","👆 Casillas y deslizador más fáciles de tocar en el móvil","📐 En el móvil el dibujo ocupa menos y las vistas caben en una línea","🌗 El tema elegido en Ajustes se aplica también a la ayuda de instalar y a la barra del móvil","🛠️ Arreglos para que la copia sin conexión siempre sea buena"]],
     ["1.4.1",["🏷️ La app pasa a llamarse «Lacería · Alicatados del Alcázar»"]],
     ["1.4",["🧩 Cuatro alicatados más: cubos y estrellas de ocho alargadas del Cenador de Carlos V, estrellas de cuatro y alfardones del Patio de las Muñecas y octógonos del rodapié","✏️ Cada uno con su trazado paso a paso"]],
@@ -1387,7 +1726,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const verCmp=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0};
   const EN_WEB=/\.github\.io$/.test(location.hostname)||location.hostname==='localhost';
   // ---- Preferencias: letra y tema ----
-  const PREF=Object.assign({letra:'normal',tema:'auto'},store.get('laceria-pref-v1',{}));
+  const PREF=Object.assign({letra:'normal',tema:'auto',idioma:'auto'},store.get('laceria-pref-v1',{}));
   function aplicarPref(){
     const r=document.documentElement;
     if(PREF.letra==='normal')r.removeAttribute('data-letra');else r.setAttribute('data-letra',PREF.letra);
@@ -1395,7 +1734,9 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
     document.querySelectorAll('meta[name="theme-color"]').forEach((m,i)=>m.setAttribute('content',PREF.tema==='claro'?'#1f5f5b':PREF.tema==='oscuro'?'#15191a':(i?'#15191a':'#1f5f5b')));
     document.querySelectorAll('[data-op]').forEach(g=>g.querySelectorAll('button').forEach(b=>{const on=b.dataset.val===PREF[g.dataset.op];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)}));
   }
-  document.querySelectorAll('[data-op]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PREF[g.dataset.op]=b.dataset.val;store.set('laceria-pref-v1',PREF);aplicarPref()}));
+  document.querySelectorAll('[data-op]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const antes=PREF[g.dataset.op];PREF[g.dataset.op]=b.dataset.val;store.set('laceria-pref-v1',PREF);aplicarPref();
+    // el idioma se aplica al cargar: se recarga la página (el coloreado y el trazado ya están guardados)
+    if(g.dataset.op==='idioma'&&antes!==b.dataset.val)setTimeout(()=>location.reload(),150);}));
   aplicarPref();
   // ---- Ventanas ----
   let foco=null;
@@ -1403,7 +1744,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   function abrir(id){foco=document.activeElement;q('#'+id).hidden=false;q('#'+id+' .x').focus()}
   function cerrar(id){q('#'+id).hidden=true;if(foco&&foco.focus)try{foco.focus()}catch(e){}}
   q('#aj-ver').textContent=VERSION;q('#aj-ver2').textContent=VERSION;
-  q('#btn-version').textContent='Ajustes · Versión '+VERSION+' · Novedades';
+  q('#btn-version').textContent=tr('Ajustes · Versión ','Settings · Version ')+VERSION+tr(' · Novedades',' · What’s new');
   q('#btn-ajustes').onclick=()=>abrir('dlg-ajustes');
   q('#btn-version').onclick=()=>abrir('dlg-ajustes');
   ['aj-x','aj-cerrar'].forEach(id=>q('#'+id).onclick=()=>cerrar('dlg-ajustes'));
@@ -1428,9 +1769,9 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   function verNovedades(desde){
     const todas=NOVEDADES.filter(([v])=>!desde||verCmp(v,desde)>0);if(!todas.length)return;
     const lista=todas.slice(0,4),mas=todas.length-lista.length;
-    q('#nov-titulo').textContent=desde?'¡La app se ha actualizado!':'Novedades';
-    q('#nov-lista').innerHTML=lista.map(([v,items])=>`<h4>Versión ${v}</h4><ul>${items.map(t=>`<li>${t}</li>`).join('')}</ul>`).join('')
-      +(mas>0?`<p class="muted">…y ${mas} ${mas===1?'versión':'versiones'} más.</p>`:'');
+    q('#nov-titulo').textContent=desde?tr('¡La app se ha actualizado!','The app has been updated!'):tr('Novedades','What’s new');
+    q('#nov-lista').innerHTML=lista.map(([v,items])=>`<h4>${tr('Versión','Version')} ${v}</h4><ul>${items.map(t=>`<li>${t}</li>`).join('')}</ul>`).join('')
+      +(mas>0?`<p class="muted">${tr(`…y ${mas} ${mas===1?'versión':'versiones'} más.`,`…and ${mas} more ${mas===1?'version':'versions'}.`)}</p>`:'');
     abrir('dlg-novedades');
   }
   (function(){const vista=store.get('laceria-version',null);store.set('laceria-version',VERSION);if(vista&&verCmp(VERSION,vista)>0)setTimeout(()=>verNovedades(vista),700)})();

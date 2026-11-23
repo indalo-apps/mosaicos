@@ -7,7 +7,7 @@
   Mosaicos · Lacería del Real Alcázar de Sevilla
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.2">
+<meta name="app-version" content="2.2.1">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -75,6 +75,14 @@ header{padding:18px 28px 6px}
 @media (max-width:520px){.cab-top h1{font-size:25px}}
 .btn-redondo{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--btn);display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink);padding:0;text-decoration:none}
 .btn-redondo[hidden]{display:none}
+.btn-volver{display:inline-flex;align-items:center;gap:2px;min-height:44px;max-width:62%;padding:0 14px 0 6px;border-radius:22px;border:1px solid var(--line);background:var(--btn);color:var(--accent);text-decoration:none;font:500 calc(16px * var(--esc,1))/1.2 Inter,system-ui,sans-serif;flex:none;order:0}
+.btn-volver svg{flex:none}
+.btn-volver span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.btn-volver[hidden]{display:none}
+/* con botón de volver: el título pasa a su propia línea, debajo */
+.cab-top.con-volver{flex-wrap:wrap}
+.cab-top.con-volver h1{order:3;flex-basis:100%;margin-top:4px}
+.cab-top.con-volver .hueco{flex:1}
 .cab-top .btn-ajustes{position:static;font-size:inherit}
 #intro{margin:8px 0 0;color:var(--muted);max-width:820px}
 .vista{padding:10px 28px 28px;max-width:1100px}
@@ -449,9 +457,9 @@ const IK = (function(){
 <body>
 <header>
   <div class="cab-top">
-    <a class="btn-redondo" id="volver" href="#inicio" aria-label="Volver" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+    <a class="btn-volver" id="volver" href="#inicio" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span id="volver-txt">Inicio</span></a>
     <h1 id="titulo">Mosaicos<span class="sub">Lacería del Real Alcázar de Sevilla</span></h1>
-    <button class="btn-redondo" id="btn-glosario" aria-label="Glosario" title="Glosario"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M8 7h7M8 11h7"/></svg></button>
+    <span class="hueco" aria-hidden="true"></span><button class="btn-redondo" id="btn-glosario" aria-label="Glosario" title="Glosario"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M8 7h7M8 11h7"/></svg></button>
     <button class="btn-redondo btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
   </div>
   <p id="intro" hidden></p>
@@ -567,7 +575,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.2 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.2.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -2436,7 +2444,10 @@ const ULT='laceria-ultimo-v1',store={get(k,d){try{const v=localStorage.getItem(k
 const ETAPAS=['trazado','teselar','colorear','imprimir'];
 const pasoGuardado=c=>{try{const v=localStorage.getItem('laceria-paso-c-'+c.id);return v===null?null:+v;}catch(e){return null;}};
 const mini=c=>consSvg(c,0,true).replace('width="100%"','aria-hidden="true" focusable="false"');
-function cab(t,sub,volver,intro){$('titulo').innerHTML=t+(sub?`<span class="sub">${sub}</span>`:'');document.title=(t==='Mosaicos'?'':t.replace(/<[^>]+>/g,'')+' · ')+'Mosaicos';
+const VOLVER={'#inicio':['Inicio','Home'],'#aprender':['Aprender a trazar','Learn to draw'],'#alicatados':['Alicatados','Tile patterns']};
+function cab(t,sub,volver,intro){$('titulo').innerHTML=t+(sub?`<span class="sub">${sub}</span>`:'');
+  if(volver){const n=lt(VOLVER[volver]||VOLVER['#inicio']);$('volver-txt').textContent=n;$('volver').setAttribute('aria-label',tr('Volver a ','Back to ')+n);}
+  document.querySelector('.cab-top').classList.toggle('con-volver',!!volver);document.title=(t==='Mosaicos'?'':t.replace(/<[^>]+>/g,'')+' · ')+'Mosaicos';
   $('volver').hidden=!volver;if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';}
 function mostrar(v){['inicio','aprender','alicatados','mis'].forEach(n=>$('v-'+n).hidden=n!==v);
   const ali=v==='a',con=v==='c';$('barra-etapas').hidden=!ali;
@@ -2534,6 +2545,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.2.1",["🧭 The back button now says where it takes you: “‹ Home”, “‹ Learn to draw” or “‹ Tile patterns”"]],
     ["2.2",["🛒 New shopping list: a card with a swatch, the reference and the pieces of each paint, and boxes to tick in the shop. Share it as an image, copy it as text or save it as a PDF to print","✏️ Draw: in the color steps the new drawing fades in over the previous one, without going blank","🔺 Moves in the plane: the original figure stays still from one move to the next","📐 Learn to draw: five constructions that went past the edge of the drawing now fit (the equilateral triangle from its side among them)"]],
     ["2.1.1",["📏 Skewed rosette: the strap width and steps 6 to 9 now follow the book exactly (pp. 111–112)","✏️ Draw: going to the next step only draws the new lines; the earlier ones stay in place","🐞 Opening a link straight to the eight-fold knot no longer shows an empty drawing"]],
     ["2.1",["🧩 New tile pattern: the skewed eight-fold rosette from the Hall of the Philip II Ceiling (pp. 110–114), with its eight-step drawing, tessellation and colors"]],
@@ -2548,6 +2560,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.2.1",["🧭 El botón de volver dice ahora a dónde vuelves: «‹ Inicio», «‹ Aprender a trazar» o «‹ Alicatados»"]],
     ["2.2",["🛒 Lista de la compra nueva: una tarjeta con la muestra, la referencia y las piezas de cada pintura, y casillas para marcar en la tienda. Compártela como imagen, cópiala como texto o guárdala en PDF para imprimir","✏️ Trazar: en los pasos de color el dibujo nuevo aparece sobre el anterior, sin pasar por blanco","🔺 Movimientos en el plano: la figura original se queda quieta de un movimiento a otro","📐 Aprender a trazar: cinco construcciones que se salían del dibujo ya caben enteras (entre ellas, el triángulo equilátero a partir del lado)"]],
     ["2.1.1",["📏 Rueda sesgada: el ancho de la cinta y los pasos 6 a 9 siguen ahora exactamente al libro (págs. 111 y 112)","✏️ Trazar: al pasar de paso solo se dibujan las líneas nuevas; las anteriores se quedan quietas","🐞 Al abrir un enlace directo al lazo de 8 ya no sale el dibujo vacío"]],
     ["2.1",["🧩 Alicatado nuevo: la rueda de ocho sesgada del Salón del techo de Felipe II (págs. 110 a 114), con su trazado en ocho pasos, el teselado y los colores del zócalo"]],

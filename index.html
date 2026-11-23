@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.5.3">
+<meta name="app-version" content="2.5.4">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -174,7 +174,7 @@ button.peligro{border-color:#b5444b;color:#b5444b}
 @keyframes fd{to{opacity:1}}
 .dim{opacity:.4}
 .lc-vista{background:#e9e3d6;border-radius:10px;padding:10px;text-align:center}.lc-vista img{max-width:100%;max-height:58vh;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.metodo{margin-bottom:10px}.metodo[hidden]{display:none}.metodo button{flex:1}
+.metodo{margin-bottom:10px}#ts-forma[hidden]{display:none}.metodo[hidden]{display:none}.metodo button{flex:1}
 
 /* v2.4: portada con los monumentos */
 .btn-pill{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--btn);color:var(--ink);font:500 calc(15px * var(--esc,1)) Inter,system-ui,sans-serif;flex:none}
@@ -591,6 +591,7 @@ const IK = (function(){
         <div><span id="ts-cl">Columnas</span><div class="paso"><button data-ts="c" data-d="-1" aria-label="Una columna menos">−</button><output id="ts-c" aria-labelledby="ts-cl" aria-live="polite"></output><button data-ts="c" data-d="1" aria-label="Una columna más">+</button></div></div>
         <div><span id="ts-rl">Filas</span><div class="paso"><button data-ts="r" data-d="-1" aria-label="Una fila menos">−</button><output id="ts-r" aria-labelledby="ts-rl" aria-live="polite"></output><button data-ts="r" data-d="1" aria-label="Una fila más">+</button></div></div>
       </div>
+      <div class="ops" id="ts-forma" role="group" aria-label="Módulo" hidden style="margin-top:10px"><button data-forma="hex">⬡ Hexágono</button><button data-forma="tri">△ Triángulo (mínimo)</button></div>
       <div class="row"><label for="ts-marcar">Marcar los módulos</label><input type="checkbox" id="ts-marcar" checked></div>
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
       <div class="row" style="justify-content:flex-start;gap:8px;margin-top:10px"><button id="ts-ant">← Trazar</button><button id="ts-sig" class="on">Siguiente: colorear →</button></div>
@@ -610,7 +611,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.5.3 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.5.4 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -697,6 +698,9 @@ const IK = (function(){
 <script>
 // ---------- Inglés (v1.5): textos fijos de la página ----------
 const ES_EN={
+ "⬡ Hexágono":"⬡ Hexagon",
+ "△ Triángulo (mínimo)":"△ Triangle (minimal)",
+ "Módulo":"Module",
  "La Alhambra de Granada":"The Alhambra of Granada",
  "Lo ya trazado":"Already drawn",
  "Este paso":"This step",
@@ -2749,6 +2753,18 @@ window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent
   const mos=PAT.tipo==='mosaico',blanco=Array(PAT.nombres.length).fill('#ffffff'),k=PAT.W/24;
   const o=mos?{cols:blanco,over:{},ribbon:'#4a4a4a',outline:'#4a4a4a',rw:0.1*k,ow:0,wc:false,grid:false,construct:false}:{cols:blanco,over:{},ribbon:'#ffffff',outline:'#3a3a3a',ow:0.07,wc:false,grid:false,construct:false};
   const M=PAT.modulo;
+  $('ts-forma').hidden=!(M&&M.tipo==='hex');
+  if(M&&M.tipo==='hex'){document.querySelectorAll('#ts-forma [data-forma]').forEach(b=>{const on=b.dataset.forma===(TS.forma||'hex');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
+  if(M&&M.tipo==='hex'&&TS.forma==='tri'){ // módulo mínimo del libro: triángulo entre tres estrellas; reflejado forma un rombo, que se repite
+    const R=M.R,L=R*Math.sqrt(3),A=[L,0],B=[L/2,1.5*R],O=[M.cx,M.cy],c=EX.c,r=EX.r,pt=(i,j)=>[O[0]+i*A[0]+j*B[0],O[1]+i*A[1]+j*B[1]];
+    const caja=[pt(0,0),pt(c,0),pt(c,r),pt(0,r)],xs=caja.map(p=>p[0]),ys=caja.map(p=>p[1]),x0=Math.min(...xs)-0.4,y0=Math.min(...ys)-0.4,w=Math.max(...xs)-x0+0.4,h=Math.max(...ys)-y0+0.4;
+    datos(PAT);const key='t'+c+'x'+r;PAT.Dts=PAT.Dts||{};if(!PAT.Dts[key])PAT.Dts[key]=MOTOR.zona(PAT,PAT.prep,x0-2,y0-2,x0+w+2,y0+h+2);
+    let sv=renderLazo(PAT.Dts[key],Object.assign({},o,{x0,y0,w,h,rw:PAT.rw,interlace:true,clip:caja}));
+    const P=a=>a.map(p=>p.map(v=>v.toFixed(3)).join(',')).join(' '),sw=w/250;
+    if(TS.marcar){let q=`<g fill="none" stroke="#e0a526" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}">`;
+      for(let i=0;i<c;i++)for(let j=0;j<r;j++)q+=`<polygon points="${P([pt(i,j),pt(i+1,j),pt(i+1,j+1),pt(i,j+1)])}"/><line x1="${pt(i+1,j)[0]}" y1="${pt(i+1,j)[1]}" x2="${pt(i,j+1)[0]}" y2="${pt(i,j+1)[1]}"/>`;
+      q+=`</g><polygon points="${P([pt(0,0),pt(1,0),pt(0,1)])}" fill="#e0a526" fill-opacity="0.18" stroke="#e0a526" stroke-width="${sw*2.2}"/><polygon points="${P([pt(1,0),pt(1,1),pt(0,1)])}" fill="#2f4fa3" fill-opacity="0.12" stroke="#2f4fa3" stroke-width="${sw*1.8}"/>`;sv=sv.replace(/<\/svg>$/,q+'</svg>');}
+    $('tssvg').innerHTML=sv;$('ts-chip').textContent=tr(`${c} × ${r} rombos · el triángulo y su reflejo, resaltados`,`${c} × ${r} rhombuses · the triangle and its reflection highlighted`);return;}
   if(M&&M.tipo==='hex'){ // módulo hexagonal: filas desplazadas medio hexágono
     const R=M.R,a=R*Math.sqrt(3)/2,c=EX.c,r=EX.r,cen=[];for(let j=0;j<r;j++)for(let i=0;i<c;i++)cen.push([M.cx+i*2*a+(j%2)*a,M.cy+j*1.5*R]);
     const x0=M.cx-a-0.3,y0=M.cy-R-0.3,w=(2*c+(r>1?1:0))*a+0.6,h=(1.5*(r-1)+2)*R+0.6;
@@ -2774,6 +2790,7 @@ window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent
   $('tssvg').innerHTML=sv;$('ts-chip').textContent=tr(`${EX.c} × ${EX.r} módulos · el primero, resaltado`,`${EX.c} × ${EX.r} modules · the first one highlighted`);};
 document.querySelector('#tab-teselar .ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const k=b.dataset.ts;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();pintarTeselar();});
 $('ts-marcar').addEventListener('change',e=>{TS.marcar=e.target.checked;pintarTeselar();});
+$('ts-forma').addEventListener('click',e=>{const b=e.target.closest('[data-forma]');if(!b)return;TS.forma=b.dataset.forma;pintarTeselar();b.focus();});
 $('ts-ant').onclick=()=>window.tabEtapa('trazado');$('ts-sig').onclick=()=>window.tabEtapa('colorear');
 // ---- Imprimir
 window.pintarImprimir=function(){$('imp-info').textContent=tr(`Se imprime el dibujo de ${EX.c} × ${EX.r} módulos que elegiste en Teselar, con tus colores de Colorear. Podrás cambiarlo en la ventana siguiente.`,`It prints the ${EX.c} × ${EX.r} module drawing you chose in Tessellate, with your colors from Color. You can change it in the next window.`);};
@@ -2808,6 +2825,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.5.4",["△ Tessellate the twelve-pointed stars with the hexagon or with the book’s minimal triangle, which is reflected into a rhombus"]],
     ["2.5.3",["⚙️ New settings button, with sliders","🧩 Color › Module now shows the book’s minimal module: the 8 × 8 square for the eight-pointed stars and the hexagon for the twelve-pointed ones"]],
     ["2.5.2",["📲 Install help updated for iOS 27: the three-line button inside the address bar","✏️ Draw: the current step is now drawn in blue, thicker than what is already drawn"]],
     ["2.5.1",["📐 Twelve-pointed stars of the Court of the Myrtles: the star and the steps now follow the book exactly","🖼️ New icon: the twelve-pointed stars in plaster-white straps on blue"]],
@@ -2830,6 +2848,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.5.4",["△ Teselar las estrellas de doce con el hexágono o con el triángulo mínimo del libro, que se refleja formando un rombo"]],
     ["2.5.3",["⚙️ Botón de ajustes nuevo, con deslizadores","🧩 Colorear › Módulo enseña ahora el módulo mínimo del libro: el cuadrado de 8 × 8 en las estrellas de ocho y el hexágono en las de doce"]],
     ["2.5.2",["📲 Ayuda para instalar al día con iOS 27: el botón de tres rayas dentro de la barra de la dirección","✏️ Trazar: el paso actual se dibuja ahora en azul, más grueso que lo ya trazado"]],
     ["2.5.1",["📐 Estrellas de doce del Patio de los Arrayanes: la estrella y los pasos siguen ahora exactamente al libro","🖼️ Icono nuevo: las estrellas de doce con la cinta de yeso sobre azul"]],

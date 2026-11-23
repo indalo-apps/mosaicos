@@ -7,7 +7,7 @@
   Mosaicos · Lacería del Real Alcázar de Sevilla
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.1">
+<meta name="app-version" content="2.1.1">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -565,7 +565,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.1.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -1482,7 +1482,9 @@ P.felipe=escalar({id:'felipe',nombre:'Rueda de ocho sesgada',lugar:'Salón del t
     'Terracota':{cols:['#8a4b36','#b8694d','#e8b49a','#f0cdb8','#8a4b36','#d98e6e','#d98e6e','#e8b49a'],ribbon:'#fbf4ec',outline:'#8a4b36'},
     'Para colorear':{cols:Array(8).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
 });
-Object.assign(P.felipe,{rw:0.75,ow:0.07,G:{R,dA,dB,rho,s,K,c,q}});
+// Paso 8 del libro: la línea interior de la cinta pasa por los puntos medios de los lados del cuadrado inicial, (0,±1) y (±1,0).
+// La cinta del rombo |x|+|y|=q queda a (q-1)/√2 de ese punto: medio ancho. En unidades de la app (×6).
+Object.assign(P.felipe,{rw:+(2*(q-1)/s2*6).toFixed(4),ow:0.07,G:{R,dA,dB,rho,s,K,c,q}});
 })();
 
 // ---------- Textos y pasos del trazado ----------
@@ -1638,14 +1640,19 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
        const r=G.rho,M=[];for(const [x,y] of [[1,1],[1,-1],[-1,1],[-1,-1]])M.push([X(x),Y(y*(1-r)),X(x*(1-r)),Y(y)]);
        const h=G.R-r/s2;for(const [x,y] of [[0,1],[0,-1],[1,0],[-1,0]])M.push(x?[X(x*h),Y(-r/s2),X(x*h),Y(r/s2)]:[X(-r/s2),Y(y*h),X(r/s2),Y(y*h)]);
        return animar(L,'#2b4f73',0.07)+animar(M,RO,0.08);}},
-    {h:'Remarcar',t:'Remarca las líneas de la rueda: la estrella central, con las puntas que se cruzan y siguen hasta el octógono, donde doblan; el octógono abierto, y en las esquinas, las líneas que forman media estrella pequeña.',c:'El módulo se repite por traslación en la dirección de los lados del cuadrado.',tipo:'remarcar'},
-    {h:'Las piezas',t:'Salen el sino (la estrella central de ocho puntas), ocho zafates a su alrededor, flechas, estrellas pequeñas donde se juntan cuatro ruedas y dos piezas más pequeñas.',c:'Al repetir el módulo, los sinos alternan negro y verde, como un tablero.',tipo:'piezas'},
-    {h:'La cinta y el color',t:'Da ancho a la cinta con dos paralelas a cada línea y alterna los cruces por encima y por debajo. En el zócalo los sinos alternan negro y verde; los zafates son verdes junto al sino negro y azules junto al verde, y las flechas, negras.',c:'El mismo dibujo está en unas jambas del Patio de las Doncellas. Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
+    {h:'Remarcar',t:'De las líneas obtenidas en los pasos anteriores, remarca las indicadas: con ellas se obtiene el módulo generador de la composición.',c:'Las puntas de la estrella se cruzan y siguen hasta el octógono, donde doblan; en las esquinas queda media estrella pequeña.',tipo:'remarcar'},
+    {h:'Repetir el módulo',t:'El módulo se repite por traslación en la dirección de los lados del cuadrado.',c:'Al repetirlo, entre cuatro ruedas se forma una estrella pequeña y entre dos, una flecha a cada lado.',tipo:'piezas'},
+    {h:'La cinta',t:'La cinta se dibuja trazando paralelas equidistantes a los ejes definidos en el paso 6. La línea interior de la cinta pasa por los puntos medios de los lados de los cuadrados iniciales.',c:'Los puntos rojos son esos puntos medios: marcan el ancho de la cinta.',tipo:'cinta',
+     guia(){const L=[[1,0],[-1,0],[0,1],[0,-1]];return `<g fill="${RO}">`+L.map(([x,y])=>`<circle cx="${X(x)}" cy="${Y(y)}" r="0.22"/>`).join('')+'</g>';}},
+    {h:'Paralelas y cruces',t:'Con esa misma distancia, traza paralelas al resto de los ejes. Remarca los trazos adecuados para que, en los cruces, las cintas pasen por encima o por debajo en orden alterno.',c:'En el zócalo los sinos alternan negro y verde; los zafates son verdes junto al sino negro y azules junto al verde, y las flechas, negras. El mismo dibujo está en unas jambas del Patio de las Doncellas.',tipo:'color'}]});
 })();
 
 // Dibuja un paso del trazado de un patrón nuevo
 function dibujarPaso(p,n,render){const vt=p.vt,[x0,y0,w,h]=vt,s=p.pasos[n-1],pad=w*0.03;
   const marco=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="#2b2b2b" stroke-width="0.08"/>`;
+  if(s.tipo==='cinta'){const o={x0,y0,w,h,cols:Array(p.nombres.length).fill('#ffffff'),over:{},ribbon:'#ffffff',outline:'#222222',rw:p.rw,ow:0.06,interlace:false,frame:true};
+    const sv=render(p.D,o).replace('<svg ','<svg style="pointer-events:none" ');
+    return `<div class="fade">${s.guia?sv.replace(/<\/svg>\s*$/,`<g class="fade">${s.guia(p,vt)}</g></svg>`):sv}</div>`;}
   if(s.tipo==='piezas'||s.tipo==='color'){
     const pal=s.tipo==='color'?Object.values(p.paletas)[0]:{cols:Array(p.nombres.length).fill('#ffffff'),ribbon:'#222222',outline:'#222222'};
     const o={x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:s.tipo==='color'?p.rw:0.1,ow:s.tipo==='color'?p.ow:0,interlace:p.tipo!=='mosaico',frame:true};
@@ -1803,9 +1810,10 @@ const PAT_EN={
    {h:'Second star octagon, skewed',t:'The sides of that octagon cross on the axes and diagonals. Join those eight points in the same way and extend the sides: you get eight slightly turned lines that do not pass through the center.',c:'That turn is what gives the “skewed” rosette its name.'},
    {h:'Nine small circles',t:'The sides of the previous octagon make two small squares: draw the circle through their corners. With the same radius, draw eight more centered on the corners of the two first squares.',c:'All nine have the same radius.'},
    {h:'The frame',t:'Those circles cut the axes and diagonals: a square and a rhombus pass through those points and make an octagon around the rosette. At each corner, also join the two points where the circle cuts the sides of the first square.',c:'The short strokes at the corners will be half a small star.'},
-   {h:'Ink',t:'Ink the lines of the rosette: the central star, with points that cross and run on to the octagon, where they bend; the open octagon; and at the corners, the lines that make half a small star.',c:'The module repeats by translation in the direction of the square’s sides.'},
-   {h:'The pieces',t:'You get the sino (the eight-pointed central star), eight zafates around it, arrows, small stars where four rosettes meet and two smaller pieces.',c:'When the module repeats, the sinos alternate black and green, like a chessboard.'},
-   {h:'Strap and color',t:'Give the strap its width with two parallels to each line and alternate the crossings over and under. On the dado the sinos alternate black and green; the zafates are green beside the black sino and blue beside the green one, and the arrows are black.',c:'The same design is on some door jambs in the Patio de las Doncellas. Try other combinations in the Color tab.'}]},
+   {h:'Ink',t:'From the lines drawn in the previous steps, ink the ones shown: they give the generating module of the composition.',c:'The points of the star cross and run on to the octagon, where they bend; at the corners, half a small star is left.'},
+   {h:'Repeat the module',t:'The module repeats by translation in the direction of the square’s sides.',c:'When it repeats, a small star appears where four rosettes meet, and an arrow on each side between two of them.'},
+   {h:'The strap',t:'The strap is drawn with parallels equidistant from the axes defined in step 6. The inner line of the strap passes through the midpoints of the sides of the first squares.',c:'The red dots are those midpoints: they set the width of the strap.'},
+   {h:'Parallels and crossings',t:'At that same distance, draw parallels to the rest of the axes. Ink the right strokes so that, at the crossings, the straps pass over and under in turn.',c:'On the dado the sinos alternate black and green; the zafates are green beside the black sino and blue beside the green one, and the arrows are black. The same design is on some door jambs in the Patio de las Doncellas.'}]},
  zaguan2:{nombre:'Six- and eight-pointed stars',lugar:'Zaguán, second room',
   nombres:['Six-pointed star','Large octagon','Honey four-pointed star','Green four-pointed star','Black eight-pointed star','Honey eight-pointed star','V piece','Small piece'],
   resumen:'Eight-pointed stars at the corners of the module, six-pointed ones at the middle of its sides and a four-pointed one in the center, joined by an interlacing white strap.',
@@ -2449,6 +2457,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.1.1",["📏 Skewed rosette: the strap width and steps 6 to 9 now follow the book exactly (pp. 111–112)"]],
     ["2.1",["🧩 New tile pattern: the skewed eight-fold rosette from the Hall of the Philip II Ceiling (pp. 110–114), with its eight-step drawing, tessellation and colors"]],
     ["2.0",["🏠 New name, Mosaicos, and a home screen: Continue, Learn to draw, Alcázar tile patterns and My drawings","📐 Learn to draw: the 23 basic ruler-and-compass constructions from the book (pp. 164–175), step by step","🖼️ Each drawing starts with the finished figure, so you know the goal","4️⃣ Each tile pattern in four stages: Draw → Tessellate → Color → Print","🧱 New Tessellate stage: repeat the module and see how it covers the wall","📖 Glossary of terms, with search"]],
     ["1.6.2",["🔠 Larger text on phones and tablets, following the system text size"]],
@@ -2461,6 +2470,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.1.1",["📏 Rueda sesgada: el ancho de la cinta y los pasos 6 a 9 siguen ahora exactamente al libro (págs. 111 y 112)"]],
     ["2.1",["🧩 Alicatado nuevo: la rueda de ocho sesgada del Salón del techo de Felipe II (págs. 110 a 114), con su trazado en ocho pasos, el teselado y los colores del zócalo"]],
     ["2.0",["🏠 La app pasa a llamarse Mosaicos y estrena portada: Seguir, Aprender a trazar, Alicatados del Alcázar y Mis dibujos","📐 Aprender a trazar: las 23 construcciones básicas con regla y compás del libro (págs. 164 a 175), paso a paso","🖼️ Cada dibujo empieza por la figura terminada, para saber cuál es el objetivo","4️⃣ Cada alicatado en cuatro etapas: Trazar → Teselar → Colorear → Imprimir","🧱 Etapa nueva, Teselar: repite el módulo y mira cómo cubre la pared","📖 Glosario de términos, con buscador"]],
     ["1.6.2",["🔠 Letra más grande en el móvil y la tablet, que sigue el tamaño de texto del sistema"]],

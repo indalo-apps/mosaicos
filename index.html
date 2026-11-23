@@ -1591,19 +1591,19 @@ Object.assign(P.barca,{rw:+(2*(2*a/10)*P.barca.k).toFixed(4),ow:0.07,giro:-45,Gb
 function clipHex(p,u){let t0=-9,t1=9;for(let i=0;i<6;i++){const a=HEX[i],b=HEX[(i+1)%6],n=[-(b[1]-a[1]),b[0]-a[0]],den=u[0]*n[0]+u[1]*n[1],num=(p[0]-a[0])*n[0]+(p[1]-a[1])*n[1];
   if(Math.abs(den)<1e-12){if(num<0)return null;continue;}const t=-num/den;if(den>0)t0=Math.max(t0,t);else t1=Math.min(t1,t);}return t1>t0?[t0,t1]:null;}
 function modulo(){const L=[];for(let k=0;k<12;k++){const a=rad(30*k),n=[Math.cos(a),Math.sin(a)],u=[-n[1],n[0]],P=[n[0]*d,n[1]*d],c=clipHex(P,u);if(!c)continue;
-  const at=t=>[P[0]+u[0]*t,P[1]+u[1]*t];L.push([...at(c[0]),...at(-d)],[...at(d),...at(c[1])]);}return L;} // de cada vértice entrante de la estrella hacia fuera
+  const at=t=>[P[0]+u[0]*t,P[1]+u[1]*t],t0=d/s3;L.push([...at(c[0]),...at(-t0)],[...at(t0),...at(c[1])]);}return L;} // cada lado de las estrellas de seis, desde su cruce con el otro lado de la misma estrella (vértice entrante, a r = 1/2) hasta el hexágono
 P.arrayanes=escalar({id:'arrayanes',coleccion:'alhambra',num:7,nombre:'Estrellas de doce',lugar:'Acceso al Patio de los Arrayanes · yesería del zaguán',tipo:'cinta',
   W:s3,H:3,
   lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const cx=i*s3+(j%2?s3/2:0),cy=j*1.5;for(const t of modulo())L.push([t[0]+cx,t[1]+cy,t[2]+cx,t[3]+cy]);}return L;},
-  clase(Q){const n=Q.length;return n>=20?0:n===5?1:2;},
-  nombres:['Estrella de doce puntas','Zafate (pentágono)','Triángulo'],
+  clase(Q){const n=Q.length;return n>=20?0:n===5?1:n===4?2:3;},
+  nombres:['Estrella de doce puntas','Zafate (pentágono)','Pieza de cuatro lados','Triángulo'],
   paletas:{
-    'Yesería':{cols:['#efe4cc','#e0cfa8','#cdb88a'],ribbon:'#fbf7ee',outline:'#8a7650'},
-    'Alhambra':{cols:['#c98b2b','#1f5f5b','#2f4fa3'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
-    'Azul y oro':{cols:['#2f4fa3','#e0b04a','#161616'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
-    'Para colorear':{cols:Array(3).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
+    'Yesería':{cols:['#efe4cc','#e0cfa8','#d6c398','#cdb88a'],ribbon:'#fbf7ee',outline:'#8a7650'},
+    'Alhambra':{cols:['#c98b2b','#1f5f5b','#2f4fa3','#161616'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Azul y oro':{cols:['#2f4fa3','#e0b04a','#1f5f5b','#161616'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Para colorear':{cols:Array(4).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
 });
-Object.assign(P.arrayanes,{rw:0.55,ow:0.06,modulo:{tipo:'hex',R:P.arrayanes.k,cx:2*s3*P.arrayanes.k,cy:3*P.arrayanes.k}});
+Object.assign(P.arrayanes,{modBase:modulo,hexV:HEX,rw:0.55,ow:0.06,modulo:{tipo:'hex',R:P.arrayanes.k,cx:2*s3*P.arrayanes.k,cy:3*P.arrayanes.k}});
 })();
 
 // ---------- Textos y pasos del trazado ----------
@@ -1829,17 +1829,18 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
   pasos:[
     {h:'Circunferencia y cuatro arcos',t:'Parte de una circunferencia con dos diámetros perpendiculares entre sí. Tomando como centros los extremos de los diámetros y radio igual al de la circunferencia, traza cuatro arcos.',c:'Es la división de la circunferencia en 12 de «Aprender a trazar».',anim:'draw',
      guia(){const R=1;return circulos([C],k,'#2b4f73',0.06)+guia(diam(0,2,1),RO,0.05,'0.3 0.2')+`<g class="draw" fill="none" stroke="${RO}" stroke-width="0.07">${arco([1,0],120,240)+arco([-1,0],-60,60)+arco([0,1],210,330)+arco([0,-1],30,150)}</g>`;}},
-    {h:'Doce partes y un hexágono',t:'Los arcos y los diámetros dividen la circunferencia en doce partes iguales. Traza los diámetros que pasan por los puntos de división y dibuja uno de los hexágonos inscritos.',c:'El hexágono tiene un vértice arriba y otro abajo.',anim:'draw',
-     guia(){return guia(diam(30,4,1).filter((_,i)=>i!==2),RO,0.04,'0.3 0.2')+cerrado(hexV,'#2b4f73',0.08,true);}},
-    {h:'Circunferencia tangente',t:'Dibuja una circunferencia concéntrica con la primera y tangente a los lados del hexágono.',c:'Su radio es la apotema del hexágono.',anim:'fade',
+    {h:'Doce partes y un hexágono',t:'Los arcos y los diámetros iniciales dividen la circunferencia en doce partes iguales. Traza los nuevos diámetros que pasan por los puntos de división y, a continuación, dibuja uno de los hexágonos inscritos.',c:'El hexágono tiene un vértice arriba y otro abajo.',anim:'draw',
+     guia(){return guia(diam(0,6,1).filter((_,i)=>i!==0&&i!==3),RO,0.05)+cerrado(hexV,'#2b4f73',0.08,true);}},
+    {h:'Circunferencia tangente',t:'Dibuja una nueva circunferencia, concéntrica con la primera y tangente a los lados del hexágono.',c:'Su radio es la apotema del hexágono.',anim:'fade',
      guia(){return circulos([C],ap*k,RO,0.07);}},
-    {h:'Primera estrella de seis',t:'Une, en orden alterno, los extremos de los diámetros de la circunferencia interior que pasan por los puntos medios de los lados del hexágono: salen dos triángulos equiláteros, una estrella de seis puntas.',c:'Sus puntas tocan los lados del hexágono.',anim:'draw',
+    {h:'Primera estrella de seis',t:'Une los puntos medios de los lados del hexágono, en orden alterno, para obtener una estrella formada por dos triángulos equiláteros.',c:'Los puntos medios están en la circunferencia del paso 3.',anim:'draw',
      guia(){return cerrado(triA[0],RO,0.08,true)+cerrado(triA[1],RO,0.08,true);}},
-    {h:'Segunda estrella de seis',t:'Une ahora los extremos de los diámetros de la circunferencia interior que pasan por los vértices del hexágono. Obtienes dos nuevos triángulos equiláteros. Prolonga sus lados hasta que corten a los del hexágono.',c:'Las dos estrellas de seis, juntas, dan doce puntas.',anim:'draw',
+    {h:'Segunda estrella de seis',t:'Une los extremos de los diámetros de la circunferencia interior que pasan por los vértices del hexágono. Obtienes dos nuevos triángulos equiláteros. Prolonga sus lados hasta su intersección con los del hexágono.',c:'Las dos estrellas de seis, juntas, dan doce puntas.',anim:'draw',
      guia(){const L=[];for(let i=0;i<6;i++){const a=rad(30+60*i),n=[Math.cos(a),Math.sin(a)],u=[-n[1],n[0]],P=[n[0]*s3/4,n[1]*s3/4];let t0=-9,t1=9;
        for(let j=0;j<6;j++){const A=hexV[j],B=hexV[(j+1)%6],m=[-(B[1]-A[1]),B[0]-A[0]],den=u[0]*m[0]+u[1]*m[1],num=(P[0]-A[0])*m[0]+(P[1]-A[1])*m[1];if(Math.abs(den)<1e-12)continue;const t=-num/den;if(den>0)t0=Math.max(t0,t);else t1=Math.min(t1,t);}
        L.push([X(P[0]+u[0]*t0),Y(P[1]+u[1]*t0),X(P[0]+u[0]*t1),Y(P[1]+u[1]*t1)]);}return animar(L,'#2b4f73',0.08);}},
-    {h:'La estrella de doce',t:'Remarcando los trazos convenientes obtienes la estrella de doce puntas inscrita en el hexágono. Este es el módulo que hay que repetir por traslación para cubrir el plano.',c:'Cada recta se remarca desde el vértice entrante de la estrella hasta el lado del hexágono.',tipo:'remarcar'},
+    {h:'La estrella de doce',t:'Remarcando los trazos convenientes obtienes la estrella de doce puntas inscrita en el hexágono. Este es el módulo que hay que repetir por traslación para cubrir el plano.',c:'Cada lado de las dos estrellas de seis se remarca desde donde se cruza con otro lado de su misma estrella hasta el lado del hexágono.',anim:'draw',
+     guia(){return animar(p.modBase().map(t=>[X(t[0]),Y(t[1]),X(t[2]),Y(t[3])]),'#1b1b1b',0.16)+cerrado(hexV,'#1b1b1b',0.12,true);}},
     {h:'Repetir el módulo',t:'El módulo se repite por traslación hasta cubrir el plano. Es posible porque el hexágono regular es uno de los polígonos que teselan el plano.',c:'Si unes los centros de las estrellas aparece una red de triángulos equiláteros.',tipo:'piezas',vt:[C[0]-2.6*k,C[1]-2.2*k,5.2*k,4.4*k]},
     {h:'Las cintas',t:'Da ancho a las líneas con dos paralelas y alterna los cruces por encima y por debajo. En el zaguán es yesería: todo es del color del yeso y el dibujo se lee por el relieve.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:[C[0]-2.6*k,C[1]-2.2*k,5.2*k,4.4*k]}]});
 })();
@@ -2005,16 +2006,16 @@ const PAT_EN={
    {h:'The pieces',t:'Two pieces: the octagon and the four-pointed star.',c:'At the edges of the panel half stars and quarter stars are used.'},
    {h:'Color',t:'The rows of octagons alternate green and black, and the stars are always white.',c:'Try other combinations in the Color tab.'}]},
  arrayanes:{nombre:'Twelve-pointed stars',lugar:'Entrance to the Court of the Myrtles · plasterwork of the hall',
-  nombres:['Twelve-pointed star','Zafate (pentagon)','Triangle'],
+  nombres:['Twelve-pointed star','Zafate (pentagon)','Four-sided piece','Triangle'],
   resumen:'Twelve-pointed stars inscribed in circles that touch one another, ringed by zafates, on a network of hexagons and another of equilateral triangles.',
   pie:'It all comes from a circle divided into twelve parts: an inscribed hexagon, the circle touching its sides and two six-pointed stars, whose extended sides make the twelve-pointed star.',
   pasos:[
    {h:'Circle and four arcs',t:'Start from a circle with two perpendicular diameters. Centered on the ends of the diameters and with the same radius as the circle, draw four arcs.',c:'It is the division of the circle into 12 from “Learn to draw”.'},
    {h:'Twelve parts and a hexagon',t:'The arcs and diameters divide the circle into twelve equal parts. Draw the diameters through the division points and one of the inscribed hexagons.',c:'The hexagon has one corner at the top and one at the bottom.'},
    {h:'Touching circle',t:'Draw a circle with the same center that touches the sides of the hexagon.',c:'Its radius is the apothem of the hexagon.'},
-   {h:'First six-pointed star',t:'Join, every other one, the ends of the diameters of the inner circle that pass through the midpoints of the hexagon’s sides: you get two equilateral triangles, a six-pointed star.',c:'Its points touch the sides of the hexagon.'},
+   {h:'First six-pointed star',t:'Join the midpoints of the hexagon’s sides, every other one, to get a star made of two equilateral triangles.',c:'The midpoints lie on the circle from step 3.'},
    {h:'Second six-pointed star',t:'Now join the ends of the diameters of the inner circle that pass through the corners of the hexagon. You get two new equilateral triangles. Extend their sides until they meet the hexagon’s sides.',c:'Together, the two six-pointed stars give twelve points.'},
-   {h:'The twelve-pointed star',t:'Inking the right strokes you get the twelve-pointed star inscribed in the hexagon. This is the module to repeat by translation to cover the plane.',c:'Each line is inked from the inner corner of the star to the side of the hexagon.'},
+   {h:'The twelve-pointed star',t:'Inking the right strokes you get the twelve-pointed star inscribed in the hexagon. This is the module to repeat by translation to cover the plane.',c:'Each side of the two six-pointed stars is inked from where it crosses another side of the same star to the side of the hexagon.'},
    {h:'Repeat the module',t:'The module repeats by translation until it covers the plane. This works because the regular hexagon is one of the polygons that tile the plane.',c:'If you join the centers of the stars, a network of equilateral triangles appears.'},
    {h:'The straps',t:'Give the lines their width with two parallels and alternate the crossings over and under. In the hall it is plasterwork: everything is plaster-colored and the design reads through the relief.',c:'Try other combinations in the Color tab.'}]},
  barca:{nombre:'Eight-pointed stars and Y pieces',lugar:'Hall of the Boat · Comares Palace',

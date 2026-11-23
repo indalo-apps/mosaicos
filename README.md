@@ -4,7 +4,7 @@
 
 App de dibujo geométrico con alicatados del Real Alcázar de Sevilla. Cada uno tiene su trazado paso a paso y una pestaña para colorearlo como un alicatado y exportarlo: SVG en color, imagen PNG y archivos para corte láser (piezas del mosaico o celosía), con tantas repeticiones del módulo como se quiera.
 
-Alicatados (versión 1.3):
+Alicatados (versión 1.4):
 
 | Alicatado | Lugar | Páginas del libro |
 | --- | --- | --- |
@@ -13,6 +13,10 @@ Alicatados (versión 1.3):
 | Hexágonos y triángulos | Salas de Toledanos y Sevillanos | 75 a 77 |
 | Estrellas de seis | Cenador de Carlos V | 145 y 146 |
 | Octógonos y cuadrados | Patio de las Muñecas | 123 a 125 |
+| Cubos | Cenador de Carlos V | 143 y 144 |
+| Estrellas de ocho alargadas | Cenador de Carlos V | 147 a 149 |
+| Estrellas de cuatro y alfardones | Patio de las Muñecas | 138 a 141 |
+| Octógonos y estrellas de cuatro | Rodapié de los zócalos | 158 y 159 |
 
 El lazo de 8 lleva sus piezas calculadas de antemano. Los demás se describen en el `index.html` (objeto `PATRONES`) solo con las líneas de un módulo; el motor (`MOTOR`) corta las líneas en sus cruces, saca las piezas, encadena las cintas y, en los de cinta, decide qué cinta pasa por encima en cada cruce. Para añadir un alicatado basta con sus líneas, los nombres de sus piezas, sus paletas y los pasos del trazado. Con `?patron=<id>` en el enlace se abre directamente uno de ellos.
 

@@ -7,7 +7,7 @@
   Lacería · Lazo de 8
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="1.3">
+<meta name="app-version" content="1.4">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -809,6 +809,76 @@ P.munecas17=escalar({id:'munecas17',nombre:'Octógonos y cuadrados',lugar:'Patio
     'Para colorear':{cols:Array(3).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
 });
 
+
+// ===== Cenador de Carlos V: cubos (págs. 143-144) =====
+// Cuadrícula con sus diagonales: un cuadro de cada tres (en diagonal) queda entero y es la cara de delante del cubo.
+P.cubos=escalar({id:'cubos',nombre:'Cubos',lugar:'Cenador de Carlos V',pags:'143 y 144',tipo:'mosaico',
+  W:9,H:9,
+  lineas(){const L=[];
+    for(let i=-1;i<=10;i++)for(let j=-1;j<=10;j++){const s=mod(i+j,3);
+      if(s!==1){L.push([i,j,i,j+1],[i,j,i+1,j]);} // lados izquierdo y de arriba (no van en los cuadros «1»)
+      if(s!==2)L.push([i,j,i+1,j+1]);}               // diagonal descendente
+    return L;},
+  clase(Pz,[x,y]){const xs=Pz.map(p=>p[0]/this.k),ys=Pz.map(p=>p[1]/this.k),w=Math.max(...xs)-Math.min(...xs),h=Math.max(...ys)-Math.min(...ys);
+    if(w>1.5)return 3;if(h>1.5)return 4;return mod(Math.round((Math.floor(x)+Math.floor(y)-2)/3),3);},
+  nombres:['Cuadrado verde','Cuadrado melado','Cuadrado negro','Cara de arriba (blanca)','Cara del lado (azul)'],
+  paletas:{
+    'Alcázar':{cols:['#2d6a51','#b8772f','#171615','#f6f3ec','#2c55a8'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Grises':{cols:['#555555','#555555','#555555','#e8e8e8','#9a9a9a'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Terracota':{cols:['#7a3b26','#d98e6e','#3a2a20','#fbf4ec','#b8694d'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Para colorear':{cols:Array(5).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+
+// ===== Cenador de Carlos V: estrellas de ocho alargadas (págs. 147-149) =====
+// Circunferencias de radio 1 en una red de 2 × 2. Las piezas salen de prolongar lados de las estrellas de ocho inscritas.
+const S8=Math.SQRT1_2,E8=2-S8,D8=1-S8;
+const ALARG=[[-E8,-S8],[-D8,-S8],[0,-1],[D8,-S8],[E8,-S8],[E8,-D8],[1,0],[E8,D8],[E8,S8],[D8,S8],[0,1],[-D8,S8],[-E8,S8],[-E8,D8],[-1,0],[-E8,-D8]];
+P.alargadas=escalar({id:'alargadas',nombre:'Estrellas de ocho alargadas',lugar:'Cenador de Carlos V',pags:'147 a 149',tipo:'mosaico',
+  W:8,H:4,
+  lineas(){const L=[];
+    for(let a=-1;a<=5;a++)for(let b=-1;b<=3;b++){const cx=2*a,cy=2*b,hz=mod(a+b,2)===0;
+      L.push(...contorno(ALARG.map(([x,y])=>hz?[cx+x,cy+y]:[cx+y,cy+x])));
+      const qx=cx+1,qy=cy+1;L.push(...contorno([[qx-D8,qy-D8],[qx+D8,qy-D8],[qx+D8,qy+D8],[qx-D8,qy+D8]]),[qx-D8,qy-D8,qx+D8,qy+D8],[qx+D8,qy-D8,qx-D8,qy+D8]);}
+    return L;},
+  clase(Pz,[x,y]){if(Pz.length===3){const qx=Math.floor(x/2)*2+1,qy=Math.floor(y/2)*2+1;return Math.abs(y-qy)>Math.abs(x-qx)?4:5;}
+    const a=Math.round(x/2),b=Math.round(y/2);if(mod(a+b,2))return 3;
+    return mod(b,2)?2:(mod(a,4)===0?0:1);},
+  nombres:['Estrella alargada azul','Estrella alargada negra','Estrella alargada melada','Estrella alargada blanca (de pie)','Triángulo oscuro','Triángulo claro'],
+  paletas:{
+    'Alcázar':{cols:['#2c4f9e','#171615','#8a4a22','#ebe6dc','#1d1d1d','#ebe6dc'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Verde y oro':{cols:['#0f3b36','#2f7a6d','#d4a83c','#f8f3e6','#0f3b36','#f8f3e6'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Cobalto':{cols:['#1d2a55','#3d63a8','#1d2a55','#f2efe8','#1d2a55','#f2efe8'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Para colorear':{cols:Array(6).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+
+// ===== Patio de las Muñecas: estrellas de cuatro y alfardones (págs. 138-141) =====
+// Alfardones (hexágonos alargados) tumbados y de pie, como un tejido; entre ellos quedan las estrellas de cuatro.
+P.alfardones=escalar({id:'alfardones',nombre:'Estrellas de cuatro y alfardones',lugar:'Patio de las Muñecas',pags:'138 a 141',tipo:'mosaico',
+  W:24,H:24,
+  alf(cx,cy,hz){const A=[[-8.5,0],[-5,-3.5],[5,-3.5],[8.5,0],[5,3.5],[-5,3.5]];return A.map(([x,y])=>hz?[cx+x,cy+y]:[cx+y,cy+x]);},
+  lineas(){const L=[];for(let a=-1;a<=3;a++)for(let b=-1;b<=3;b++)L.push(...contorno(this.alf(12*a,12*b,mod(a+b,2)===0)));return L;},
+  clase(Pz,[x,y]){if(Pz.length!==6)return 2;const a=Math.round(x/12),b=Math.round(y/12);return mod(a+b,2)?1:0;},
+  nombres:['Alfardón tumbado','Alfardón de pie','Estrella de cuatro'],
+  paletas:{
+    'Alcázar':{cols:['#1a1918','#1a1918','#f2efe8'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Verde y negro':{cols:['#2b5d5c','#1a1918','#f2efe8'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Melado':{cols:['#7a3b26','#b8772f','#f2efe8'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Para colorear':{cols:Array(3).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+
+// ===== Frisos: octógonos y estrellas de cuatro (rodapié W, págs. 158-159) =====
+P.octogonos=escalar({id:'octogonos',nombre:'Octógonos y estrellas de cuatro',lugar:'Rodapié de los zócalos',pags:'158 y 159',tipo:'mosaico',
+  W:2,H:4,
+  lineas(){const L=[];for(let a=-1;a<=2;a++)for(let b=-1;b<=3;b++)L.push(...contorno(poligono(2*a+1,2*b+1,8,1,0)));return L;},
+  clase(Pz,[x,y]){if(Math.abs(MOTOR.area(Pz))/(this.k*this.k)<2)return 2;return mod(Math.floor(y/2),2);},
+  nombres:['Octógono de las filas oscuras','Octógono de las filas verdes','Estrella de cuatro'],
+  paletas:{
+    'Alcázar':{cols:['#151a19','#244a3f','#f4f1ea'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Azul':{cols:['#1d2a55','#3d63a8','#f2efe8'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Melado':{cols:['#7a3b26','#c98b2b','#fbf4ec'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Para colorear':{cols:Array(3).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -864,6 +934,61 @@ Object.assign(P.cenador6,{vt:[0,0,24,P.cenador6.H],
     {h:'Las piezas',t:'Entre dos estrellas de una fila queda un rombo, y entre dos filas, un alfardón: un hexágono alargado de diez triángulos.',c:'Las tres piezas salen solas al dibujar las estrellas: no hace falta ninguna línea más.',tipo:'piezas'},
     {h:'Colorear',t:'Las estrellas van en negro, melado, verde y azul, y los rombos y alfardones en blanco.',c:'En el libro verás una variante de la Sala de Audiencias del Cuarto Real Alto con triángulos en lugar de rombos.',tipo:'color'}]});
 
+
+const circulos=(C,r,c,w)=>`<g fill="none" stroke="${c}" stroke-width="${w}" stroke-dasharray="0.3 0.2">`+C.map(([x,y])=>`<circle cx="${+x.toFixed(3)}" cy="${+y.toFixed(3)}" r="${+r.toFixed(3)}"/>`).join('')+'</g>';
+// cuadrícula de paso «u» (en unidades del libro) y, si se pide, sus diagonales
+function cuadricula(p,vt,u,diag){const L=[],D=[],b=caja(vt,1),k=p.k*u;
+  for(let n=Math.floor(b[0]/k)-1;n<=Math.ceil(b[2]/k)+1;n++)L.push([n*k,b[1],n*k,b[3]]);
+  for(let n=Math.floor(b[1]/k)-1;n<=Math.ceil(b[3]/k)+1;n++)L.push([b[0],n*k,b[2],n*k]);
+  if(diag)for(let n=-60;n<=60;n++)for(const s of [recta([n*k,0],[1,1],b),recta([n*k,0],[1,-1],b)])if(s)D.push(s);
+  return guia(D,RO,0.04,'0.3 0.2')+guia(L,AZ,0.05);}
+
+Object.assign(P.cubos,{vt:[0,0,24,24],
+  resumen:'Cuadrados de colores con dos caras en paralelogramo, blanca y azul: parecen cubos vistos en perspectiva.',
+  pie:'Es una cuadrícula con las diagonales descendentes: en cada fila, uno de cada tres cuadros se deja entero y los demás se parten por la diagonal.',
+  pasos:[
+    {h:'Cuadrícula y diagonales',t:'Dibuja una cuadrícula y traza en cada cuadro la diagonal que baja de izquierda a derecha.',c:'Con cuadros de 1,5 cm, el módulo de 3 × 3 mide 4,5 cm.',
+     guia(p,vt){const L=[],D=[],b=caja(vt,1),k=p.k;for(let n=-2;n<=12;n++)L.push([n*k,b[1],n*k,b[3]],[b[0],n*k,b[2],n*k]);for(let n=-12;n<=12;n++){const s=recta([n*k,0],[1,1],b);if(s)D.push(s);}return guia(D,RO,0.05,'0.3 0.2')+guia(L,AZ,0.05);}},
+    {h:'Cuadros enteros y caras',t:'En cada fila deja entero uno de cada tres cuadros, corriéndolo un cuadro a la izquierda en la fila de abajo. Remarca las diagonales de los demás y borra las líneas que unen dos triángulos de una misma cara: arriba de cada cuadro queda un paralelogramo tumbado y a su izquierda, otro de pie.',c:'Cada cubo es un cuadro entero, la cara de arriba y la del lado.',tipo:'remarcar'},
+    {h:'Las piezas',t:'Salen tres piezas: el cuadrado (la cara de delante), el paralelogramo tumbado (la de arriba) y el paralelogramo de pie (la del lado).',c:'Los dos paralelogramos son iguales, solo cambia su posición.',tipo:'piezas'},
+    {h:'Colorear',t:'Las caras de arriba son blancas y las del lado, azules. Los cuadrados cambian de color en cada escalera: verde, melado y negro.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
+
+Object.assign(P.alargadas,{vt:[0,0,24,24],
+  resumen:'Estrellas de ocho alargadas de colores, tumbadas, y blancas de pie, con cuadraditos partidos en aspa entre ellas.',
+  pie:'La base es una red de circunferencias iguales, tangentes de cuatro en cuatro. Las piezas salen de prolongar algunos lados de las estrellas de ocho inscritas en ellas.',
+  pasos:[
+    {h:'Cuadrícula y circunferencias',t:'Dibuja una cuadrícula con sus diagonales. Con centro en uno de cada dos cruces, traza circunferencias que se toquen de cuatro en cuatro: su radio es el lado de un cuadro.',c:'Las circunferencias quedan tangentes entre sí y a los lados de los cuadros grandes de 2 × 2.',
+     guia(p,vt){const C=[];for(let a=-1;a<=7;a++)for(let b=-1;b<=7;b++)C.push([2*a*p.k,2*b*p.k]);return cuadricula(p,vt,1,true)+circulos(C,p.k,RO,0.06);}},
+    {h:'Estrellas de ocho',t:'En cada circunferencia inscribe una estrella de ocho puntas con dos cuadrados: uno con los lados horizontales y verticales, y otro girado 45°. Prolonga los lados horizontales y verticales.',c:'Los lados prolongados forman una red de calles; en sus cruces saldrán los cuadraditos.',
+     guia(p,vt){const L=[],k=p.k,s=Math.SQRT1_2;for(let a=-1;a<=7;a++)for(let b=-1;b<=7;b++){const x=2*a,y=2*b;L.push(...contorno([[x-s,y-s],[x+s,y-s],[x+s,y+s],[x-s,y+s]]),...contorno([[x,y-1],[x+1,y],[x,y+1],[x-1,y]]));}return animar(L.map(q=>q.map(v=>v*k)),RO,0.08);},anim:'draw'},
+    {h:'Remarcar',t:'Remarca las estrellas alargadas: alrededor de una circunferencia, tumbada (con una punta arriba y otra abajo); alrededor de las vecinas, de pie. Entre cuatro estrellas queda un cuadradito; traza sus diagonales.',c:'Cada estrella alargada encaja con sus vecinas sin dejar huecos: la punta de una entra en la muesca de la otra.',tipo:'remarcar'},
+    {h:'Las piezas',t:'Hay dos piezas: la estrella alargada, igual tumbada que de pie, y el triángulo del cuadradito partido en aspa.',c:'En los bordes del panel las estrellas se recortan.',tipo:'piezas'},
+    {h:'Colorear',t:'Las estrellas de pie son blancas. Las tumbadas van en filas: una de estrellas meladas y otra alternando azul y negro. En los cuadraditos, los triángulos de arriba y abajo son oscuros.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
+
+Object.assign(P.alfardones,{vt:[0,0,24,24],
+  resumen:'Alfardones (hexágonos alargados) tumbados y de pie que se entrecruzan como un tejido, con estrellas de cuatro blancas entre ellos.',
+  pie:'Sale de estrellas de ocho de segundo cruce trazadas sobre una cuadrícula con el ritmo 3,5-5-3,5: de cada estrella se remarcan los trazos que forman los alfardones y la estrella de cuatro.',
+  pasos:[
+    {h:'Cuadrícula 3,5-5-3,5',t:'Dibuja una cuadrícula y remarca las líneas siguiendo el ritmo 3,5 - 5 - 3,5 cuadros. Cada grupo de 12 cuadros alojará una estrella.',c:'Los medios cuadros se marcan a ojo en el centro del cuadro.',
+     guia(p,vt){const L=[],b=caja(vt,1),k=p.k;for(let n=-1;n<=3;n++)for(const e of [3.5,8.5]){const c=(12*n+e)*k;L.push([c,b[1],c,b[3]],[b[0],c,b[2],c]);}return cuadricula(p,vt,1,false)+guia(L,'#2b4f73',0.09);}},
+    {h:'Estrellas de ocho',t:'En cada cuadro de 12 dibuja una estrella de ocho puntas de segundo cruce: los lados horizontales y verticales van por las líneas remarcadas y los inclinados, a 45°, unen las puntas de dos en dos. Las estrellas vecinas se tocan por las puntas.',c:'Cada punta está a 6 cuadros del centro de su estrella.',anim:'draw',
+     guia(p,vt){const L=[],k=p.k;for(let a=-1;a<=2;a++)for(let b=-1;b<=2;b++){const cx=12*a+6,cy=12*b+6;
+       const pt=[[6,2.5],[2.5,6],[-2.5,6],[-6,2.5],[-6,-2.5],[-2.5,-6],[2.5,-6],[6,-2.5]].map(([x,y])=>[cx+x,cy+y]);
+       for(let i=0;i<8;i++){const A=pt[i],B=pt[(i+3)%8];L.push([A[0]*k,A[1]*k,B[0]*k,B[1]*k]);}}return animar(L,RO,0.08);}},
+    {h:'Remarcar',t:'De cada estrella remarca solo los trazos que forman los alfardones: hexágonos alargados con las puntas a 45°, tumbados y de pie alternando. La punta de cada alfardón toca el lado largo del vecino. Lo que queda entre ellos son las estrellas de cuatro.',c:'Una estrella es simétrica de la de al lado: si una gira a la derecha, la vecina gira a la izquierda.',tipo:'remarcar'},
+    {h:'Las piezas',t:'Solo hay dos piezas: el alfardón, igual tumbado que de pie, y la estrella de cuatro puntas.',c:'Es el mismo motivo del vestíbulo del palacio, entre los alicatados del zaguán.',tipo:'piezas'},
+    {h:'Colorear',t:'En las jambas casi todos los alfardones son negros, con algunas filas verdes o meladas que dibujan una cruz en el centro del panel. Las estrellas son blancas.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
+
+Object.assign(P.octogonos,{vt:[0,0,72,72],
+  resumen:'Octógonos regulares que se tocan por los vértices, en filas oscuras y verdes, con estrellas de cuatro blancas en los huecos.',
+  pie:'La base es una cuadrícula con sus diagonales: en cada cuadro se inscribe una circunferencia y en ella, un octógono regular.',
+  pasos:[
+    {h:'Cuadrícula y circunferencias',t:'Dibuja una cuadrícula con sus diagonales y, en cada cuadro, la circunferencia inscrita.',c:'Los ejes y las diagonales dividen cada circunferencia en ocho partes iguales.',
+     guia(p,vt){const C=[];for(let a=-1;a<=7;a++)for(let b=-1;b<=7;b++)C.push([(2*a+1)*p.k,(2*b+1)*p.k]);return cuadricula(p,vt,2,true)+circulos(C,p.k,RO,0.06);}},
+    {h:'Octógonos',t:'Une en orden los ocho puntos donde los ejes y las diagonales cortan cada circunferencia: sale un octógono regular, con una punta arriba. Los octógonos vecinos se tocan por las puntas.',c:'Los huecos que quedan entre cuatro octógonos son estrellas de cuatro.',tipo:'remarcar'},
+    {h:'Las piezas',t:'Dos piezas: el octógono y la estrella de cuatro puntas.',c:'En los bordes del panel se usan medias estrellas y cuartos de estrella.',tipo:'piezas'},
+    {h:'Colorear',t:'Las filas de octógonos se alternan en verde y negro, y las estrellas siempre son blancas.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
+
 // Dibuja un paso del trazado de un patrón nuevo
 function dibujarPaso(p,n,render){const vt=p.vt,[x0,y0,w,h]=vt,s=p.pasos[n-1],pad=w*0.03;
   const marco=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="#2b2b2b" stroke-width="0.08"/>`;
@@ -877,6 +1002,7 @@ function dibujarPaso(p,n,render){const vt=p.vt,[x0,y0,w,h]=vt,s=p.pasos[n-1],pad
       const sg=[pts[a],pts[a+1],pts[b],pts[b+1]];if(Math.max(sg[0],sg[2])<x0-1||Math.min(sg[0],sg[2])>x0+w+1||Math.max(sg[1],sg[3])<y0-1||Math.min(sg[1],sg[3])>y0+h+1)continue;L.push(sg);}
     const cx=x0+w/2,cy=y0+h/2;L.sort((a,b)=>Math.hypot((a[0]+a[2])/2-cx,(a[1]+a[3])/2-cy)-Math.hypot((b[0]+b[2])/2-cx,(b[1]+b[3])/2-cy));
     g+=animar(L,'#1b1b1b',0.17);}
+  const fz=Math.max(w,h)/24;if(fz>1.2){g=g.replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(v*fz).toFixed(3)}"`).replace(/stroke-dasharray="([\d. ]+)"/g,(m,v)=>`stroke-dasharray="${v.split(' ').map(n=>+(n*fz).toFixed(3)).join(' ')}"`);}
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${y0-pad} ${w+2*pad} ${h+2*pad}" width="100%"><rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#fffefa"/><defs><clipPath id="tzclip2"><rect x="${x0}" y="${y0}" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#tzclip2)">${g}</g>${marco}</svg>`;}
 return {P,recta,redTriangulos,poligono,contorno,dibujarPaso};
 })();
@@ -1217,6 +1343,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=[
+    ["1.4",["🧩 Cuatro alicatados más: cubos y estrellas de ocho alargadas del Cenador de Carlos V, estrellas de cuatro y alfardones del Patio de las Muñecas y octógonos del rodapié","✏️ Cada uno con su trazado paso a paso"]],
     ["1.3",["🧩 Cuatro alicatados nuevos del Alcázar: cuadrados y cintas del zaguán, octógonos del Patio de las Muñecas, hexágonos de las salas de Toledanos y Sevillanos y estrellas de seis del Cenador de Carlos V","🖼️ Elige el alicatado en la galería de arriba","✏️ Cada uno con su trazado paso a paso","🎨 Colorea y exporta cualquiera de ellos; cada uno guarda sus colores"]],
     ["1.2",["⬇️ Botón Exportar en Colorear: descarga el dibujo en lugar de solo copiarlo","🎨 SVG en color en milímetros, para imprimir o cortar vinilo","🖼️ Imagen PNG de 2000 o 4000 píxeles","✂️ Láser: piezas del mosaico o celosía con marco, en líneas rojas de 0,1 mm","🔁 Elige cuántos módulos repetir: encajan sin costuras"]],
     ["1.1",["📲 Se instala en el móvil como una app, con su icono","📶 Funciona sin conexión","🔄 Se actualiza sola y te cuenta las novedades","⚙️ Ajustes: tamaño de letra, tema claro u oscuro, instalar, autores y versión","💾 El coloreado y el paso del trazado se guardan en el móvil","👆 Botones más grandes en el móvil"]],

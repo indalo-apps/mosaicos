@@ -2,18 +2,42 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--
+  Lacería · Lazo de 8
+  © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
+-->
+<meta name="app-version" content="1.1">
+<meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lacería">
+<meta name="author" content="Adela Moreno Vega y Carlos Moreno Otto">
+<meta name="copyright" content="© 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.">
+<meta name="description" content="El lazo de 8 del Patio de las Muñecas (Real Alcázar de Sevilla): trazado paso a paso con regla y compás, y coloreado como un alicatado.">
 <title>Lacería · Lazo de 8</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1f5f5b">
-<link rel="icon" href="icon.svg">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lacería · Lazo de 8">
+<meta property="og:description" content="El lazo de 8 del Patio de las Muñecas (Real Alcázar de Sevilla): trazado paso a paso con regla y compás, y coloreado como un alicatado.">
+<meta property="og:url" content="https://indalo-apps.github.io/laceria/">
+<meta property="og:image" content="https://indalo-apps.github.io/laceria/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#f6f2ea;--ink:#22201c;--muted:#6f685d;--line:#ddd5c6;--card:#fffdf8;--accent:#1f5f5b}
+:root{--paper:#f6f2ea;--ink:#22201c;--muted:#6f685d;--line:#ddd5c6;--card:#fffdf8;--accent:#1f5f5b;--btn:#fff;--btn-on:#22201c;--btn-on-t:#fff;--tipbg:#f1ebdf;--tipt:#4d463b;--accent-t:#fff;--esc:1;color-scheme:light}
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif}
+body{margin:0;background:var(--paper);color:var(--ink);font:calc(14px * var(--esc))/1.45 Inter,system-ui,sans-serif;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 header{padding:22px 28px 10px}
 h1{font:600 30px/1.1 "Cormorant Garamond",Georgia,serif;margin:0;letter-spacing:.2px}
 header p{margin:6px 0 0;color:var(--muted);max-width:820px}
@@ -23,9 +47,9 @@ main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;padding:12p
 .stage svg{display:block;max-height:calc(100vh - 140px);cursor:crosshair}
 .viewbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
 .viewbar span{color:var(--muted);margin-right:4px}
-button,.chip{font:inherit;border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 10px;cursor:pointer;color:var(--ink)}
+button,.chip{font:inherit;border:1px solid var(--line);background:var(--btn);border-radius:7px;padding:6px 10px;cursor:pointer;color:var(--ink)}
 button:hover{border-color:#bfb4a0}
-button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+button.on{background:var(--btn-on);color:var(--btn-on-t);border-color:var(--btn-on)}
 aside{display:flex;flex-direction:column;gap:14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
 .card h2{font:600 13px Inter;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
@@ -36,7 +60,7 @@ aside{display:flex;flex-direction:column;gap:14px}
 .brush{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .sw{width:28px;height:28px;border-radius:6px;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
 .sw.sel{box-shadow:0 0 0 2px var(--ink)}
-input[type=color]{width:30px;height:28px;border:1px solid var(--line);border-radius:6px;padding:1px;background:#fff;cursor:pointer}
+input[type=color]{width:30px;height:28px;border:1px solid var(--line);border-radius:6px;padding:1px;background:var(--btn);cursor:pointer}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0}
 .row label{flex:1}
 .types .row{margin:5px 0}
@@ -55,7 +79,7 @@ section.tab.show{display:block}
 .stepn{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .card h3{font:600 23px/1.15 "Cormorant Garamond",Georgia,serif;margin:4px 0 8px}
 .card p{margin:0 0 8px}
-.tip{background:#f1ebdf;border-radius:7px;padding:8px 10px;font-size:13px;color:#4d463b}
+.tip{background:var(--tipbg);border-radius:7px;padding:8px 10px;font-size:calc(13px * var(--esc));color:var(--tipt)}
 .tip:empty{display:none}
 #tzsvg svg{display:block;max-height:calc(100vh - 190px);margin:auto}
 .draw line,.draw polygon,.draw path{stroke-dasharray:1;stroke-dashoffset:1;animation:dr .9s ease forwards}
@@ -64,10 +88,243 @@ section.tab.show{display:block}
 @keyframes fd{to{opacity:1}}
 .dim{opacity:.4}
 footer{padding:0 28px 30px;color:var(--muted);font-size:12.5px;max-width:900px}
+
+/* ===== Tema oscuro (Automático sigue al móvil) ===== */
+:root[data-tema="oscuro"]{--paper:#15191a;--ink:#ece7dc;--muted:#a59e92;--line:#323a39;--card:#1d2324;--accent:#6cbdb4;--btn:#262d2e;--btn-on:#ece7dc;--btn-on-t:#15191a;--tipbg:#262d2e;--tipt:#d8d2c6;--accent-t:#0f1f1d;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-tema="claro"]){--paper:#15191a;--ink:#ece7dc;--muted:#a59e92;--line:#323a39;--card:#1d2324;--accent:#6cbdb4;--btn:#262d2e;--btn-on:#ece7dc;--btn-on-t:#15191a;--tipbg:#262d2e;--tipt:#d8d2c6;--accent-t:#0f1f1d;color-scheme:dark}}
+/* El dibujo siempre sobre papel claro, como en el cuaderno */
+#svg,#tzsvg{background:#fffdf8;border-radius:6px}
+/* ===== Tamaño de letra ===== */
+:root[data-letra="grande"]{--esc:1.14}:root[data-letra="muy-grande"]{--esc:1.3}
+.card h2{font-size:calc(13px * var(--esc))}.hint,.msg,footer{font-size:calc(12.5px * var(--esc))}
+/* ===== Accesibilidad: foco visible, botones de 44 pt en pantallas táctiles, movimiento reducido ===== */
+button:focus-visible,input:focus-visible{outline:3px solid #e0a526;outline-offset:2px}
+@media (pointer:coarse){button{min-height:44px;min-width:44px}.dots button{width:44px;height:44px}.sw{width:44px;height:44px}input[type=color]{width:44px;height:44px}input[type=checkbox]{width:24px;height:24px}}
+@media (prefers-reduced-motion:reduce){.draw line,.draw polygon,.draw path,.fade{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}}
+/* ===== Cabecera con Ajustes ===== */
+header{position:relative;padding-right:76px}
+.btn-ajustes{position:absolute;top:18px;right:22px;width:44px;height:44px;border-radius:50%;padding:0;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center}
+.pie-ajustes{display:inline-block;margin-top:10px}
+/* ===== Ventanas (Ajustes y novedades) ===== */
+.dlg{position:fixed;inset:0;z-index:50;background:rgba(10,15,15,.55);display:flex;align-items:flex-end;justify-content:center}
+.dlg[hidden]{display:none}
+@media (min-width:640px){.dlg{align-items:center;padding:20px}}
+.hoja{position:relative;background:var(--card);color:var(--ink);width:100%;max-width:520px;max-height:90vh;overflow:auto;border-radius:18px 18px 0 0;padding:22px 20px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+@media (min-width:640px){.hoja{border-radius:18px}}
+@media (prefers-reduced-motion:no-preference){.hoja{animation:sube .22s ease-out}@keyframes sube{from{transform:translateY(30px);opacity:0}}}
+.hoja h2{font:600 calc(26px * var(--esc))/1.1 "Cormorant Garamond",Georgia,serif;margin:0 50px 6px 0}
+.hoja .x{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;padding:0;font-size:16px}
+.grupo{border-top:1px solid var(--line);padding:12px 0}
+.grupo h3{font:600 calc(12px * var(--esc)) Inter;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+.grupo p{margin:0 0 8px}
+.ops{display:flex;gap:6px;flex-wrap:wrap}
+.ops button{min-height:44px;padding:8px 14px}
+.acerca{display:flex;gap:12px;align-items:center}
+.acerca img{width:56px;height:56px;border-radius:13px;flex:none}
+.muted{color:var(--muted)}
+.listo{width:100%;min-height:48px;margin-top:6px;background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}
+#nov-lista h4{margin:12px 0 4px;color:var(--accent)}
+#nov-lista ul{margin:0;padding-left:20px}
+.barra-act{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);z-index:60;background:var(--accent);color:var(--accent-t);padding:10px 18px;border-radius:12px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.barra-act[hidden]{display:none}
 </style>
+<style>:root{--ik-accent:#1f5f5b}</style>
+<style>
+/* ===== Kit común: ayuda para instalar y aviso amarillo ===== */
+.ik-bg{position:fixed;inset:0;z-index:9999;background:rgba(10,15,25,.55);display:flex;align-items:flex-end;justify-content:center;padding:0}
+@media (min-width:640px){.ik-bg{align-items:center;padding:20px}}
+.ik-sheet{position:relative;background:#fff;color:#1b2430;width:100%;max-width:520px;max-height:88vh;overflow:auto;border-radius:22px 22px 0 0;padding:22px 20px calc(18px + env(safe-area-inset-bottom));font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:left;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+@media (min-width:640px){.ik-sheet{border-radius:22px}}
+.ik-sheet h2{margin:0;font-size:20px;line-height:1.2}
+.ik-sheet p{margin:12px 0 0}
+.ik-head{display:flex;align-items:center;gap:12px;padding-right:40px}
+.ik-head img{width:56px;height:56px;border-radius:13px;flex:none}
+.ik-muted{color:#5b6573;font-size:14px}
+.ik-nota{background:#eef3fa;border-radius:12px;padding:8px 12px;font-size:14px}
+.ik-steps{margin:12px 0 0;padding:0;list-style:none;counter-reset:ik}
+.ik-steps li{counter-increment:ik;position:relative;padding:8px 0 8px 40px;border-top:1px solid #e8ecf1}
+.ik-steps li:first-child{border-top:0}
+.ik-steps li::before{content:counter(ik);position:absolute;left:0;top:7px;width:28px;height:28px;border-radius:50%;background:var(--ik-accent,#1d5fc4);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+.ik-ic{width:20px;height:20px;vertical-align:-4px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--ik-accent,#1d5fc4)}
+.ik-ic circle{fill:currentColor}
+.ik-kbd{display:inline-block;border:1px solid #c9d1db;border-bottom-width:2px;border-radius:6px;padding:0 6px;font-weight:600;font-size:14px}
+.ik-nav{margin-top:16px}
+.ik-btn{appearance:none;border:0;border-radius:12px;min-height:44px;padding:10px 16px;font:inherit;font-weight:700;background:var(--ik-accent,#1d5fc4);color:#fff;cursor:pointer}
+.ik-nav .ik-btn{width:100%}
+.ik-ghost{background:#eef3fa;color:var(--ik-accent,#1d5fc4);min-height:36px;padding:6px 12px;font-size:14px;margin-top:6px}
+.ik-btn:focus-visible,.ik-x:focus-visible,.ik-bx:focus-visible{outline:3px solid #ffbf47;outline-offset:2px}
+.ik-btn:disabled{opacity:.6}
+.ik-x{position:absolute;top:12px;right:12px;width:44px;height:44px;border:0;border-radius:50%;background:#eef1f5;color:#1b2430;font-size:18px;cursor:pointer}
+.ik-banner{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));z-index:9000;width:calc(100% - 24px);max-width:520px;display:flex;align-items:center;gap:10px;background:#ffe066;color:#2b2100;border:1.5px solid #e6bf2e;border-radius:14px;padding:8px 4px 8px 10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.35);font:14px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:left}
+.ik-banner img{width:36px;height:36px;border-radius:9px;flex:none}
+.ik-banner div{flex:1;min-width:0}
+.ik-banner b{display:block;font-size:15px}
+.ik-banner .ik-btn{background:#2b2100;color:#ffe066;min-height:40px;padding:8px 12px;font-size:14px}
+.ik-bx{flex:none;width:44px;height:44px;border:0;background:none;color:#5c4a00;font-size:22px;cursor:pointer}
+@media (prefers-color-scheme:dark){.ik-sheet{background:#1c2430;color:#e8edf3}.ik-muted{color:#a9b4c2}.ik-nota{background:#26313f}.ik-steps li{border-color:#2d3846}.ik-x{background:#2a3442;color:#e8edf3}.ik-ghost{background:#26313f}.ik-kbd{border-color:#4a5666}}
+@media (prefers-reduced-motion:no-preference){.ik-sheet{animation:ik-up .22s ease-out}@keyframes ik-up{from{transform:translateY(30px);opacity:0}}}
+</style>
+<script>
+/* ===== Kit común de las apps de indalo-apps (copiado de la Tabla periódica) =====
+   Ayuda para instalar según el móvil, aviso para instalar y búsqueda de versión.
+   Uso: IK.init({nombre, clave, version, onBuscar, esInicio})                        */
+const IK = (function(){
+  const UA = navigator.userAgent;
+  const IS_IPAD = /iPad/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const IS_IOS = /iPhone|iPad|iPod/.test(UA) || IS_IPAD;
+  const IS_ANDROID = /Android/.test(UA);
+  const IN_APP = /FBAN|FBAV|Instagram|WhatsApp|Line\/|; wv\)|GSA\//.test(UA);
+  const IOS_OTHER = IS_IOS && /CriOS|FxiOS|EdgiOS/.test(UA);
+  const EN_WEB = /\.github\.io$/.test(location.hostname) || location.hostname === "localhost";
+  let cfg = {nombre: document.title, clave: "app", version: "dev"};
+  let deferred = null;
+  const st = {
+    get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+    set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+  };
+  // Versión de iOS: Safari 26 deja fija la del sistema en 18_x, así que se usa «Version/NN» cuando está
+  function iosVersion(){
+    const sv = UA.match(/Version\/(\d+)(?:\.(\d+))?.*Safari/);
+    if (sv && !IOS_OTHER) return [+sv[1], +(sv[2] || 0)];
+    const os = UA.match(/OS (\d+)_(\d+)/); return os ? [+os[1], +os[2]] : [0, 0];
+  }
+  function instalada(){ try { return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; } catch(e){ return false; } }
+  const SHARE = '<svg class="ik-ic" viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
+  const DOTS = '<svg class="ik-ic" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>';
+  const HDOTS = '<svg class="ik-ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>';
+  const PLUS = '<svg class="ik-ic" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>';
+
+  function pasos(){
+    const n = cfg.nombre;
+    if (IN_APP) return `<p>Has abierto el enlace dentro de otra app. Para instalarla, ábrela primero en el navegador:</p>
+      <ol class="ik-steps"><li>Toca el menú ${DOTS} o el botón ${SHARE} de esta pantalla.</li>
+      <li>Elige <b>«Abrir en ${IS_IOS ? "Safari" : "Chrome"}»</b> (o «Abrir en el navegador»).</li>
+      <li>Allí, vuelve a <b>Ajustes → Cómo añadirla a la pantalla de inicio</b>.</li></ol>`;
+    if (IS_IOS){
+      const [maj, min] = iosVersion(), dev = IS_IPAD ? "iPad" : "iPhone";
+      const ver = maj ? `<p class="ik-nota">Tu ${dev} tiene <b>iOS ${maj}${min ? "." + min : ""}</b>. Estos son los pasos para esa versión.</p>` : "";
+      const fin = `<li>Si aparece <b>«Abrir como app web»</b>, déjalo activado y pulsa <span class="ik-kbd">Añadir</span> (arriba a la derecha).</li>
+        <li>Listo: el icono <b>${n}</b> aparecerá en tu pantalla de inicio. Ábrela siempre desde ahí.</li>`;
+      if (maj && (maj < 16 || (maj === 16 && min < 4)) && IOS_OTHER)
+        return ver + `<p>En esta versión de iOS solo se puede instalar desde <b>Safari</b>:</p>
+          <ol class="ik-steps"><li>Copia el enlace y ábrelo en <b>Safari</b>. <button class="ik-btn ik-ghost" data-ik="copiar">Copiar enlace</button></li>
+          <li>Toca el botón <b>Compartir</b> ${SHARE} de la barra de abajo.</li>
+          <li>Elige <b>«Añadir a pantalla de inicio»</b> ${PLUS}.</li>${fin}</ol>`;
+      if (IOS_OTHER)
+        return ver + `<p>Desde este navegador (o desde Safari):</p>
+          <ol class="ik-steps"><li>Toca el botón <b>Compartir</b> ${SHARE}, en la barra de direcciones (arriba a la derecha) o en el menú del navegador.</li>
+          <li>Elige <b>«Añadir a pantalla de inicio»</b> ${PLUS}. Si no está, toca <b>«Más»</b> o baja en la lista.</li>${fin}</ol>`;
+      if (maj >= 26)
+        return ver + `<ol class="ik-steps">
+          <li>Toca el botón <b>···</b> ${HDOTS} que está a la derecha de la barra de la dirección${IS_IPAD ? " (arriba)" : " (abajo)"}.</li>
+          <li>Toca <b>«Compartir»</b> ${SHARE}.</li>
+          <li>Toca <b>«Ver más»</b> si hace falta, baja en la lista y elige <b>«Añadir a pantalla de inicio»</b> ${PLUS}.</li>${fin}</ol>`;
+      return ver + `<ol class="ik-steps">
+        <li>Toca el botón <b>Compartir</b> ${SHARE}${IS_IPAD ? ", arriba a la derecha." : ", en el centro de la barra de abajo. Si no ves la barra, desliza un poco la página hacia arriba."}</li>
+        <li>Baja en la lista y elige <b>«Añadir a pantalla de inicio»</b> ${PLUS}.</li>${fin}</ol>`;
+    }
+    if (IS_ANDROID) return `<p>En el móvil o la tablet Android, con Chrome:</p>
+      <ol class="ik-steps"><li>Toca el menú ${DOTS} (arriba a la derecha).</li>
+      <li>Elige <b>«Añadir a pantalla de inicio»</b> o <b>«Instalar aplicación»</b>.</li>
+      <li>Pulsa <span class="ik-kbd">Instalar</span>. El icono aparecerá en tu pantalla de inicio.</li></ol>`;
+    return `<p>Está pensada para el móvil o la tablet: abre este mismo enlace allí y sigue los pasos que salen.</p>
+      <ol class="ik-steps"><li>En el ordenador también se puede instalar con Chrome o Edge: busca el icono de instalar ${PLUS} a la derecha de la barra de direcciones.</li></ol>`;
+  }
+
+  function cerrar(){ const s = document.getElementById("ik-sheet"); if (s) s.remove(); }
+  function abrir(html, etiqueta){
+    cerrar();
+    const s = document.createElement("div");
+    s.id = "ik-sheet"; s.className = "ik-bg";
+    s.innerHTML = `<div class="ik-sheet" role="dialog" aria-modal="true" aria-label="${etiqueta}"><button class="ik-x" data-ik="cerrar" aria-label="Cerrar">✕</button>${html}</div>`;
+    s.addEventListener("click", ev => {
+      if (ev.target === s || ev.target.closest('[data-ik="cerrar"]')) { cerrar(); return; }
+      const b = ev.target.closest("[data-ik]"); if (!b) return;
+      if (b.dataset.ik === "ya") instalarYa();
+      if (b.dataset.ik === "copiar"){
+        const u = location.origin + location.pathname;
+        (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => { b.textContent = "✓ Enlace copiado"; }).catch(() => { b.textContent = u; });
+      }
+    });
+    document.addEventListener("keydown", function esc(e){ if (e.key === "Escape"){ cerrar(); document.removeEventListener("keydown", esc); } });
+    document.body.appendChild(s);
+    const x = s.querySelector(".ik-x"); if (x) x.focus();
+  }
+  async function instalarYa(){
+    if (!deferred) return;
+    deferred.prompt(); try { await deferred.userChoice; } catch(e){}
+    deferred = null; cerrar();
+  }
+  function abrirInstalar(){
+    if (instalada()){ abrir(`<h2>Ya está instalada</h2><p>✓ Ya la estás usando como app instalada. Ábrela siempre desde su icono.</p><div class="ik-nav"><button class="ik-btn" data-ik="cerrar">Entendido</button></div>`, "Instalar"); return; }
+    if (deferred && !IS_IOS && !IN_APP){ instalarYa(); return; }
+    abrir(`<div class="ik-head"><img src="icon-192.png" alt=""><div><h2>Instalar la app</h2><span class="ik-muted">Gratis, sin tienda y sin registrarse</span></div></div>
+      ${pasos()}
+      <p class="ik-muted">Una vez instalada se abre a pantalla completa, funciona sin conexión y se actualiza sola.</p>
+      <div class="ik-nav">${deferred ? '<button class="ik-btn" data-ik="ya">Instalar ahora</button>' : '<button class="ik-btn" data-ik="cerrar">Entendido</button>'}</div>`, "Instalar en el móvil");
+  }
+
+  // Aviso amarillo «Instálala en tu móvil» (solo en móvil o tablet, si no está instalada y no se ha cerrado)
+  function pintarAviso(){
+    const viejo = document.getElementById("ik-banner");
+    const toca = !instalada() && !st.get(cfg.clave + "-install-hide", 0) && (IS_IOS || IS_ANDROID || deferred)
+      && (!cfg.esInicio || cfg.esInicio());
+    if (!toca){ if (viejo) viejo.remove(); return; }
+    if (viejo) return;
+    const b = document.createElement("div");
+    b.id = "ik-banner"; b.className = "ik-banner"; b.setAttribute("role", "region"); b.setAttribute("aria-label", "Instalar la app");
+    b.innerHTML = `<img src="icon-192.png" alt=""><div><b>📲 Instálala en tu ${IS_IPAD ? "iPad" : "móvil"}</b>Tenla en la pantalla de inicio, como una app.</div>
+      <button class="ik-btn" data-b="ver">${deferred && !IS_IOS ? "Instalar" : "Ver cómo"}</button><button class="ik-bx" data-b="x" aria-label="No mostrar más">×</button>`;
+    b.addEventListener("click", ev => {
+      const t = ev.target.closest("[data-b]"); if (!t) return;
+      if (t.dataset.b === "ver") abrirInstalar();
+      else { st.set(cfg.clave + "-install-hide", 1); b.remove(); }
+    });
+    document.body.appendChild(b);
+  }
+
+  // Comprueba la versión publicada leyendo el <meta name="app-version"> de la página
+  const verCmp = (a, b) => { const x = String(a).split(".").map(Number), y = String(b).split(".").map(Number);
+    for (let i = 0; i < 3; i++){ const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
+  async function versionPublicada(){
+    if (!EN_WEB) return null;
+    try {
+      const txt = await (await fetch(location.pathname + "?v=" + Date.now(), {cache: "no-store"})).text();
+      const m = txt.match(/name="app-version" content="([^"]+)"/);
+      return m ? m[1] : null;
+    } catch(e){ return null; }
+  }
+  // Botón «Buscar actualizaciones»: escribe el resultado en el elemento msg
+  async function buscar(boton, msg){
+    if (boton) boton.disabled = true;
+    if (msg) msg.textContent = "Comprobando…";
+    const v = await versionPublicada();
+    if (boton) boton.disabled = false;
+    if (!msg) return v;
+    if (!EN_WEB) msg.textContent = "Solo se puede comprobar en la app publicada.";
+    else if (v == null) msg.textContent = "No se ha podido comprobar. ¿Tienes conexión a internet?";
+    else if (verCmp(v, cfg.version) > 0){ msg.textContent = `Hay una versión nueva (${v}). Se instalará en cuanto cierres esta ventana.`; if (cfg.onNueva) cfg.onNueva(v); }
+    else msg.textContent = `✓ Tienes la última versión (${cfg.version}).`;
+    return v;
+  }
+
+  function init(c){
+    Object.assign(cfg, c);
+    addEventListener("beforeinstallprompt", ev => { ev.preventDefault(); deferred = ev; pintarAviso(); });
+    addEventListener("appinstalled", () => { deferred = null; st.set(cfg.clave + "-install-hide", 1); pintarAviso(); cerrar(); });
+    let pend = false;
+    if (cfg.esInicio) new MutationObserver(() => { if (pend) return; pend = true; setTimeout(() => { pend = false; pintarAviso(); }, 250); }).observe(document.body, {subtree: true, attributes: true, attributeFilter: ["class", "hidden"]});
+    setTimeout(pintarAviso, 1200);
+    // Enlace directo a las instrucciones: …/?instalar
+    if (/[?&]instalar\b/.test(location.search)){ history.replaceState(history.state, "", location.pathname); if (!instalada()) setTimeout(abrirInstalar, 500); }
+  }
+  return {init, abrirInstalar, buscar, versionPublicada, verCmp, instalada, EN_WEB};
+})();
+</script>
 </head>
 <body>
 <header>
+  <button class="btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes">⚙️</button>
   <h1>Lazo de 8 del Patio de las Muñecas</h1>
   <p>Es el módulo de las páginas 133 a 136 de <em>El Real Alcázar de Sevilla con regla y compás</em>, trazado sobre la cuadrícula 5-7-5-7.</p>
   <nav class="tabs"><button data-tab="trazado">Trazado paso a paso</button><button data-tab="colorear">Colorear</button></nav>
@@ -119,7 +376,39 @@ footer{padding:0 28px 30px;color:var(--muted);font-size:12.5px;max-width:900px}
     </div>
   </aside>
 </main>
-<footer><b>Lacería · v1.0.0</b> · La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</footer>
+<footer>La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.<br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+
+<div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
+ <div class="hoja">
+  <button class="x" id="aj-x" aria-label="Cerrar">✕</button>
+  <h2 id="aj-tit">Ajustes</h2>
+  <div class="grupo"><h3>Apariencia</h3>
+   <p>Tamaño de letra</p><div class="ops" data-op="letra" role="group" aria-label="Tamaño de letra"><button data-val="normal">Normal</button><button data-val="grande">Grande</button><button data-val="muy-grande">Muy grande</button></div>
+   <p style="margin-top:10px">Tema</p><div class="ops" data-op="tema" role="group" aria-label="Tema"><button data-val="auto">Automático</button><button data-val="claro">Claro</button><button data-val="oscuro">Oscuro</button></div></div>
+  <div class="grupo"><h3>Instalar en el móvil</h3>
+   <div class="ops"><button id="aj-instalar">📲 Cómo añadirla a la pantalla de inicio</button></div></div>
+  <div class="grupo"><h3>Acerca de</h3>
+   <div class="acerca"><img src="icon-192.png" alt=""><div><b>Lacería · Lazo de 8</b><br><span class="muted">Versión <span id="aj-ver"></span></span></div></div>
+   <p style="margin-top:10px">Creada por <b>Adela Moreno Vega</b> y <b>Carlos Moreno Otto</b>.</p>
+   <p class="muted">© 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p></div>
+  <div class="grupo"><h3>Aviso</h3>
+   <p>Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable es el libro <i>El Real Alcázar de Sevilla con regla y compás</i>.</p></div>
+  <div class="grupo"><h3>Versión</h3>
+   <p>Versión <b id="aj-ver2"></b>. Se actualiza sola cuando hay una versión nueva.</p>
+   <div class="ops"><button id="aj-buscar">🔄 Buscar actualizaciones</button><button id="aj-novedades">Ver novedades</button></div>
+   <p class="muted" id="aj-upd-msg" role="status" aria-live="polite" style="margin-top:8px"></p></div>
+  <button class="listo" id="aj-cerrar">Listo</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-novedades" hidden role="dialog" aria-modal="true" aria-labelledby="nov-titulo">
+ <div class="hoja">
+  <button class="x" id="nov-x" aria-label="Cerrar">✕</button>
+  <h2 id="nov-titulo">Novedades</h2>
+  <div id="nov-lista" aria-live="polite"></div>
+  <button class="listo" id="nov-cerrar">Entendido</button>
+ </div>
+</div>
+<div class="barra-act" id="barra-act" hidden role="status">Actualizando a la versión nueva…</div>
 <script>
 // Shared renderer: builds the lazo SVG as a string (used in the page and with node for the PDFs)
 function renderLazo(D, o) {
@@ -228,9 +517,14 @@ const VIEWS={mod:[-2.5,-2.5,29,29],'2x2':[0,0,48,48],'3x2':[0,0,72,48],'4x3':[0,
 let st;
 function fresh(){return{view:'2x2',...JSON.parse(JSON.stringify(PRESETS['Alcázar'])),over:{},rw:0.62,ow:0.07,interlace:true,wc:false,grid:false,construct:false,brush:'#1f5f5b',solo:false};}
 st=fresh();
+// El coloreado se guarda en el móvil: así no se pierde al cerrar la app ni al actualizarse
+const ST_KEY='laceria-estado-v1';
+try{const g=JSON.parse(localStorage.getItem(ST_KEY)||'null');if(g&&Array.isArray(g.cols)&&g.cols.length===9&&VIEWS[g.view])st=Object.assign(fresh(),g);}catch(e){}
+function guardar(){try{localStorage.setItem(ST_KEY,JSON.stringify(st))}catch(e){}}
 const $=id=>document.getElementById(id);
 function opts(){const [x0,y0,w,h]=VIEWS[st.view];return{x0,y0,w,h,cols:st.cols,over:st.over,ribbon:st.ribbon,outline:st.outline,rw:st.rw,ow:st.ow,interlace:st.interlace,wc:st.wc,grid:st.grid,construct:st.construct};}
 function draw(){
+  guardar();
   $('svg').innerHTML=renderLazo(D,opts());
   document.querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===st.view));
   $('types').innerHTML=NAMES.map((n,i)=>`<div class="row"><label for="t${i}">${n}</label><input type="color" id="t${i}" data-t="${i}" value="${st.cols[i]}"></div>`).join('');
@@ -253,6 +547,7 @@ document.addEventListener('input',e=>{
   else if(t.id==='ribbon'||t.id==='outline'){st[t.id]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
   else if(t.id==='rw'){st.rw=+t.value;$('svg').innerHTML=renderLazo(D,opts());}
 });
+document.addEventListener('input',()=>guardar());
 document.addEventListener('change',e=>{const t=e.target;if(['interlace','wc','grid','construct','solo'].includes(t.id)){st[t.id]=t.checked;draw();}});
 $('clearOver').onclick=()=>{st.over={};draw();};
 $('reset').onclick=()=>{st=fresh();draw();};
@@ -322,8 +617,10 @@ const STEPS=[
  {h:'Colorear',t:'Ya puedes pintar. Las estrellas y los alfardones en negro y las piezas en V en verde reproducen el zócalo del patio.',c:'Prueba antes las combinaciones en la pestaña Colorear.'}
 ];
 let step=1;const N=STEPS.length;
+try{const s=+localStorage.getItem('laceria-paso');if(s>=1&&s<=N)step=s;}catch(e){}
 const white={cols:Array(9).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222',rw:0.62,ow:0.08};
 function show(){
+  try{localStorage.setItem('laceria-paso',step)}catch(e){}
   const s=STEPS[step-1];
   document.getElementById('stepn').textContent=`Paso ${step} de ${N}`;
   document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c;
@@ -345,16 +642,95 @@ document.addEventListener('click',e=>{const t=e.target;
   else if(t.id==='gocolor'){tab('colorear');}
   else if(t.dataset.tab){tab(t.dataset.tab);}
 });
-document.addEventListener('keydown',e=>{if(!document.getElementById('tab-trazado').classList.contains('show'))return;
+document.addEventListener('keydown',e=>{if(!document.getElementById('tab-trazado').classList.contains('show')||document.querySelector('.dlg:not([hidden])')||document.getElementById('ik-sheet'))return;
   if(e.key==='ArrowRight'&&step<N){step++;show();}else if(e.key==='ArrowLeft'&&step>1){step--;show();}});
 function tab(n){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('show',x.id==='tab-'+n));
   document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===n));
   try{history.replaceState(null,'','#'+n)}catch(e){}}
 tab(location.hash==='#colorear'?'colorear':'trazado');show();
-if('serviceWorker' in navigator&&location.protocol==='https:'&&!location.hostname.endsWith('claude.ai')&&!location.hostname.includes('claudeusercontent')){
-  try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
 })();
 
+</script>
+
+<script>
+/* ===== Ajustes, novedades y actualización automática (Guía común de indalo-apps) ===== */
+(function(){
+  const q=s=>document.querySelector(s);
+  const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
+  const NOVEDADES=[
+    ["1.1",["📲 Se instala en el móvil como una app, con su icono","📶 Funciona sin conexión","🔄 Se actualiza sola y te cuenta las novedades","⚙️ Ajustes: tamaño de letra, tema claro u oscuro, instalar, autores y versión","💾 El coloreado y el paso del trazado se guardan en el móvil","👆 Botones más grandes en el móvil"]],
+  ];
+  const verCmp=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0};
+  const EN_WEB=/\.github\.io$/.test(location.hostname)||location.hostname==='localhost';
+  // ---- Preferencias: letra y tema ----
+  const PREF=Object.assign({letra:'normal',tema:'auto'},store.get('laceria-pref-v1',{}));
+  function aplicarPref(){
+    const r=document.documentElement;
+    if(PREF.letra==='normal')r.removeAttribute('data-letra');else r.setAttribute('data-letra',PREF.letra);
+    if(PREF.tema==='auto')r.removeAttribute('data-tema');else r.setAttribute('data-tema',PREF.tema);
+    document.querySelectorAll('[data-op]').forEach(g=>g.querySelectorAll('button').forEach(b=>{const on=b.dataset.val===PREF[g.dataset.op];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)}));
+  }
+  document.querySelectorAll('[data-op]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PREF[g.dataset.op]=b.dataset.val;store.set('laceria-pref-v1',PREF);aplicarPref()}));
+  aplicarPref();
+  // ---- Ventanas ----
+  let foco=null;
+  function abrir(id){foco=document.activeElement;q('#'+id).hidden=false;q('#'+id+' .x').focus()}
+  function cerrar(id){q('#'+id).hidden=true;if(foco&&foco.focus)try{foco.focus()}catch(e){}}
+  q('#aj-ver').textContent=VERSION;q('#aj-ver2').textContent=VERSION;
+  q('#btn-version').textContent='Ajustes · Versión '+VERSION+' · Novedades';
+  q('#btn-ajustes').onclick=()=>abrir('dlg-ajustes');
+  q('#btn-version').onclick=()=>abrir('dlg-ajustes');
+  ['aj-x','aj-cerrar'].forEach(id=>q('#'+id).onclick=()=>cerrar('dlg-ajustes'));
+  ['nov-x','nov-cerrar'].forEach(id=>q('#'+id).onclick=()=>cerrar('dlg-novedades'));
+  q('#aj-instalar').onclick=()=>IK.abrirInstalar();
+  q('#aj-buscar').onclick=()=>IK.buscar(q('#aj-buscar'),q('#aj-upd-msg'));
+  q('#aj-novedades').onclick=()=>{cerrar('dlg-ajustes');verNovedades(null)};
+  document.querySelectorAll('.dlg').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)cerrar(d.id)}));
+  document.addEventListener('keydown',e=>{
+    const d=[...document.querySelectorAll('.dlg')].find(x=>!x.hidden);if(!d)return;
+    if(e.key==='Escape'){cerrar(d.id);return}
+    if(e.key!=='Tab')return;const f=[...d.querySelectorAll('button')];const a=f[0],z=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}
+  });
+  // Arrastrar la ventana hacia abajo para cerrarla
+  document.querySelectorAll('.hoja').forEach(h=>{let y0=null;
+    h.addEventListener('touchstart',e=>{y0=h.scrollTop<=0?e.touches[0].clientY:null},{passive:true});
+    h.addEventListener('touchmove',e=>{if(y0==null)return;const dy=e.touches[0].clientY-y0;if(dy>0)h.style.transform=`translateY(${dy}px)`},{passive:true});
+    h.addEventListener('touchend',e=>{if(y0==null)return;const dy=e.changedTouches[0].clientY-y0;h.style.transform='';y0=null;if(dy>90)cerrar(h.parentNode.id)});
+  });
+  // ---- Novedades ----
+  function verNovedades(desde){
+    const todas=NOVEDADES.filter(([v])=>!desde||verCmp(v,desde)>0);if(!todas.length)return;
+    const lista=todas.slice(0,4),mas=todas.length-lista.length;
+    q('#nov-titulo').textContent=desde?'¡La app se ha actualizado!':'Novedades';
+    q('#nov-lista').innerHTML=lista.map(([v,items])=>`<h4>Versión ${v}</h4><ul>${items.map(t=>`<li>${t}</li>`).join('')}</ul>`).join('')
+      +(mas>0?`<p class="muted">…y ${mas} ${mas===1?'versión':'versiones'} más.</p>`:'');
+    abrir('dlg-novedades');
+  }
+  (function(){const vista=store.get('laceria-version',null);store.set('laceria-version',VERSION);if(vista&&verCmp(VERSION,vista)>0)setTimeout(()=>verNovedades(vista),700)})();
+  // ---- Actualización automática ----
+  // No se recarga con una ventana abierta; el coloreado y el paso ya están guardados en el móvil
+  let pulsando=false;
+  addEventListener('pointerdown',()=>pulsando=true,true);addEventListener('pointerup',()=>pulsando=false,true);addEventListener('pointercancel',()=>pulsando=false,true);
+  const seguroRecargar=()=>!document.querySelector('.dlg:not([hidden])')&&!document.getElementById('ik-sheet')&&!pulsando&&!(document.activeElement&&document.activeElement.type==='color');
+  let pendiente=false;
+  function actualizar(){
+    if(!seguroRecargar()){pendiente=true;return}
+    pendiente=false;q('#barra-act').hidden=false;
+    setTimeout(()=>location.replace(location.pathname+'?u='+Date.now()+location.hash),900);
+  }
+  if(/[?&]u=\d/.test(location.search))history.replaceState(null,'',location.pathname+location.search.replace(/[?&]u=\d+/,'').replace(/^&/,'?')+location.hash);
+  async function buscarVersion(){const v=await IK.versionPublicada();if(v&&verCmp(v,VERSION)>0)actualizar()}
+  new MutationObserver(()=>{if(pendiente&&seguroRecargar())actualizar()}).observe(document.body,{subtree:true,attributes:true,childList:true,attributeFilter:['hidden']});
+  addEventListener('pointerup',()=>setTimeout(()=>{if(pendiente&&seguroRecargar())actualizar()},300));
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')buscarVersion()});
+  addEventListener('focus',buscarVersion);
+  setInterval(buscarVersion,90*1000);
+  setTimeout(buscarVersion,3000);
+  IK.init({nombre:'Lacería',clave:'laceria',version:VERSION,onNueva:()=>actualizar(),esInicio:()=>!document.querySelector('.dlg:not([hidden])')});
+  if(EN_WEB&&'serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{}));
+})();
 </script>
 </body>
 </html>

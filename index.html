@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.6">
+<meta name="app-version" content="2.6.1">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -592,6 +592,7 @@ const IK = (function(){
         <div><span id="ts-rl">Filas</span><div class="paso"><button data-ts="r" data-d="-1" aria-label="Una fila menos">−</button><output id="ts-r" aria-labelledby="ts-rl" aria-live="polite"></output><button data-ts="r" data-d="1" aria-label="Una fila más">+</button></div></div>
       </div>
       <div class="ops" id="ts-forma" role="group" aria-label="Módulo" hidden style="margin-top:10px"><button data-forma="hex">⬡ Hexágono</button><button data-forma="tri">△ Triángulo (mínimo)</button></div>
+      <div class="row"><label for="ts-marcar">Marcar los módulos</label><input type="checkbox" id="ts-marcar" checked></div>
       <div class="tesela">
         <h3 class="grupo-ts">Tu tesela</h3>
         <p class="hint" style="margin:0 0 8px">Dibuja sobre el dibujo y tu trazo se repite en todos los módulos.</p>
@@ -604,7 +605,7 @@ const IK = (function(){
         <div class="ops"><button id="ts-fondo">📱 Fondo de pantalla</button></div>
         <p class="msg" id="ts-msg" role="status" aria-live="polite"></p>
       </div>
-      <div class="row"><label for="ts-marcar">Marcar los módulos</label><input type="checkbox" id="ts-marcar" checked></div>
+
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
       <div class="row" style="justify-content:flex-start;gap:8px;margin-top:10px"><button id="ts-ant">← Trazar</button><button id="ts-sig" class="on">Siguiente: colorear →</button></div>
     </div></div>
@@ -623,7 +624,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.6 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.6.1 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -2630,7 +2631,7 @@ function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')|
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
-  const obj={h:tr('El objetivo','The goal'),t:MODO.c?tr('Esta es la figura que vas a construir. Pulsa «Empezar» para ver el primer paso.','This is the figure you are going to construct. Tap “Start” to see the first step.'):tr('Este es el mosaico que vas a dibujar, con los colores del Alcázar. Pulsa «Empezar» para ver el primer paso.','This is the mosaic you are going to draw, in the Alcázar colors. Tap “Start” to see the first step.'),c:tr('También puedes deslizar el dibujo para cambiar de paso.','You can also swipe the drawing to change step.')};
+  const obj={h:tr('El objetivo','The goal'),t:MODO.c?tr('Esta es la figura que vas a construir. Pulsa «Empezar» para ver el primer paso.','This is the figure you are going to construct. Tap “Start” to see the first step.'):tr(`Este es el mosaico que vas a dibujar, con los colores de ${PAT.coleccion==='alhambra'?'la Alhambra':'el Alcázar'}. Pulsa «Empezar» para ver el primer paso.`,`This is the mosaic you are going to draw, in the ${PAT.coleccion==='alhambra'?'Alhambra':'Alcázar'} colors. Tap “Start” to see the first step.`),c:tr('También puedes deslizar el dibujo para cambiar de paso.','You can also swipe the drawing to change step.')};
   const s=step===0?obj:PS[step-1];
   const etq=step===0?tr('Objetivo','Goal'):tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
   document.getElementById('stepn').textContent=etq;
@@ -2770,7 +2771,7 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y comp
   $('n-alcazar').textContent=tr(`${na} alicatados`,`${na} tile patterns`);
   $('n-alhambra').textContent=tr(`${nh} ${nh===1?'alicatado':'alicatados'} · se irán añadiendo más`,`${nh} tile ${nh===1?'pattern':'patterns'} · more coming`);
   $('n-aprender').textContent=tr(`${CONS.L.length} construcciones`,`${CONS.L.length} constructions`);
-  const n=misDibujos().length;$('n-mis').textContent=n?tr(`${n} guardados`,`${n} saved`):tr('Aún no hay ninguno','None yet');}
+  const n=misDibujos().length;$('n-mis').textContent=n?tr(`${n} ${n===1?'guardado':'guardados'}`,`${n} saved`):tr('Aún no hay ninguno','None yet');}
 // ---- Aprender a trazar
 function aprender(){mostrar('aprender');cab(tr('Aprender a trazar','Learn to draw'),tr('Construcciones básicas · págs. 164 a 175','Basic constructions · pp. 164–175'),'#inicio',tr('Las construcciones con regla y compás del libro: la base de todos los alicatados. Cada una empieza por la figura terminada.','The ruler-and-compass constructions from the book: the basis of every tile pattern. Each one starts with the finished figure.'));
   let html='';for(const [g,nom] of Object.entries(CONS.grupos)){const L=CONS.L.filter(c=>c.grupo===g);if(!L.length)continue;
@@ -2792,7 +2793,8 @@ function alicatados(col){col=col||'alcazar';mostrar('alicatados');const n=deCol(
 function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}if(!ETAPAS.includes(etapa))etapa='trazado';
   const antes=MODO.c;MODO.c=null;mostrar('a');
   if(PAT.id!==id)cambiarPatron(id);else if(antes||!$('dots').children.length)window.trazadoCambio();
-  cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',PAT.intro);
+  cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',etapa==='trazado'?PAT.intro:''); // el texto largo, solo al empezar: en las demás etapas el dibujo queda más arriba
+  document.querySelector('footer #pie').hidden=etapa!=='trazado';
   window.tabEtapa(etapa,true);if(etapa==='colorear')draw();store.set(ULT,'a/'+id+'/'+etapa);}
 // ---- Mis dibujos
 function misDibujos(){const out=[];let E={};try{E=JSON.parse(localStorage.getItem('laceria-estado-v2')||'{}').p||{};}catch(e){}
@@ -2931,6 +2933,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.6.1",["👆 In Tessellate, Color and Print the drawing is higher up: the long introduction only appears in Draw","🔧 Small fixes: Alhambra colors in the goal step, “Mark the modules” next to columns and rows"]],
     ["2.6",["✏️ Your tile: in Tessellate, draw on the design and your stroke repeats in every module. Choose color and width, use your colors and save it as a phone wallpaper","🎨 Same design, other colors: in Color, see the pattern colored in several ways and discover how stars and rosettes appear"]],
     ["2.5.4",["△ Tessellate the twelve-pointed stars with the hexagon or with the book’s minimal triangle, which is reflected into a rhombus"]],
     ["2.5.3",["⚙️ New settings button, with sliders","🧩 Color › Module now shows the book’s minimal module: the 8 × 8 square for the eight-pointed stars and the hexagon for the twelve-pointed ones"]],
@@ -2955,6 +2958,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.6.1",["👆 En Teselar, Colorear e Imprimir el dibujo queda más arriba: la presentación larga solo sale en Trazar","🔧 Arreglos: colores de la Alhambra en el objetivo, «Marcar los módulos» junto a columnas y filas"]],
     ["2.6",["✏️ Tu tesela: en Teselar, dibuja sobre el dibujo y tu trazo se repite en todos los módulos. Elige color y grosor, usa tus colores y guárdalo como fondo de pantalla del móvil","🎨 Mismo dibujo, otro color: en Colorear, mira la trama coloreada de varias maneras y descubre cómo aparecen estrellas y rosetas"]],
     ["2.5.4",["△ Teselar las estrellas de doce con el hexágono o con el triángulo mínimo del libro, que se refleja formando un rombo"]],
     ["2.5.3",["⚙️ Botón de ajustes nuevo, con deslizadores","🧩 Colorear › Módulo enseña ahora el módulo mínimo del libro: el cuadrado de 8 × 8 en las estrellas de ocho y el hexágono en las de doce"]],

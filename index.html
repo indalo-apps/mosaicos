@@ -7,7 +7,7 @@
   Lacería · Alicatados del Alcázar
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="1.4.1">
+<meta name="app-version" content="1.4.2">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -41,8 +41,8 @@ body{margin:0;background:var(--paper);color:var(--ink);font:calc(14px * var(--es
 header{padding:22px 28px 10px}
 h1{font:600 30px/1.1 "Cormorant Garamond",Georgia,serif;margin:0;letter-spacing:.2px}
 header p{margin:6px 0 0;color:var(--muted);max-width:820px}
-main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;padding:12px 28px 28px;align-items:start}
-@media (max-width:900px){main{grid-template-columns:1fr}}
+.cz{grid-template-columns:minmax(0,1fr) 330px;gap:22px;padding:12px 28px 28px;align-items:start}
+@media (max-width:900px){.cz{grid-template-columns:1fr}}
 .stage{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;position:sticky;top:12px}
 .stage svg{display:block;max-height:calc(100vh - 140px);cursor:crosshair}
 .viewbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
@@ -77,7 +77,10 @@ section.tab.show{display:block}
 .dots{display:flex;gap:5px;flex-wrap:wrap}
 .dots button{width:30px;height:30px;padding:0;border-radius:50%;font-size:12px}
 .stepn{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.card h3{font:600 23px/1.15 "Cormorant Garamond",Georgia,serif;margin:4px 0 8px}
+.card h3,.card h2.steph{font:600 calc(23px * var(--esc))/1.15 "Cormorant Garamond",Georgia,serif;margin:4px 0 8px;text-transform:none;letter-spacing:0;color:var(--ink)}
+h1 .sub{display:block;font:500 calc(15px * var(--esc))/1.3 Inter,system-ui,sans-serif;color:var(--muted);margin-top:4px;letter-spacing:0}
+#svg:focus-visible{outline:3px solid #e0a526;outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .card p{margin:0 0 8px}
 .tip{background:var(--tipbg);border-radius:7px;padding:8px 10px;font-size:calc(13px * var(--esc));color:var(--tipt)}
 .tip:empty{display:none}
@@ -104,10 +107,12 @@ footer{padding:0 28px 30px;color:var(--muted);font-size:12.5px;max-width:900px}
 #svg,#tzsvg{background:#fffdf8;border-radius:6px}
 /* ===== Tamaño de letra ===== */
 :root[data-letra="grande"]{--esc:1.14}:root[data-letra="muy-grande"]{--esc:1.3}
-.card h2{font-size:calc(13px * var(--esc))}.hint,.msg,footer{font-size:calc(12.5px * var(--esc))}
+.card h2:not(.steph){font-size:calc(13px * var(--esc))}.hint,.msg,footer{font-size:calc(12.5px * var(--esc))}
 /* ===== Accesibilidad: foco visible, botones de 44 pt en pantallas táctiles, movimiento reducido ===== */
 button:focus-visible,input:focus-visible{outline:3px solid #e0a526;outline-offset:2px}
-@media (pointer:coarse){button{min-height:44px;min-width:44px}.dots button{width:44px;height:44px}.sw{width:44px;height:44px}input[type=color]{width:44px;height:44px}input[type=checkbox]{width:24px;height:24px}}
+@media (pointer:coarse){button{min-height:44px;min-width:44px}.dots button{width:44px;height:44px}.sw{width:44px;height:44px}input[type=color]{width:44px;height:44px}input[type=checkbox]{width:28px;height:28px}.row{min-height:44px;margin:2px 0}.row label{padding:10px 0}input[type=range]{height:44px;width:150px}}
+/* Móvil: el dibujo fijo arriba ocupa menos y las vistas caben en una línea */
+@media (max-width:900px){.stage svg{max-height:44vh;margin:auto}.viewbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.viewbar::-webkit-scrollbar{display:none}.viewbar button{flex:none}}
 @media (prefers-reduced-motion:reduce){.draw line,.draw polygon,.draw path,.fade{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}}
 /* ===== Cabecera con Ajustes ===== */
 header{position:relative;padding-right:76px}
@@ -179,7 +184,8 @@ button:disabled{opacity:.55}
 .ik-banner b{display:block;font-size:15px}
 .ik-banner .ik-btn{background:#2b2100;color:#ffe066;min-height:40px;padding:8px 12px;font-size:14px}
 .ik-bx{flex:none;width:44px;height:44px;border:0;background:none;color:#5c4a00;font-size:22px;cursor:pointer}
-@media (prefers-color-scheme:dark){.ik-sheet{background:#1c2430;color:#e8edf3}.ik-muted{color:#a9b4c2}.ik-nota{background:#26313f}.ik-steps li{border-color:#2d3846}.ik-x{background:#2a3442;color:#e8edf3}.ik-ghost{background:#26313f}.ik-kbd{border-color:#4a5666}}
+@media (prefers-color-scheme:dark){:root:not([data-tema="claro"]) .ik-sheet{background:#1c2430;color:#e8edf3}:root:not([data-tema="claro"]) .ik-muted{color:#a9b4c2}:root:not([data-tema="claro"]) .ik-nota{background:#26313f}:root:not([data-tema="claro"]) .ik-steps li{border-color:#2d3846}:root:not([data-tema="claro"]) .ik-x{background:#2a3442;color:#e8edf3}:root:not([data-tema="claro"]) .ik-ghost{background:#26313f}:root:not([data-tema="claro"]) .ik-kbd{border-color:#4a5666}}
+:root[data-tema="oscuro"] .ik-sheet{background:#1c2430;color:#e8edf3}:root[data-tema="oscuro"] .ik-muted{color:#a9b4c2}:root[data-tema="oscuro"] .ik-nota{background:#26313f}:root[data-tema="oscuro"] .ik-steps li{border-color:#2d3846}:root[data-tema="oscuro"] .ik-x{background:#2a3442;color:#e8edf3}:root[data-tema="oscuro"] .ik-ghost{background:#26313f}:root[data-tema="oscuro"] .ik-kbd{border-color:#4a5666}
 @media (prefers-reduced-motion:no-preference){.ik-sheet{animation:ik-up .22s ease-out}@keyframes ik-up{from{transform:translateY(30px);opacity:0}}}
 </style>
 <script>
@@ -264,7 +270,6 @@ const IK = (function(){
         (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => { b.textContent = "✓ Enlace copiado"; }).catch(() => { b.textContent = u; });
       }
     });
-    document.addEventListener("keydown", function esc(e){ if (e.key === "Escape"){ cerrar(); document.removeEventListener("keydown", esc); } });
     document.body.appendChild(s);
     const x = s.querySelector(".ik-x"); if (x) x.focus();
   }
@@ -328,6 +333,7 @@ const IK = (function(){
 
   function init(c){
     Object.assign(cfg, c);
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.getElementById("ik-sheet")) cerrar(); });
     addEventListener("beforeinstallprompt", ev => { ev.preventDefault(); deferred = ev; pintarAviso(); });
     addEventListener("appinstalled", () => { deferred = null; st.set(cfg.clave + "-install-hide", 1); pintarAviso(); cerrar(); });
     let pend = false;
@@ -343,40 +349,41 @@ const IK = (function(){
 <body>
 <header>
   <button class="btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes">⚙️</button>
-  <h1 id="titulo">Lazo de 8 del Patio de las Muñecas</h1>
+  <h1 id="titulo">Lazo de 8<span class="sub">Patio de las Muñecas · Real Alcázar de Sevilla</span></h1>
   <p id="intro">Es el módulo de las páginas 133 a 136 de <em>El Real Alcázar de Sevilla con regla y compás</em>, trazado sobre la cuadrícula 5-7-5-7.</p>
   <nav class="galeria" id="galeria" aria-label="Elige el alicatado"></nav>
-  <nav class="tabs"><button data-tab="trazado">Trazado paso a paso</button><button data-tab="colorear">Colorear</button></nav>
+  <div class="tabs" role="tablist" aria-label="Modo"><button role="tab" id="t-trazado" aria-controls="tab-trazado" data-tab="trazado">Trazado paso a paso</button><button role="tab" id="t-colorear" aria-controls="tab-colorear" data-tab="colorear">Colorear</button></div>
 </header>
-<section id="tab-trazado" class="tab">
+<main id="app">
+<section id="tab-trazado" class="tab" role="tabpanel" aria-labelledby="t-trazado">
   <div class="tz">
-    <div class="stage"><div id="tzsvg"></div></div>
+    <div class="stage"><div id="tzsvg" role="img" aria-label="Dibujo del paso"></div></div>
     <div class="tzside">
       <div class="dots" id="dots"></div>
-      <div class="card"><div class="stepn" id="stepn"></div><h3 id="steph"></h3><p id="stept"></p><p class="tip" id="stepc"></p>
-        <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="replay" title="Repetir la animación">↻</button></div>
-        <button id="gocolor" style="display:none;margin-top:10px">Ir a colorear</button>
+      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div>
+        <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div>
       </div>
       <p class="hint">También puedes avanzar con las flechas del teclado.</p>
     </div>
   </div>
 </section>
-<main id="tab-colorear" class="tab">
+<div id="tab-colorear" class="tab cz" role="tabpanel" aria-labelledby="t-colorear">
   <section class="stage">
-    <div class="viewbar"><span>Vista</span>
+    <div class="viewbar" role="group" aria-label="Vista"><span aria-hidden="true">Vista</span>
       <button data-v="mod">Módulo (29×29)</button>
       <button data-v="2x2">2 × 2</button>
       <button data-v="3x2">Zócalo 3 × 2</button>
       <button data-v="4x3">4 × 3</button>
     </div>
-    <div id="svg"></div>
+    <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
+    <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
   </section>
   <aside>
     <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div></div>
     <div class="card"><h2>Pincel</h2>
       <div class="brush" id="brush"></div>
       <div class="row"><label for="solo">Pintar solo la pieza pulsada</label><input type="checkbox" id="solo"></div>
-      <p class="hint">Elige un color y haz clic en una pieza. Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.</p>
+      <p class="hint">Elige un color y toca una pieza (con el teclado: entra en el dibujo con Tab, muévete con las flechas y pinta con Intro). Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.</p>
     </div>
     <div class="card types"><h2>Tipos de pieza</h2><div id="types"></div>
       <button id="clearOver" style="margin-top:6px">Quitar retoques sueltos</button></div>
@@ -394,8 +401,9 @@ const IK = (function(){
       <div class="msg" id="msg"></div>
     </div>
   </aside>
+</div>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.2 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.4.2 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -1017,6 +1025,7 @@ const PRESETS={
  'Para colorear':{cols:Array(9).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}
 };
 const BRUSH=['#161616','#1f5f5b','#2f4fa3','#c98b2b','#6f8f45','#b8694d','#e8b49a','#9ab6dc','#d4a83c','#7a2e3a','#ffffff'];
+const BRUSH_N=['Negro','Verde','Azul cobalto','Melado','Verde oliva','Terracota','Rosa claro','Azul claro','Oro','Granate','Blanco'];
 const VIEWS={mod:[-2.5,-2.5,29,29],'2x2':[0,0,48,48],'3x2':[0,0,72,48],'4x3':[0,0,96,72]};
 // ---------- Patrones (v1.3): el lazo de 8 y los alicatados nuevos ----------
 const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',pags:'133 a 136',tipo:'cinta',W:24,H:24,D:D_LAZO,nombres:NAMES,paletas:PRESETS,vistas:VIEWS,rw:0.62,ow:0.07,
@@ -1043,7 +1052,7 @@ function opts(){const [x0,y0,w,h]=PAT.vistas[st.view];return{x0,y0,w,h,cols:st.c
 function draw(){
   guardar();
   $('svg').innerHTML=renderLazo(D,opts());
-  document.querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===st.view));
+  document.querySelectorAll('[data-v]').forEach(b=>{const on=b.dataset.v===st.view;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   const mos=PAT.tipo==='mosaico',lazo=PAT.id==='lazo8';
   document.querySelector('[data-v="mod"]').textContent=lazo?'Módulo (29×29)':'Módulo';
   $('row-outline').hidden=mos;$('row-interlace').hidden=mos;$('row-grid').hidden=!lazo;$('row-construct').hidden=!lazo;
@@ -1052,20 +1061,40 @@ function draw(){
   $('types').innerHTML=PAT.nombres.map((n,i)=>`<div class="row"><label for="t${i}">${n}</label><input type="color" id="t${i}" data-t="${i}" value="${st.cols[i]}"></div>`).join('');
   $('ribbon').value=st.ribbon;$('outline').value=st.outline;$('rw').value=st.rw;
   ['interlace','wc','grid','construct','solo'].forEach(k=>$(k).checked=st[k]);
-  $('brush').innerHTML=BRUSH.map(c=>`<button class="sw${c===st.brush?' sel':''}" style="background:${c}" data-c="${c}" title="${c}"></button>`).join('')+`<input type="color" id="brushc" value="${st.brush}" title="Otro color">`;
+  $('brush').innerHTML=BRUSH.map((c,i)=>`<button class="sw${c===st.brush?' sel':''}" style="background:${c}" data-c="${c}" title="${BRUSH_N[i]}" aria-label="${BRUSH_N[i]}" aria-pressed="${c===st.brush}"></button>`).join('')+`<input type="color" id="brushc" value="${st.brush}" title="Otro color" aria-label="Otro color del pincel">`;
+  marcarPieza();
 }
+// ---------- Pintar con el teclado: flechas para elegir pieza, Intro o espacio para pintar ----------
+let SEL=-1;
+function visibles(){const [x0,y0,w,h]=PAT.vistas[st.view];const out=[];
+  D.F.forEach((f,i)=>{const p=f[1];let cx=0,cy=0;for(let k=0;k<p.length;k+=2){cx+=p[k];cy+=p[k+1];}cx/=p.length/2;cy/=p.length/2;
+    if(cx>x0&&cx<x0+w&&cy>y0&&cy<y0+h)out.push([i,cx,cy]);});return out;}
+function marcarPieza(){const sv=$('svg').querySelector('svg');if(!sv)return;const old=sv.querySelector('#pieza-sel');if(old)old.remove();
+  if(SEL<0||document.activeElement!==$('svg'))return;const pol=sv.querySelector(`polygon[data-i="${SEL}"]`);if(!pol)return;
+  const m=pol.cloneNode();m.id='pieza-sel';m.removeAttribute('data-i');m.setAttribute('fill','none');m.setAttribute('stroke','#e0a526');m.setAttribute('stroke-width',String(Math.max(PAT.vistas[st.view][2]/120,0.15)));m.setAttribute('pointer-events','none');sv.appendChild(m);}
+function anunciar(){if(SEL<0)return;const k=D.F[SEL][0],c=(st.over[SEL]||st.cols[k]),n=BRUSH.indexOf(c);$('pieza-anuncio').textContent=PAT.nombres[k]+(n>=0?', '+BRUSH_N[n].toLowerCase():'');}
+function pintarPieza(i){if(st.solo)st.over[i]=st.brush;else{const k=D.F[i][0];st.cols[k]=st.brush;for(const j in st.over)if(D.F[j][0]===k)delete st.over[j];}draw();}
+$('svg').addEventListener('focus',()=>{const V=visibles();if(!V.some(v=>v[0]===SEL)){const [x0,y0,w,h]=PAT.vistas[st.view],cx=x0+w/2,cy=y0+h/2;
+  V.sort((a,b)=>Math.hypot(a[1]-cx,a[2]-cy)-Math.hypot(b[1]-cx,b[2]-cy));SEL=V.length?V[0][0]:-1;}marcarPieza();anunciar();});
+$('svg').addEventListener('blur',()=>marcarPieza());
+$('svg').addEventListener('keydown',e=>{const dirs={ArrowRight:[1,0],ArrowLeft:[-1,0],ArrowDown:[0,1],ArrowUp:[0,-1]};
+  if((e.key==='Enter'||e.key===' ')&&SEL>=0){e.preventDefault();pintarPieza(SEL);$('svg').focus();anunciar();return;}
+  const d=dirs[e.key];if(!d)return;e.preventDefault();const V=visibles(),c=V.find(v=>v[0]===SEL);if(!c)return;
+  let best=null,bd=1e9;for(const v of V){if(v[0]===SEL)continue;const dx=v[1]-c[1],dy=v[2]-c[2],a=dx*d[0]+dy*d[1];if(a<=1e-6)continue;
+    const lat=Math.abs(dx*d[1]-dy*d[0]);if(lat>a*1.2)continue;const s=a+2*lat;if(s<bd){bd=s;best=v[0];}}
+  if(best!=null){SEL=best;marcarPieza();anunciar();}});
 function pintarPaletas(){$('presets').innerHTML=Object.entries(PAT.paletas).map(([n,p])=>`<button class="preset" data-p="${n}">${n}<i>${[...new Set(p.cols)].slice(0,5).map(c=>`<b style="background:${c}"></b>`).join('')}</i></button>`).join('');}
 document.addEventListener('click',e=>{
   const t=e.target;
   if(t.dataset.v){st.view=t.dataset.v;draw();}
   else if(t.closest('[data-p]')){const p=PAT.paletas[t.closest('[data-p]').dataset.p];st.cols=[...p.cols];st.ribbon=p.ribbon;st.outline=p.outline;st.over={};draw();}
   else if(t.dataset.c){st.brush=t.dataset.c;draw();}
-  else if(t.tagName==='polygon'&&t.dataset.i){const i=+t.dataset.i;if(st.solo)st.over[i]=st.brush;else{const k=D.F[i][0];st.cols[k]=st.brush;for(const j in st.over)if(D.F[j][0]===k)delete st.over[j];}draw();}
+  else if(t.tagName==='polygon'&&t.dataset.i){SEL=+t.dataset.i;pintarPieza(SEL);}
 });
 document.addEventListener('input',e=>{
   const t=e.target;
   if(t.dataset.t){st.cols[+t.dataset.t]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
-  else if(t.id==='brushc'){st.brush=t.value;document.querySelectorAll('.sw').forEach(s=>s.classList.remove('sel'));}
+  else if(t.id==='brushc'){st.brush=t.value;document.querySelectorAll('.sw').forEach(s=>{s.classList.remove('sel');s.setAttribute('aria-pressed','false');});}
   else if(t.id==='ribbon'||t.id==='outline'){st[t.id]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
   else if(t.id==='rw'){st.rw=+t.value;$('svg').innerHTML=renderLazo(D,opts());}
 });
@@ -1226,9 +1255,9 @@ $('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(f
 function miniatura(p){const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
   return renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');}
 function pintarGaleria(){$('galeria').innerHTML=Object.values(PATS).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small></span></button>`).join('');}
-function cabecera(){$('titulo').textContent=PAT.titulo;$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
+function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · Real Alcázar de Sevilla</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
-function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
+function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
 $('galeria').addEventListener('click',e=>{const b=e.target.closest('[data-pat]');if(b)cambiarPatron(b.dataset.pat);});
 cargar(new URLSearchParams(location.search).get('patron')||ESTADO.pat);pintarPaletas();pintarGaleria();cabecera();
 draw();
@@ -1313,9 +1342,12 @@ function show(){
     if(step===9){const p=PRESETS['Alcázar'];o.cols=p.cols;o.ribbon=p.ribbon;o.outline=p.outline;}
     svg=`<div class="fade">${renderLazo(D_LAZO,o).replace('<svg ','<svg style="pointer-events:none" ')}</div>`;}
   document.getElementById('tzsvg').innerHTML=svg;
-  document.getElementById('dots').innerHTML=PS.map((_,i)=>`<button data-step="${i+1}" class="${i+1===step?'on':''}" title="${PS[i].h}">${i+1}</button>`).join('');
-  document.getElementById('prev').disabled=step===1;document.getElementById('next').disabled=step===N;
-  document.getElementById('gocolor').style.display=step===N?'inline-block':'none';
+  const foco=document.activeElement&&document.activeElement.id;
+  document.getElementById('dots').innerHTML=PS.map((_,i)=>`<button data-step="${i+1}" class="${i+1===step?'on':''}" title="${PS[i].h}" aria-label="Paso ${i+1}: ${PS[i].h}"${i+1===step?' aria-current="step"':''}>${i+1}</button>`).join('');
+  document.getElementById('tzsvg').setAttribute('aria-label',`Dibujo del paso ${step}: ${s.h}`);
+  document.getElementById('prev').disabled=step===1;
+  const ult=step===N;document.getElementById('next').hidden=ult;document.getElementById('gocolor').hidden=!ult;
+  if(ult&&foco==='next')document.getElementById('gocolor').focus();
 }
 document.addEventListener('click',e=>{const t=e.target;
   if(t.dataset.step){step=+t.dataset.step;show();}
@@ -1324,11 +1356,13 @@ document.addEventListener('click',e=>{const t=e.target;
   else if(t.id==='replay'){show();}
   else if(t.id==='gocolor'){tab('colorear');}
   else if(t.dataset.tab){tab(t.dataset.tab);}
+  else if(t.closest&&t.closest('#gocolor')){tab('colorear');}
 });
-document.addEventListener('keydown',e=>{if(!document.getElementById('tab-trazado').classList.contains('show')||document.querySelector('.dlg:not([hidden])')||document.getElementById('ik-sheet'))return;
+document.querySelector('.tabs').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();const n=document.getElementById('tab-trazado').classList.contains('show')?'colorear':'trazado';tab(n);document.querySelector(`[data-tab="${n}"]`).focus();});
+document.addEventListener('keydown',e=>{if(e.target.closest&&(e.target.closest('.tabs')||e.target.closest('#svg')))return;if(!document.getElementById('tab-trazado').classList.contains('show')||document.querySelector('.dlg:not([hidden])')||document.getElementById('ik-sheet'))return;
   if(e.key==='ArrowRight'&&step<pasos().length){step++;show();}else if(e.key==='ArrowLeft'&&step>1){step--;show();}});
 function tab(n){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('show',x.id==='tab-'+n));
-  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===n));
+  document.querySelectorAll('[data-tab]').forEach(b=>{const on=b.dataset.tab===n;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;});
   try{history.replaceState(null,'','#'+n)}catch(e){}}
 window.trazadoCambio=()=>{leerPaso();show();};
 tab(location.hash==='#colorear'?'colorear':'trazado');show();
@@ -1343,6 +1377,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=[
+    ["1.4.2",["♿ Se puede pintar pieza a pieza con el teclado: flechas para moverse e Intro para pintar","🗣️ El lector de pantalla anuncia cada paso, la pestaña, la vista y el color del pincel","👆 Casillas y deslizador más fáciles de tocar en el móvil","📐 En el móvil el dibujo ocupa menos y las vistas caben en una línea","🌗 El tema elegido en Ajustes se aplica también a la ayuda de instalar y a la barra del móvil","🛠️ Arreglos para que la copia sin conexión siempre sea buena"]],
     ["1.4.1",["🏷️ La app pasa a llamarse «Lacería · Alicatados del Alcázar»"]],
     ["1.4",["🧩 Cuatro alicatados más: cubos y estrellas de ocho alargadas del Cenador de Carlos V, estrellas de cuatro y alfardones del Patio de las Muñecas y octógonos del rodapié","✏️ Cada uno con su trazado paso a paso"]],
     ["1.3",["🧩 Cuatro alicatados nuevos del Alcázar: cuadrados y cintas del zaguán, octógonos del Patio de las Muñecas, hexágonos de las salas de Toledanos y Sevillanos y estrellas de seis del Cenador de Carlos V","🖼️ Elige el alicatado en la galería de arriba","✏️ Cada uno con su trazado paso a paso","🎨 Colorea y exporta cualquiera de ellos; cada uno guarda sus colores"]],
@@ -1357,6 +1392,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
     const r=document.documentElement;
     if(PREF.letra==='normal')r.removeAttribute('data-letra');else r.setAttribute('data-letra',PREF.letra);
     if(PREF.tema==='auto')r.removeAttribute('data-tema');else r.setAttribute('data-tema',PREF.tema);
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m,i)=>m.setAttribute('content',PREF.tema==='claro'?'#1f5f5b':PREF.tema==='oscuro'?'#15191a':(i?'#15191a':'#1f5f5b')));
     document.querySelectorAll('[data-op]').forEach(g=>g.querySelectorAll('button').forEach(b=>{const on=b.dataset.val===PREF[g.dataset.op];b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)}));
   }
   document.querySelectorAll('[data-op]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PREF[g.dataset.op]=b.dataset.val;store.set('laceria-pref-v1',PREF);aplicarPref()}));

@@ -197,7 +197,7 @@ button.peligro{border-color:#b5444b;color:#b5444b}
 .acc-ic svg{width:40px;height:40px;display:block;border-radius:8px;flex:none}
 @media (max-width:520px){.accesos{grid-template-columns:1fr}}
 .leyenda-paso{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 0;font-size:calc(13px * var(--esc,1));color:var(--muted)}.leyenda-paso[hidden]{display:none}
-.lp-prev,.lp-act{display:inline-block;width:28px;border-radius:2px}.lp-prev{height:2px;background:#a7a196}.lp-act{height:5px;background:var(--ink);margin-left:10px}
+.lp-prev,.lp-act{display:inline-block;width:28px;border-radius:2px}.lp-prev{height:2px;background:#a7a196}.lp-act{height:5px;background:#1d4ed8;margin-left:10px}
 .capas{display:grid}.capas>*{grid-area:1/1;min-width:0}
 .row[hidden]{display:none}
 .galeria{display:flex;gap:8px;overflow-x:auto;margin:6px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
@@ -2551,11 +2551,11 @@ const clave=()=>MODO.c?'laceria-paso-c-'+MODO.c.id:(PAT.id==='lazo8'?'laceria-pa
 function leerPaso(){step=0;try{const v=localStorage.getItem(clave());const s=+v;if(v!==null&&s>=0&&s<=pasos().length)step=s;}catch(e){}}
 leerPaso();
 const white={cols:Array(9).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222',rw:0.62,ow:0.08};
-// Paso actual en negro y más grueso; lo ya trazado, en gris claro. Así se distinguen sin depender del color.
+// Paso actual en azul intenso y más grueso; lo ya trazado, en gris claro. Así se distinguen sin depender del color.
 function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')||document.getElementById('tzsvg');
   const pinta=(sel,fn)=>raiz.querySelectorAll(sel).forEach(g=>[g,...g.querySelectorAll('*')].forEach(e=>{const st=e.getAttribute('stroke');if(!st||st==='none')return;const f=e.getAttribute('fill');if(f&&f!=='none'&&e.tagName!=='g')return;fn(e);}));
   pinta('.previo',e=>{e.setAttribute('stroke','#a7a196');});
-  pinta('.actual',e=>{e.setAttribute('stroke','#161616');const w=parseFloat(e.getAttribute('stroke-width'));if(w)e.setAttribute('stroke-width',+(w*1.5).toFixed(3));});
+  pinta('.actual',e=>{e.setAttribute('stroke','#1d4ed8');const w=parseFloat(e.getAttribute('stroke-width'));if(w)e.setAttribute('stroke-width',+(w*1.5).toFixed(3));});
   const hay=!!raiz.querySelector('.previo')&&!!raiz.querySelector('.actual');document.getElementById('leyenda-paso').hidden=!hay;}
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
@@ -2802,7 +2802,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
-    ["2.5.2",["📲 Install help updated for iOS 27: the three-line button inside the address bar"]],
+    ["2.5.2",["📲 Install help updated for iOS 27: the three-line button inside the address bar","✏️ Draw: the current step is now drawn in blue, thicker than what is already drawn"]],
     ["2.5.1",["📐 Twelve-pointed stars of the Court of the Myrtles: the star and the steps now follow the book exactly","🖼️ New icon: the twelve-pointed stars in plaster-white straps on blue"]],
     ["2.5",["🧩 New Alhambra tile pattern: twelve-pointed stars from the entrance to the Court of the Myrtles (no. 7), with its steps from the book and hexagonal modules in Tessellate","🖼️ New app icon: the twelve-pointed star of the Court of the Myrtles","📄 Coloring sheet also in A5"]],
     ["2.4.1",["✏️ Draw: what is already drawn turns light gray and the current step is drawn in black and thicker, so it stands out without relying on color","🏛️ “The Alhambra of Granada”","🧱 Tessellate: the eight-pointed stars of the Alhambra, the skewed rosette and the six- and eight-pointed stars now repeat their minimal module, one by one"]],
@@ -2823,7 +2823,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
-    ["2.5.2",["📲 Ayuda para instalar al día con iOS 27: el botón de tres rayas dentro de la barra de la dirección"]],
+    ["2.5.2",["📲 Ayuda para instalar al día con iOS 27: el botón de tres rayas dentro de la barra de la dirección","✏️ Trazar: el paso actual se dibuja ahora en azul, más grueso que lo ya trazado"]],
     ["2.5.1",["📐 Estrellas de doce del Patio de los Arrayanes: la estrella y los pasos siguen ahora exactamente al libro","🖼️ Icono nuevo: las estrellas de doce con la cinta de yeso sobre azul"]],
     ["2.5",["🧩 Alicatado nuevo de la Alhambra: estrellas de doce del acceso al Patio de los Arrayanes (n.º 7), con sus pasos del libro y módulos hexagonales en Teselar","🖼️ Icono nuevo de la app: la estrella de doce del Patio de los Arrayanes","📄 Lámina para pintar también en A5"]],
     ["2.4.1",["✏️ Trazar: lo ya trazado pasa a gris claro y el paso actual se dibuja en negro y más grueso, para distinguirlo sin depender del color","🏛️ «La Alhambra de Granada»","🧱 Teselar: las estrellas de ocho de la Alhambra, la rueda sesgada y las estrellas de seis y de ocho repiten ahora su módulo mínimo, de uno en uno"]],

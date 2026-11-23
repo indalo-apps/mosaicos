@@ -17,7 +17,7 @@ Con «Carta de acuarela» se pinta con los colores de Van Gogh (Royal Talens), D
 
 Está en español y en inglés (Ajustes › Idioma; «Automático» sigue al idioma del móvil). Los textos en inglés de cada alicatado están en `PAT_EN` y los de la página, en `ES_EN`.
 
-Alicatados (versión 2.0):
+Alicatados (versión 2.1):
 
 | Alicatado | Lugar | Páginas del libro |
 | --- | --- | --- |
@@ -31,6 +31,7 @@ Alicatados (versión 2.0):
 | Estrellas de cuatro y alfardones | Patio de las Muñecas | 138 a 141 |
 | Octógonos y estrellas de cuatro | Rodapié de los zócalos | 158 y 159 |
 | Estrellas de seis y de ocho | Zaguán, segunda sala | 32 a 35 |
+| Rueda de ocho sesgada | Salón del techo de Felipe II | 110 a 114 |
 
 El lazo de 8 lleva sus piezas calculadas de antemano. Los demás se describen en el `index.html` (objeto `PATRONES`) solo con las líneas de un módulo; el motor (`MOTOR`) corta las líneas en sus cruces, saca las piezas, encadena las cintas y, en los de cinta, decide qué cinta pasa por encima en cada cruce. Para añadir un alicatado basta con sus líneas, los nombres de sus piezas, sus paletas y los pasos del trazado. Con `#a/<id>/trazado` en el enlace se abre directamente uno de ellos (el antiguo `?patron=<id>` sigue funcionando).
 

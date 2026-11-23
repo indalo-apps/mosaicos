@@ -37,6 +37,7 @@ Alicatados de *La Alhambra con regla y compás* (colección `alhambra`, `#alhamb
 
 | Alicatado | Lugar | N.º en el libro |
 | --- | --- | --- |
+| Estrellas de doce (yesería) | Acceso al Patio de los Arrayanes, zaguán | 7 |
 | Estrellas de ocho y piezas en Y | Sala de la Barca (Palacio de Comares) | 16 |
 
 El lazo de 8 lleva sus piezas calculadas de antemano. Los demás se describen en el `index.html` (objeto `PATRONES`) solo con las líneas de un módulo; el motor (`MOTOR`) corta las líneas en sus cruces, saca las piezas, encadena las cintas y, en los de cinta, decide qué cinta pasa por encima en cada cruce. Para añadir un alicatado basta con sus líneas, los nombres de sus piezas, sus paletas y los pasos del trazado. Con `#a/<id>/trazado` en el enlace se abre directamente uno de ellos (el antiguo `?patron=<id>` sigue funcionando).

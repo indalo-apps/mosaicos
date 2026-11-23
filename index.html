@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.4.1">
+<meta name="app-version" content="2.5">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -594,7 +594,7 @@ const IK = (function(){
 <section id="tab-imprimir" class="tab" role="tabpanel" aria-labelledby="t-imprimir">
   <div class="vista-imp">
     <div class="caminos">
-      <button class="camino" data-imp="lamina"><h2>📄 Lámina para pintar</h2><p>PDF en A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.</p></button>
+      <button class="camino" data-imp="lamina"><h2>📄 Lámina para pintar</h2><p>PDF en A5, A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.</p></button>
       <button class="camino" data-imp="png"><h2>🖼️ Imagen</h2><p>PNG en alta resolución, para fondos de pantalla, redes o imprimir.</p></button>
       <button class="camino" data-imp="svg"><h2>🎨 Vector en color</h2><p>SVG en milímetros, para imprimir a cualquier tamaño o cortar vinilo.</p></button>
       <button class="camino" data-imp="piezas"><h2>✂️ Corte láser</h2><p>Las piezas del mosaico o la celosía de la cinta, en líneas de corte.</p></button>
@@ -604,7 +604,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.4.1 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.5 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -653,7 +653,7 @@ const IK = (function(){
   <div class="grupo" id="ex-g-mm"><h3>Tamaño</h3>
    <div class="row"><label for="ex-mm">Ancho de cada módulo (mm)</label><input type="number" id="ex-mm" min="10" max="1000" step="1" inputmode="decimal"></div></div>
   <div class="grupo" id="ex-g-lam" hidden><h3>Lámina</h3>
-   <p>Papel</p><div class="ops" data-ex="papel" role="group" aria-label="Papel"><button data-val="A4">A4</button><button data-val="A3">A3</button></div>
+   <p>Papel</p><div class="ops" data-ex="papel" role="group" aria-label="Papel"><button data-val="A5">A5</button><button data-val="A4">A4</button><button data-val="A3">A3</button></div>
    <p style="margin-top:10px">Orientación</p><div class="ops" data-ex="ori" role="group" aria-label="Orientación"><button data-val="v">Vertical</button><button data-val="h">Horizontal</button></div>
    <p style="margin-top:10px">Línea</p><div class="ops" data-ex="linea" role="group" aria-label="Línea"><button data-val="gris">Gris suave</button><button data-val="negra">Negra</button></div>
    <p class="muted" style="margin-top:8px">Con la línea gris suave, el trazo casi desaparece bajo la acuarela.</p>
@@ -736,7 +736,7 @@ const ES_EN={
  "Siguiente: colorear →":"Next: color →",
  "← Colorear":"← Color",
  "📄 Lámina para pintar":"📄 Coloring sheet",
- "PDF en A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.":"A4 or A3 PDF, line art only, for watercolor or pencils. With the paint list if you pick a brand.",
+ "PDF en A5, A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.":"A5, A4 or A3 PDF, line art only, for watercolor or pencils. With the paint list if you pick a brand.",
  "🖼️ Imagen":"🖼️ Image",
  "PNG en alta resolución, para fondos de pantalla, redes o imprimir.":"High-resolution PNG for wallpapers, social media or printing.",
  "🎨 Vector en color":"🎨 Color vector",
@@ -1585,6 +1585,27 @@ Object.assign(P.barca,{rw:+(2*(2*a/10)*P.barca.k).toFixed(4),ow:0.07,giro:-45,Gb
   modulo:{m:8*P.barca.k,cx:6,cy:6,giro:-45}}); // módulo mínimo: el cuadrado de 8 × 8 del libro, girado en el muro
 })();
 
+// ===== LA ALHAMBRA · Acceso al Patio de los Arrayanes, yesería del zaguán (n.º 7) =====
+// Estrella de doce inscrita en un hexágono regular: 12 rectas a √3/4 del centro (los lados de dos estrellas de seis).
+(function(){const s3=Math.sqrt(3),d=s3/4,HEX=[0,1,2,3,4,5].map(i=>[Math.cos(rad(90+60*i)),Math.sin(rad(90+60*i))]);
+function clipHex(p,u){let t0=-9,t1=9;for(let i=0;i<6;i++){const a=HEX[i],b=HEX[(i+1)%6],n=[-(b[1]-a[1]),b[0]-a[0]],den=u[0]*n[0]+u[1]*n[1],num=(p[0]-a[0])*n[0]+(p[1]-a[1])*n[1];
+  if(Math.abs(den)<1e-12){if(num<0)return null;continue;}const t=-num/den;if(den>0)t0=Math.max(t0,t);else t1=Math.min(t1,t);}return t1>t0?[t0,t1]:null;}
+function modulo(){const L=[];for(let k=0;k<12;k++){const a=rad(30*k),n=[Math.cos(a),Math.sin(a)],u=[-n[1],n[0]],P=[n[0]*d,n[1]*d],c=clipHex(P,u);if(!c)continue;
+  const at=t=>[P[0]+u[0]*t,P[1]+u[1]*t];L.push([...at(c[0]),...at(-d)],[...at(d),...at(c[1])]);}return L;} // de cada vértice entrante de la estrella hacia fuera
+P.arrayanes=escalar({id:'arrayanes',coleccion:'alhambra',num:7,nombre:'Estrellas de doce',lugar:'Acceso al Patio de los Arrayanes · yesería del zaguán',tipo:'cinta',
+  W:s3,H:3,
+  lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const cx=i*s3+(j%2?s3/2:0),cy=j*1.5;for(const t of modulo())L.push([t[0]+cx,t[1]+cy,t[2]+cx,t[3]+cy]);}return L;},
+  clase(Q){const n=Q.length;return n>=20?0:n===5?1:2;},
+  nombres:['Estrella de doce puntas','Zafate (pentágono)','Triángulo'],
+  paletas:{
+    'Yesería':{cols:['#efe4cc','#e0cfa8','#cdb88a'],ribbon:'#fbf7ee',outline:'#8a7650'},
+    'Alhambra':{cols:['#c98b2b','#1f5f5b','#2f4fa3'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Azul y oro':{cols:['#2f4fa3','#e0b04a','#161616'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Para colorear':{cols:Array(3).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
+});
+Object.assign(P.arrayanes,{rw:0.55,ow:0.06,modulo:{tipo:'hex',R:P.arrayanes.k,cx:2*s3*P.arrayanes.k,cy:3*P.arrayanes.k}});
+})();
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -1795,6 +1816,34 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
   function ln_(s0){return `<line x1="${s0[0]}" y1="${s0[1]}" x2="${s0[2]}" y2="${s0[3]}"/>`;}
 })();
 
+(function(){const p=P.arrayanes,k=p.k,s3=Math.sqrt(3),C=[p.modulo.cx,p.modulo.cy],X=v=>C[0]+v*k,Y=v=>C[1]+v*k,ap=s3/2;
+  const pol=(r,a0,n)=>Array.from({length:n},(_,i)=>[r*Math.cos(rad(a0+360*i/n)),r*Math.sin(rad(a0+360*i/n))]);
+  const cerrado=(V,c,w,an)=>{const L=V.map((v,i)=>[X(v[0]),Y(v[1]),X(V[(i+1)%V.length][0]),Y(V[(i+1)%V.length][1])]);return an?animar(L,c,w):guia(L,c,w);};
+  const diam=(a0,n,r)=>Array.from({length:n},(_,i)=>{const a=rad(a0+180*i/n);return [X(-r*Math.cos(a)),Y(-r*Math.sin(a)),X(r*Math.cos(a)),Y(r*Math.sin(a))];});
+  const arco=(c,a0,a1)=>{const P1=[X(c[0]+Math.cos(rad(a0))),Y(c[1]+Math.sin(rad(a0)))],P2=[X(c[0]+Math.cos(rad(a1))),Y(c[1]+Math.sin(rad(a1)))];return `<path d="M${P1[0].toFixed(3)} ${P1[1].toFixed(3)}A${k} ${k} 0 0 1 ${P2[0].toFixed(3)} ${P2[1].toFixed(3)}"/>`;};
+  const hexV=pol(1,90,6),triA=[pol(ap,0,3),pol(ap,60,3)],triB=[pol(ap,90,3),pol(ap,30,3)];
+  const vt=[C[0]-1.15*k,C[1]-1.15*k,2.3*k,2.3*k];
+  Object.assign(p,{vt,
+  resumen:'Estrellas de doce puntas inscritas en circunferencias tangentes entre sí, rodeadas de zafates, sobre una red de hexágonos y otra de triángulos equiláteros.',
+  pie:'Todo sale de una circunferencia dividida en doce partes: un hexágono inscrito, la circunferencia tangente a sus lados y dos estrellas de seis puntas, cuyos lados prolongados forman la estrella de doce.',
+  pasos:[
+    {h:'Circunferencia y cuatro arcos',t:'Parte de una circunferencia con dos diámetros perpendiculares entre sí. Tomando como centros los extremos de los diámetros y radio igual al de la circunferencia, traza cuatro arcos.',c:'Es la división de la circunferencia en 12 de «Aprender a trazar».',anim:'draw',
+     guia(){const R=1;return circulos([C],k,'#2b4f73',0.06)+guia(diam(0,2,1),RO,0.05,'0.3 0.2')+`<g class="draw" fill="none" stroke="${RO}" stroke-width="0.07">${arco([1,0],120,240)+arco([-1,0],-60,60)+arco([0,1],210,330)+arco([0,-1],30,150)}</g>`;}},
+    {h:'Doce partes y un hexágono',t:'Los arcos y los diámetros dividen la circunferencia en doce partes iguales. Traza los diámetros que pasan por los puntos de división y dibuja uno de los hexágonos inscritos.',c:'El hexágono tiene un vértice arriba y otro abajo.',anim:'draw',
+     guia(){return guia(diam(30,4,1).filter((_,i)=>i!==2),RO,0.04,'0.3 0.2')+cerrado(hexV,'#2b4f73',0.08,true);}},
+    {h:'Circunferencia tangente',t:'Dibuja una circunferencia concéntrica con la primera y tangente a los lados del hexágono.',c:'Su radio es la apotema del hexágono.',anim:'fade',
+     guia(){return circulos([C],ap*k,RO,0.07);}},
+    {h:'Primera estrella de seis',t:'Une, en orden alterno, los extremos de los diámetros de la circunferencia interior que pasan por los puntos medios de los lados del hexágono: salen dos triángulos equiláteros, una estrella de seis puntas.',c:'Sus puntas tocan los lados del hexágono.',anim:'draw',
+     guia(){return cerrado(triA[0],RO,0.08,true)+cerrado(triA[1],RO,0.08,true);}},
+    {h:'Segunda estrella de seis',t:'Une ahora los extremos de los diámetros de la circunferencia interior que pasan por los vértices del hexágono. Obtienes dos nuevos triángulos equiláteros. Prolonga sus lados hasta que corten a los del hexágono.',c:'Las dos estrellas de seis, juntas, dan doce puntas.',anim:'draw',
+     guia(){const L=[];for(let i=0;i<6;i++){const a=rad(30+60*i),n=[Math.cos(a),Math.sin(a)],u=[-n[1],n[0]],P=[n[0]*s3/4,n[1]*s3/4];let t0=-9,t1=9;
+       for(let j=0;j<6;j++){const A=hexV[j],B=hexV[(j+1)%6],m=[-(B[1]-A[1]),B[0]-A[0]],den=u[0]*m[0]+u[1]*m[1],num=(P[0]-A[0])*m[0]+(P[1]-A[1])*m[1];if(Math.abs(den)<1e-12)continue;const t=-num/den;if(den>0)t0=Math.max(t0,t);else t1=Math.min(t1,t);}
+       L.push([X(P[0]+u[0]*t0),Y(P[1]+u[1]*t0),X(P[0]+u[0]*t1),Y(P[1]+u[1]*t1)]);}return animar(L,'#2b4f73',0.08);}},
+    {h:'La estrella de doce',t:'Remarcando los trazos convenientes obtienes la estrella de doce puntas inscrita en el hexágono. Este es el módulo que hay que repetir por traslación para cubrir el plano.',c:'Cada recta se remarca desde el vértice entrante de la estrella hasta el lado del hexágono.',tipo:'remarcar'},
+    {h:'Repetir el módulo',t:'El módulo se repite por traslación hasta cubrir el plano. Es posible porque el hexágono regular es uno de los polígonos que teselan el plano.',c:'Si unes los centros de las estrellas aparece una red de triángulos equiláteros.',tipo:'piezas',vt:[C[0]-2.6*k,C[1]-2.2*k,5.2*k,4.4*k]},
+    {h:'Las cintas',t:'Da ancho a las líneas con dos paralelas y alterna los cruces por encima y por debajo. En el zaguán es yesería: todo es del color del yeso y el dibujo se lee por el relieve.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:[C[0]-2.6*k,C[1]-2.2*k,5.2*k,4.4*k]}]});
+})();
+
 // Dibuja un paso del trazado de un patrón nuevo
 function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt||p.vt,[x0,y0,w,h]=vt,pad=w*0.03;
   // p.giro: el alicatado está girado en el muro; los pasos lo enseñan derecho, como en el libro (salvo s.sinGiro)
@@ -1864,7 +1913,7 @@ const MONU={alcazar:['Real Alcázar de Sevilla','Royal Alcázar of Seville'],alh
 const monu=p=>tr(...MONU[p.coleccion||'alcazar']);
 // ---------- Inglés (v1.5): nombres, textos y pasos de cada alicatado ----------
 const LIBRO_EN='<em>El Real Alcázar de Sevilla con regla y compás</em> (“The Royal Alcázar of Seville with ruler and compass”)';
-const PAL_EN={'Alcázar':'Alcázar','Alhambra':'Alhambra','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
+const PAL_EN={'Alcázar':'Alcázar','Alhambra':'Alhambra','Yesería':'Plasterwork','Azul y oro':'Blue & gold','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
 const PAT_EN={
  lazo8:{nombre:'Eight-fold knot',lugar:'Patio de las Muñecas',
   nombres:['Corner star','Small piece by the star','Alfardón (long hexagon)','Side V piece','Triangle by the alfardón','Triangle by the central star','Edge star','Central V piece','Central star'],
@@ -1955,6 +2004,19 @@ const PAT_EN={
    {h:'Octagons',t:'Join in order the eight points where the axes and diagonals cut each circle: you get a regular octagon with one point up. Neighboring octagons touch at their points.',c:'The gaps left between four octagons are four-pointed stars.'},
    {h:'The pieces',t:'Two pieces: the octagon and the four-pointed star.',c:'At the edges of the panel half stars and quarter stars are used.'},
    {h:'Color',t:'The rows of octagons alternate green and black, and the stars are always white.',c:'Try other combinations in the Color tab.'}]},
+ arrayanes:{nombre:'Twelve-pointed stars',lugar:'Entrance to the Court of the Myrtles · plasterwork of the hall',
+  nombres:['Twelve-pointed star','Zafate (pentagon)','Triangle'],
+  resumen:'Twelve-pointed stars inscribed in circles that touch one another, ringed by zafates, on a network of hexagons and another of equilateral triangles.',
+  pie:'It all comes from a circle divided into twelve parts: an inscribed hexagon, the circle touching its sides and two six-pointed stars, whose extended sides make the twelve-pointed star.',
+  pasos:[
+   {h:'Circle and four arcs',t:'Start from a circle with two perpendicular diameters. Centered on the ends of the diameters and with the same radius as the circle, draw four arcs.',c:'It is the division of the circle into 12 from “Learn to draw”.'},
+   {h:'Twelve parts and a hexagon',t:'The arcs and diameters divide the circle into twelve equal parts. Draw the diameters through the division points and one of the inscribed hexagons.',c:'The hexagon has one corner at the top and one at the bottom.'},
+   {h:'Touching circle',t:'Draw a circle with the same center that touches the sides of the hexagon.',c:'Its radius is the apothem of the hexagon.'},
+   {h:'First six-pointed star',t:'Join, every other one, the ends of the diameters of the inner circle that pass through the midpoints of the hexagon’s sides: you get two equilateral triangles, a six-pointed star.',c:'Its points touch the sides of the hexagon.'},
+   {h:'Second six-pointed star',t:'Now join the ends of the diameters of the inner circle that pass through the corners of the hexagon. You get two new equilateral triangles. Extend their sides until they meet the hexagon’s sides.',c:'Together, the two six-pointed stars give twelve points.'},
+   {h:'The twelve-pointed star',t:'Inking the right strokes you get the twelve-pointed star inscribed in the hexagon. This is the module to repeat by translation to cover the plane.',c:'Each line is inked from the inner corner of the star to the side of the hexagon.'},
+   {h:'Repeat the module',t:'The module repeats by translation until it covers the plane. This works because the regular hexagon is one of the polygons that tile the plane.',c:'If you join the centers of the stars, a network of equilateral triangles appears.'},
+   {h:'The straps',t:'Give the lines their width with two parallels and alternate the crossings over and under. In the hall it is plasterwork: everything is plaster-colored and the design reads through the relief.',c:'Try other combinations in the Color tab.'}]},
  barca:{nombre:'Eight-pointed stars and Y pieces',lugar:'Hall of the Boat · Comares Palace',
   nombres:['Blue sino','Honey sino','Black sino','Alfardón (long four-pointed star)','Y piece','Square piece'],
   resumen:'White straps interlace into overlapping octagons, with blue, black and honey eight-pointed stars at their centers, green alfardones and black Y-shaped pieces.',
@@ -2265,11 +2327,11 @@ function svgLaser(modo,c,r,mm,vista){
 if(typeof module!=='undefined')module.exports.ex={svgLaser,celda,encoger,piezas,area};
 
 // ---------- Lámina para pintar (v1.5): PDF A4 o A3 con el dibujo solo en línea ----------
-const PAPEL={A4:[210,297],A3:[297,420]};
+const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]};
 function lamina(){ // medidas en mm de la hoja y del dibujo
   let [pw,ph]=PAPEL[EX.papel]||PAPEL.A4;if(EX.ori==='h')[pw,ph]=[ph,pw];
   const ley=CARTA&&EX.leyenda!==false?listaPinturas():[],nc=pw>250?3:2,fila=6,lh=ley.length?8+Math.ceil(ley.length/nc)*fila:0;
-  const m=12,pie=8,aw=pw-2*m,ah=ph-2*m-pie-lh,w=EX.c*PAT.W,h=EX.r*PAT.H,e=Math.min(aw/w,ah/h),dw=w*e,dh=h*e;
+  const m=Math.min(pw,ph)<160?9:12,pie=8,aw=pw-2*m,ah=ph-2*m-pie-lh,w=EX.c*PAT.W,h=EX.r*PAT.H,e=Math.min(aw/w,ah/h),dw=w*e,dh=h*e;
   // leyenda de pinturas: debajo del dibujo, en columnas
   const ly=ph-m-pie-lh+4,cw=aw/nc,items=ley.map((it,i)=>({it,x:m+(i%nc)*cw,y:ly+6+Math.floor(i/nc)*fila,w:cw-3}));
   return {pw,ph,m,pie,dw,dh,dx:(pw-dw)/2,dy:m+(ah-dh)/2,umm:e,ley:items,ly,titLey:ley.length?`${tr('Pinturas','Paints')} · ${CARTAS[CARTA].nombre}`:''};
@@ -2344,7 +2406,7 @@ function exSvg(vista){
   if(EX.modo==='png'){const [W,H]=exDims();return svgColor(EX.c,EX.r,W,H);}
   return svgColor(EX.c,EX.r,fx(EX.c*EX.mm)+'mm',fx(EX.r*EX.mm)+'mm');
 }
-function exNombre(ext){const t={svg:'',png:'',piezas:'-laser-piezas',celosia:'-laser-celosia',lamina:'-lamina-'+EX.papel}[EX.modo];return `laceria-${PAT.id}${t}-${EX.c}x${EX.r}.${ext}`;}
+function exNombre(ext){const t={svg:'',png:'',piezas:'-laser-piezas',celosia:'-laser-celosia',lamina:'-lamina-'+EX.papel}[EX.modo];return `mosaicos-${PAT.id}${t}-${EX.c}x${EX.r}.${ext}`;}
 const mmTxt=n=>(Math.round(n*10)/10).toLocaleString(EN?'en-US':'es-ES');
 function exPintar(){
   document.querySelectorAll('[data-ex]').forEach(g=>g.querySelectorAll('button').forEach(b=>{const on=String(EX[g.dataset.ex])===b.dataset.val;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);}));
@@ -2674,6 +2736,15 @@ window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent
   const mos=PAT.tipo==='mosaico',blanco=Array(PAT.nombres.length).fill('#ffffff'),k=PAT.W/24;
   const o=mos?{cols:blanco,over:{},ribbon:'#4a4a4a',outline:'#4a4a4a',rw:0.1*k,ow:0,wc:false,grid:false,construct:false}:{cols:blanco,over:{},ribbon:'#ffffff',outline:'#3a3a3a',ow:0.07,wc:false,grid:false,construct:false};
   const M=PAT.modulo;
+  if(M&&M.tipo==='hex'){ // módulo hexagonal: filas desplazadas medio hexágono
+    const R=M.R,a=R*Math.sqrt(3)/2,c=EX.c,r=EX.r,cen=[];for(let j=0;j<r;j++)for(let i=0;i<c;i++)cen.push([M.cx+i*2*a+(j%2)*a,M.cy+j*1.5*R]);
+    const x0=M.cx-a-0.3,y0=M.cy-R-0.3,w=(2*c+(r>1?1:0))*a+0.6,h=(1.5*(r-1)+2)*R+0.6;
+    datos(PAT);const key='h'+c+'x'+r;PAT.Dts=PAT.Dts||{};if(!PAT.Dts[key])PAT.Dts[key]=MOTOR.zona(PAT,PAT.prep,x0-2,y0-2,x0+w+2,y0+h+2);
+    let sv=renderLazo(PAT.Dts[key],Object.assign({},o,{x0,y0,w,h,rw:PAT.rw,interlace:true}));
+    const hx=([x,y])=>Array.from({length:6},(_,i)=>{const t=(90+60*i)*Math.PI/180;return (x+R*Math.cos(t)).toFixed(3)+','+(y+R*Math.sin(t)).toFixed(3);}).join(' ');
+    if(TS.marcar){const sw=w/250;let q=`<g fill="none" stroke="#e0a526" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}">`+cen.slice(1).map(p=>`<polygon points="${hx(p)}"/>`).join('')+'</g>';
+      q+=`<polygon points="${hx(cen[0])}" fill="#e0a526" fill-opacity="0.12" stroke="#e0a526" stroke-width="${sw*2.2}"/>`;sv=sv.replace(/<\/svg>$/,q+'</svg>');}
+    $('tssvg').innerHTML=sv;$('ts-chip').textContent=tr(`${c} × ${r} módulos hexagonales · el primero, resaltado`,`${c} × ${r} hexagonal modules · the first one highlighted`);return;}
   if(M){ // módulo mínimo distinto del bloque de color (o girado en el muro): se teselan módulos de lado m
     const m=M.m,c=EX.c,r=EX.r,w=c*m,h=r*m,g=(M.giro||0)*Math.PI/180,dx=c%2?0:m/2,dy=r%2?0:m/2;
     const P=[M.cx+dx*Math.cos(-g)-dy*Math.sin(-g),M.cy+dx*Math.sin(-g)+dy*Math.cos(-g)],x0=P[0]-w/2,y0=P[1]-h/2,R=Math.hypot(w,h)/2+2;
@@ -2724,6 +2795,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.5",["🧩 New Alhambra tile pattern: twelve-pointed stars from the entrance to the Court of the Myrtles (no. 7), with its steps from the book and hexagonal modules in Tessellate","🖼️ New app icon: the twelve-pointed star of the Court of the Myrtles","📄 Coloring sheet also in A5"]],
     ["2.4.1",["✏️ Draw: what is already drawn turns light gray and the current step is drawn in black and thicker, so it stands out without relying on color","🏛️ “The Alhambra of Granada”","🧱 Tessellate: the eight-pointed stars of the Alhambra, the skewed rosette and the six- and eight-pointed stars now repeat their minimal module, one by one"]],
     ["2.4",["🏛️ New home screen with the two monuments: the Royal Alcázar of Seville and the Alhambra","🧩 First Alhambra tile pattern: eight-pointed stars and Y pieces from the Hall of the Boat (no. 16), with its 11 steps from the book","📖 The glossary button now says “Glossary”"]],
     ["2.3",["▦ Skewed rosette: a second way to draw it, on the 5-9-9-5 grid (p. 113), next to the compass one","🔁 “Repeat the module” now shows several rosettes"]],
@@ -2742,6 +2814,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.5",["🧩 Alicatado nuevo de la Alhambra: estrellas de doce del acceso al Patio de los Arrayanes (n.º 7), con sus pasos del libro y módulos hexagonales en Teselar","🖼️ Icono nuevo de la app: la estrella de doce del Patio de los Arrayanes","📄 Lámina para pintar también en A5"]],
     ["2.4.1",["✏️ Trazar: lo ya trazado pasa a gris claro y el paso actual se dibuja en negro y más grueso, para distinguirlo sin depender del color","🏛️ «La Alhambra de Granada»","🧱 Teselar: las estrellas de ocho de la Alhambra, la rueda sesgada y las estrellas de seis y de ocho repiten ahora su módulo mínimo, de uno en uno"]],
     ["2.4",["🏛️ Portada nueva con los dos monumentos: el Real Alcázar de Sevilla y la Alhambra","🧩 Primer alicatado de la Alhambra: estrellas de ocho y piezas en Y de la Sala de la Barca (n.º 16), con sus 11 pasos del libro","📖 El botón del glosario dice ahora «Glosario»"]],
     ["2.3",["▦ Rueda sesgada: segunda forma de trazarla, con la cuadrícula 5-9-9-5 (pág. 113), junto a la del compás","🔁 «Repetir el módulo» enseña ahora varias ruedas"]],

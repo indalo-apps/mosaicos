@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!--
-  Lacería · Lazo de 8
+  Lacería · Alicatados del Alcázar
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="1.4">
+<meta name="app-version" content="1.4.1">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,7 +16,7 @@
 <meta name="author" content="Adela Moreno Vega y Carlos Moreno Otto">
 <meta name="copyright" content="© 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.">
 <meta name="description" content="Alicatados del Real Alcázar de Sevilla: el lazo de 8 del Patio de las Muñecas y otros, con su trazado paso a paso y para colorear como un alicatado.">
-<title>Lacería · Lazo de 8</title>
+<title>Lacería · Alicatados del Alcázar</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -25,7 +25,7 @@
 <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Lacería · Lazo de 8">
+<meta property="og:title" content="Lacería · Alicatados del Alcázar">
 <meta property="og:description" content="Alicatados del Real Alcázar de Sevilla: el lazo de 8 del Patio de las Muñecas y otros, con su trazado paso a paso y para colorear como un alicatado.">
 <meta property="og:url" content="https://indalo-apps.github.io/laceria/">
 <meta property="og:image" content="https://indalo-apps.github.io/laceria/og.png">
@@ -407,7 +407,7 @@ const IK = (function(){
   <div class="grupo"><h3>Instalar en el móvil</h3>
    <div class="ops"><button id="aj-instalar">📲 Cómo añadirla a la pantalla de inicio</button></div></div>
   <div class="grupo"><h3>Acerca de</h3>
-   <div class="acerca"><img src="icon-192.png" alt=""><div><b>Lacería · Lazo de 8</b><br><span class="muted">Versión <span id="aj-ver"></span></span></div></div>
+   <div class="acerca"><img src="icon-192.png" alt=""><div><b>Lacería · Alicatados del Alcázar</b><br><span class="muted">Versión <span id="aj-ver"></span></span></div></div>
    <p style="margin-top:10px">Creada por <b>Adela Moreno Vega</b> y <b>Carlos Moreno Otto</b>.</p>
    <p class="muted">© 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p></div>
   <div class="grupo"><h3>Aviso</h3>
@@ -1343,6 +1343,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=[
+    ["1.4.1",["🏷️ La app pasa a llamarse «Lacería · Alicatados del Alcázar»"]],
     ["1.4",["🧩 Cuatro alicatados más: cubos y estrellas de ocho alargadas del Cenador de Carlos V, estrellas de cuatro y alfardones del Patio de las Muñecas y octógonos del rodapié","✏️ Cada uno con su trazado paso a paso"]],
     ["1.3",["🧩 Cuatro alicatados nuevos del Alcázar: cuadrados y cintas del zaguán, octógonos del Patio de las Muñecas, hexágonos de las salas de Toledanos y Sevillanos y estrellas de seis del Cenador de Carlos V","🖼️ Elige el alicatado en la galería de arriba","✏️ Cada uno con su trazado paso a paso","🎨 Colorea y exporta cualquiera de ellos; cada uno guarda sus colores"]],
     ["1.2",["⬇️ Botón Exportar en Colorear: descarga el dibujo en lugar de solo copiarlo","🎨 SVG en color en milímetros, para imprimir o cortar vinilo","🖼️ Imagen PNG de 2000 o 4000 píxeles","✂️ Láser: piezas del mosaico o celosía con marco, en líneas rojas de 0,1 mm","🔁 Elige cuántos módulos repetir: encajan sin costuras"]],

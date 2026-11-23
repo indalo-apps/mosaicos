@@ -1,4 +1,4 @@
-# Lacería · Lazo de 8
+# Lacería · Alicatados del Alcázar
 
 © 2026 **Adela Moreno Vega** y **Carlos Moreno Otto**. Todos los derechos reservados (ver [LICENSE](LICENSE)).
 

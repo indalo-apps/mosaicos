@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.5.2">
+<meta name="app-version" content="2.5.3">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -610,7 +610,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.5.2 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.5.3 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -800,7 +800,7 @@ function renderLazo(D, o) {
   const cb = o.giro ? (() => { const cx = o.x0 + o.w / 2, cy = o.y0 + o.h / 2, r = Math.hypot(o.w, o.h) / 2; return { x0: cx - r, y0: cy - r, w: 2 * r, h: 2 * r }; })() : o;
   const size = o.unitmm ? `width="${f(o.w * o.unitmm)}mm" height="${f(o.h * o.unitmm)}mm"` : `width="100%"`;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" ${size} preserveAspectRatio="xMidYMid meet">`;
-  s += `<defs><clipPath id="${u}clip"><rect x="${o.x0}" y="${o.y0}" width="${o.w}" height="${o.h}"/></clipPath>`;
+  s += `<defs><clipPath id="${u}clip">${o.clip ? `<polygon points="${o.clip.map(p => p.map(f).join(',')).join(' ')}"/>` : `<rect x="${o.x0}" y="${o.y0}" width="${o.w}" height="${o.h}"/>`}</clipPath>`;
   if (o.wc) {
     s += `<filter id="${u}wc" x="${o.x0}" y="${o.y0}" width="${o.w}" height="${o.h}" filterUnits="userSpaceOnUse">` +
       `<feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="4" seed="7" result="n"/>` +
@@ -884,7 +884,7 @@ function renderLazo(D, o) {
   }
   if (o.giro) s += `</g>`;
   s += `</g>`;
-  if (o.frame) s += `<rect x="${o.x0}" y="${o.y0}" width="${o.w}" height="${o.h}" fill="none" stroke="${o.outline}" stroke-width="0.08"/>`;
+  if (o.frame) s += o.clip ? `<polygon points="${o.clip.map(p => p.map(f).join(',')).join(' ')}" fill="none" stroke="${o.outline}" stroke-width="0.12"/>` : `<rect x="${o.x0}" y="${o.y0}" width="${o.w}" height="${o.h}" fill="none" stroke="${o.outline}" stroke-width="0.08"/>`;
   return s + `</svg>`;
 }
 if (typeof module !== 'undefined') module.exports = { renderLazo };
@@ -2098,7 +2098,13 @@ function cargar(id){const p=PATS[id]||PATS.lazo8;PAT=p;D=datos(p);CELDA=null;EST
   const g=ESTADO.p[p.id];if(g&&Array.isArray(g.cols)&&g.cols.length===p.nombres.length&&p.vistas[g.view])st=Object.assign(st,g);}
 function guardar(){ESTADO.p[PAT.id]=st;try{localStorage.setItem(ST2,JSON.stringify(ESTADO))}catch(e){}}
 const $=id=>document.getElementById(id);
-function opts(){const [x0,y0,w,h]=PAT.vistas[st.view];return{x0,y0,w,h,cols:st.cols,over:st.over,ribbon:st.ribbon,outline:st.outline,rw:st.rw,ow:st.ow,interlace:st.interlace,wc:st.wc,grid:st.grid,construct:st.construct};}
+function opts(){const [x0,y0,w,h]=PAT.vistas[st.view],o={x0,y0,w,h,cols:st.cols,over:st.over,ribbon:st.ribbon,outline:st.outline,rw:st.rw,ow:st.ow,interlace:st.interlace,wc:st.wc,grid:st.grid,construct:st.construct};
+  // «Módulo»: el módulo mínimo del libro (cuadrado girado o hexágono), no el bloque que se repite para los colores
+  const M=PAT.modulo;if(st.view==='mod'&&M){
+    if(M.tipo==='hex'){const R=M.R,a=R*Math.sqrt(3)/2;Object.assign(o,{x0:M.cx-a-0.3,y0:M.cy-R-0.3,w:2*a+0.6,h:2*R+0.6,clip:Array.from({length:6},(_,i)=>{const t=(90+60*i)*Math.PI/180;return [M.cx+R*Math.cos(t),M.cy+R*Math.sin(t)];})});}
+    else Object.assign(o,{x0:M.cx-M.m/2,y0:M.cy-M.m/2,w:M.m,h:M.m,giro:M.giro?[M.giro,M.cx,M.cy]:null});
+    o.frame=true;}
+  return o;}
 function draw(){
   guardar();
   $('svg').innerHTML=renderLazo(D,opts());
@@ -2802,6 +2808,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.5.3",["🧩 Color › Module now shows the book’s minimal module: the 8 × 8 square for the eight-pointed stars and the hexagon for the twelve-pointed ones"]],
     ["2.5.2",["📲 Install help updated for iOS 27: the three-line button inside the address bar","✏️ Draw: the current step is now drawn in blue, thicker than what is already drawn"]],
     ["2.5.1",["📐 Twelve-pointed stars of the Court of the Myrtles: the star and the steps now follow the book exactly","🖼️ New icon: the twelve-pointed stars in plaster-white straps on blue"]],
     ["2.5",["🧩 New Alhambra tile pattern: twelve-pointed stars from the entrance to the Court of the Myrtles (no. 7), with its steps from the book and hexagonal modules in Tessellate","🖼️ New app icon: the twelve-pointed star of the Court of the Myrtles","📄 Coloring sheet also in A5"]],
@@ -2823,6 +2830,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.5.3",["🧩 Colorear › Módulo enseña ahora el módulo mínimo del libro: el cuadrado de 8 × 8 en las estrellas de ocho y el hexágono en las de doce"]],
     ["2.5.2",["📲 Ayuda para instalar al día con iOS 27: el botón de tres rayas dentro de la barra de la dirección","✏️ Trazar: el paso actual se dibuja ahora en azul, más grueso que lo ya trazado"]],
     ["2.5.1",["📐 Estrellas de doce del Patio de los Arrayanes: la estrella y los pasos siguen ahora exactamente al libro","🖼️ Icono nuevo: las estrellas de doce con la cinta de yeso sobre azul"]],
     ["2.5",["🧩 Alicatado nuevo de la Alhambra: estrellas de doce del acceso al Patio de los Arrayanes (n.º 7), con sus pasos del libro y módulos hexagonales en Teselar","🖼️ Icono nuevo de la app: la estrella de doce del Patio de los Arrayanes","📄 Lámina para pintar también en A5"]],

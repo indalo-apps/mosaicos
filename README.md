@@ -2,7 +2,7 @@
 
 © 2026 **Adela Moreno Vega** y **Carlos Moreno Otto**. Todos los derechos reservados (ver [LICENSE](LICENSE)).
 
-App de dibujo geométrico: el lazo de 8 del Patio de las Muñecas (Real Alcázar de Sevilla), con el trazado paso a paso sobre la cuadrícula 5-7-5-7 y una pestaña para colorearlo como un alicatado y copiarlo en SVG.
+App de dibujo geométrico: el lazo de 8 del Patio de las Muñecas (Real Alcázar de Sevilla), con el trazado paso a paso sobre la cuadrícula 5-7-5-7 y una pestaña para colorearlo como un alicatado y exportarlo: SVG en color, imagen PNG y archivos para corte láser (piezas del mosaico o celosía), con tantas repeticiones del módulo como se quiera.
 
 Se publica con GitHub Pages: https://indalo-apps.github.io/laceria/  
 Enlace para instalarla en el móvil: https://indalo-apps.github.io/laceria/?instalar

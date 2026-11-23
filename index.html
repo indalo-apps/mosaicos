@@ -7,7 +7,7 @@
   Lacería · Lazo de 8
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="1.1">
+<meta name="app-version" content="1.2">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -108,6 +108,16 @@ header{position:relative;padding-right:76px}
 /* ===== Ventanas (Ajustes y novedades) ===== */
 .dlg{position:fixed;inset:0;z-index:50;background:rgba(10,15,15,.55);display:flex;align-items:flex-end;justify-content:center}
 .dlg[hidden]{display:none}
+.grupo[hidden],.ops button[hidden]{display:none}
+.ex-rep{display:flex;gap:18px;flex-wrap:wrap}
+.paso{display:flex;align-items:center;gap:6px;margin-top:4px}
+.paso button{width:44px;height:44px;padding:0;font-size:20px}
+.paso output{min-width:2ch;text-align:center;font-weight:600;font-size:calc(17px * var(--esc))}
+#ex-mm{width:90px;min-height:44px;font:inherit;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:var(--btn);color:var(--ink)}
+.ex-vista{border:1px solid var(--line);border-radius:10px;background:#fff;padding:6px;margin:10px 0 6px;display:flex;justify-content:center}
+.ex-vista svg{width:100%;height:auto;max-height:240px}
+button.prim{background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}
+button:disabled{opacity:.55}
 @media (min-width:640px){.dlg{align-items:center;padding:20px}}
 .hoja{position:relative;background:var(--card);color:var(--ink);width:100%;max-width:520px;max-height:90vh;overflow:auto;border-radius:18px 18px 0 0;padding:22px 20px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
 @media (min-width:640px){.hoja{border-radius:18px}}
@@ -371,12 +381,12 @@ const IK = (function(){
       <div class="row"><label>Simular acuarela</label><input type="checkbox" id="wc"></div>
       <div class="row"><label>Cuadrícula</label><input type="checkbox" id="grid"></div>
       <div class="row"><label>Trazado (5-7 y diagonales)</label><input type="checkbox" id="construct"></div>
-      <div class="row" style="margin-top:12px"><button id="copy">Copiar SVG</button><button id="reset">Restablecer</button></div>
+      <div class="row" style="margin-top:12px"><button id="exportar">⬇️ Exportar…</button><button id="reset">Restablecer</button></div>
       <div class="msg" id="msg"></div>
     </div>
   </aside>
 </main>
-<footer>La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.<br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer>La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.<br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.2 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -406,6 +416,30 @@ const IK = (function(){
   <h2 id="nov-titulo">Novedades</h2>
   <div id="nov-lista" aria-live="polite"></div>
   <button class="listo" id="nov-cerrar">Entendido</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-exportar" hidden role="dialog" aria-modal="true" aria-labelledby="ex-tit">
+ <div class="hoja">
+  <button class="x" id="ex-x" aria-label="Cerrar">✕</button>
+  <h2 id="ex-tit">Exportar</h2>
+  <div class="grupo"><h3>Qué quieres</h3>
+   <div class="ops" data-ex="modo" role="group" aria-label="Tipo de archivo"><button data-val="svg">🎨 Color (SVG)</button><button data-val="png">🖼️ Imagen (PNG)</button><button data-val="piezas">✂️ Láser: piezas</button><button data-val="celosia">✂️ Láser: celosía</button></div>
+   <p class="muted" id="ex-ayuda" style="margin-top:8px"></p></div>
+  <div class="grupo"><h3>Repeticiones del módulo</h3>
+   <div class="ex-rep">
+    <div><span id="ex-cl">Columnas</span><div class="paso"><button data-rep="c" data-d="-1" aria-label="Una columna menos">−</button><output id="ex-c" aria-labelledby="ex-cl" aria-live="polite"></output><button data-rep="c" data-d="1" aria-label="Una columna más">+</button></div></div>
+    <div><span id="ex-rl">Filas</span><div class="paso"><button data-rep="r" data-d="-1" aria-label="Una fila menos">−</button><output id="ex-r" aria-labelledby="ex-rl" aria-live="polite"></output><button data-rep="r" data-d="1" aria-label="Una fila más">+</button></div></div>
+   </div>
+   <p class="muted" style="margin-top:8px">El dibujo encaja sin costuras: puedes repetirlo como un azulejo.</p></div>
+  <div class="grupo" id="ex-g-mm"><h3>Tamaño</h3>
+   <div class="row"><label for="ex-mm">Ancho de cada módulo (mm)</label><input type="number" id="ex-mm" min="10" max="1000" step="1" inputmode="decimal"></div></div>
+  <div class="grupo" id="ex-g-px" hidden><h3>Resolución</h3>
+   <div class="ops" data-ex="px" role="group" aria-label="Resolución"><button data-val="2000">2000 px</button><button data-val="4000">4000 px</button></div></div>
+  <div class="ex-vista" id="ex-vista" aria-hidden="true"></div>
+  <p class="muted" id="ex-info"></p>
+  <div class="ops"><button id="ex-bajar" class="prim">⬇️ Descargar</button><button id="ex-copiar">Copiar SVG</button></div>
+  <p class="msg" id="ex-msg" role="status" aria-live="polite"></p>
+  <button class="listo" id="ex-cerrar">Listo</button>
  </div>
 </div>
 <div class="barra-act" id="barra-act" hidden role="status">Actualizando a la versión nueva…</div>
@@ -551,7 +585,157 @@ document.addEventListener('input',()=>guardar());
 document.addEventListener('change',e=>{const t=e.target;if(['interlace','wc','grid','construct','solo'].includes(t.id)){st[t.id]=t.checked;draw();}});
 $('clearOver').onclick=()=>{st.over={};draw();};
 $('reset').onclick=()=>{st=fresh();draw();};
-$('copy').onclick=async()=>{const o=opts();o.unitmm=VIEWS[st.view][2]>40?3.8:6.5;try{await navigator.clipboard.writeText(renderLazo(D,o));$('msg').textContent='SVG copiado. Pégalo en un archivo .svg o en Inkscape.';}catch(err){$('msg').textContent='El navegador no ha dejado copiar.';}};
+// ---------- Exportar (v1.2): SVG en color, PNG, y láser (piezas o celosía) ----------
+// El lazo se repite cada 24 cuadros: un módulo. Se exporta un rectángulo de c × r módulos que encaja sin costuras.
+const MOD=24;
+const fx=n=>+(+n).toFixed(3);
+const EX_KEY='laceria-export-v1';
+let EX={modo:'svg',c:2,r:2,mm:60,px:4000};
+try{EX=Object.assign(EX,JSON.parse(localStorage.getItem(EX_KEY)||'{}'));}catch(e){}
+function exGuardar(){try{localStorage.setItem(EX_KEY,JSON.stringify(EX))}catch(e){}}
+const interior=s=>s.slice(s.indexOf('>')+1,s.lastIndexOf('</svg>'));
+
+// Dibujo en color. Hasta 4 × 3 módulos se dibuja tal cual (con los retoques sueltos);
+// si es mayor, se repite ese bloque, que encaja porque mide un número entero de módulos.
+function svgColor(c,r,ancho,alto){
+  const w=c*MOD,h=r*MOD,bw=Math.min(w,96),bh=Math.min(h,72);
+  const o=opts();Object.assign(o,{x0:0,y0:0,w:bw,h:bh});
+  const base=interior(renderLazo(D,o));
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${w} ${h}" width="${ancho}" height="${alto}">`;
+  if(bw===w&&bh===h)return s+base+'</svg>';
+  s+=`<defs><g id="lz-bloque">${base}</g><clipPath id="lz-todo"><rect x="0" y="0" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#lz-todo)">`;
+  for(let x=0;x<w;x+=bw)for(let y=0;y<h;y+=bh)s+=`<use href="#lz-bloque" xlink:href="#lz-bloque" x="${x}" y="${y}"/>`;
+  return s+'</g></svg>';
+}
+
+// Geometría de las piezas para el láser
+let CELDA=null;
+function celda(){ // las piezas de un módulo: las que tienen su centro en [0,24)²
+  if(CELDA)return CELDA;CELDA=[];
+  D.F.forEach(fc=>{const p=fc[1],n=p.length/2;let cx=0,cy=0;
+    for(let k=0;k<p.length;k+=2){cx+=p[k];cy+=p[k+1];}cx/=n;cy/=n;
+    if(cx>=0&&cx<MOD&&cy>=0&&cy<MOD){const P=[];for(let k=0;k<p.length;k+=2)P.push([p[k],p[k+1]]);CELDA.push(P);}});
+  return CELDA;
+}
+function piezas(w,h){
+  const out=[],nc=Math.ceil(w/MOD),nr=Math.ceil(h/MOD);
+  for(let i=-1;i<=nc;i++)for(let j=-1;j<=nr;j++)for(const P of celda()){
+    const Q=P.map(([x,y])=>[x+MOD*i,y+MOD*j]);
+    if(Q.every(p=>p[0]<=0)||Q.every(p=>p[0]>=w)||Q.every(p=>p[1]<=0)||Q.every(p=>p[1]>=h))continue;
+    out.push(Q);
+  }
+  return out;
+}
+const area=P=>{let a=0;for(let i=0;i<P.length;i++){const p=P[i],q=P[(i+1)%P.length];a+=p[0]*q[1]-q[0]*p[1];}return a/2;};
+function recortar(P,x0,y0,x1,y1){ // Sutherland–Hodgman contra un rectángulo
+  const lados=[[p=>p[0]>=x0,(a,b)=>[x0,a[1]+(x0-a[0])/(b[0]-a[0])*(b[1]-a[1])]],
+    [p=>p[0]<=x1,(a,b)=>[x1,a[1]+(x1-a[0])/(b[0]-a[0])*(b[1]-a[1])]],
+    [p=>p[1]>=y0,(a,b)=>[a[0]+(y0-a[1])/(b[1]-a[1])*(b[0]-a[0]),y0]],
+    [p=>p[1]<=y1,(a,b)=>[a[0]+(y1-a[1])/(b[1]-a[1])*(b[0]-a[0]),y1]]];
+  let out=P;
+  for(const [dentro,corte] of lados){const inp=out;out=[];if(!inp.length)break;
+    for(let i=0;i<inp.length;i++){const cur=inp[i],prev=inp[(i+inp.length-1)%inp.length];
+      if(dentro(cur)){if(!dentro(prev))out.push(corte(prev,cur));out.push(cur);}else if(dentro(prev))out.push(corte(prev,cur));}}
+  return out;
+}
+function encoger(P,d){ // desplaza cada lado d hacia dentro; null si la pieza se deforma
+  const s=Math.sign(area(P)),n=P.length,L=[];
+  for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n],dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy);
+    const nx=-dy/l*s,ny=dx/l*s;L.push([[a[0]+nx*d,a[1]+ny*d],[dx,dy]]);}
+  const Q=[];
+  for(let i=0;i<n;i++){const [p1,v1]=L[(i+n-1)%n],[p2,v2]=L[i],cr=v1[0]*v2[1]-v1[1]*v2[0];
+    if(Math.abs(cr)<1e-9){Q.push(p2);continue;}
+    const t=((p2[0]-p1[0])*v2[1]-(p2[1]-p1[1])*v2[0])/cr;Q.push([p1[0]+v1[0]*t,p1[1]+v1[1]*t]);}
+  if(Math.sign(area(Q))!==s)return null;
+  for(let i=0;i<n;i++){const a=Q[i],b=Q[(i+1)%n],v=L[i][1];if((b[0]-a[0])*v[0]+(b[1]-a[1])*v[1]<=0)return null;}
+  return Q;
+}
+// Láser: líneas rojas de 0,1 mm. «piezas»: el mosaico, cada línea una sola vez. «celosia»: huecos con la cinta de puente y marco.
+function svgLaser(modo,c,r,mm,vista){
+  const w=c*MOD,h=r*MOD,u=mm/MOD;let d='',nPiezas=0;
+  const pt=p=>fx(p[0])+','+fx(p[1]);
+  if(modo==='piezas'){
+    const vistos=new Set();
+    for(const P of piezas(w,h)){const Q=recortar(P,0,0,w,h);if(Q.length<3||Math.abs(area(Q))<1e-6)continue;nPiezas++;
+      for(let k=0;k<Q.length;k++){const a=pt(Q[k]),b=pt(Q[(k+1)%Q.length]);if(a===b)continue;
+        const key=a<b?a+' '+b:b+' '+a;if(vistos.has(key))continue;vistos.add(key);d+=`M${a}L${b}`;}}
+  }else{
+    const m=2,dist=(st.rw+2*st.ow)/2;
+    for(const P of piezas(w,h)){const I=encoger(P,dist);if(!I)continue;
+      const Q=recortar(I,m,m,w-m,h-m);if(Q.length<3)continue;
+      const A=Math.abs(area(Q));let per=0;for(let k=0;k<Q.length;k++){const a=Q[k],b=Q[(k+1)%Q.length];per+=Math.hypot(b[0]-a[0],b[1]-a[1]);}
+      if(A<0.3||A/(per/2)<0.3)continue;nPiezas++; // fuera las tiras demasiado finas junto al marco
+      d+='M'+Q.map(pt).join('L')+'Z';}
+    d+=`M0,0H${w}V${h}H0Z`;
+  }
+  const trazo=vista?'stroke-width="1" vector-effect="non-scaling-stroke"':`stroke-width="${fx(0.1/u)}"`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${fx(w*u)}mm" height="${fx(h*u)}mm"><path d="${d}" fill="none" stroke="#ff0000" ${trazo} stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+if(typeof module!=='undefined')module.exports.ex={svgLaser,celda,encoger,piezas,area};
+
+// Ventana de exportar
+const EX_AYUDA={
+  svg:'Archivo vectorial tal como lo ves, para Inkscape, Illustrator, imprimir a cualquier tamaño o cortar vinilo de colores.',
+  png:'Imagen en alta resolución para fondos de pantalla, redes o imprimir.',
+  piezas:'Líneas de corte rojas de 0,1 mm con las piezas encajadas como un mosaico (marquetería, alicatado, plantillas). Cada línea se corta una sola vez.',
+  celosia:'Se cortan los huecos de las piezas y queda la cinta como una celosía de una sola pieza, con marco. Usa el ancho de la cinta de la pestaña Colorear.'
+};
+function exDims(){const w=EX.c*MOD,h=EX.r*MOD,lado=EX.px;return w>=h?[lado,Math.round(lado*h/w)]:[Math.round(lado*w/h),lado];}
+function exSvg(vista){
+  if(EX.modo==='piezas'||EX.modo==='celosia')return svgLaser(EX.modo,EX.c,EX.r,EX.mm,vista);
+  if(EX.modo==='png'){const [W,H]=exDims();return svgColor(EX.c,EX.r,W,H);}
+  return svgColor(EX.c,EX.r,fx(EX.c*EX.mm)+'mm',fx(EX.r*EX.mm)+'mm');
+}
+function exNombre(ext){const t={svg:'',png:'',piezas:'-laser-piezas',celosia:'-laser-celosia'}[EX.modo];return `laceria-lazo8${t}-${EX.c}x${EX.r}.${ext}`;}
+const mmTxt=n=>(Math.round(n*10)/10).toLocaleString('es-ES');
+function exPintar(){
+  document.querySelectorAll('[data-ex]').forEach(g=>g.querySelectorAll('button').forEach(b=>{const on=String(EX[g.dataset.ex])===b.dataset.val;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);}));
+  $('ex-c').textContent=EX.c;$('ex-r').textContent=EX.r;
+  if(document.activeElement!==$('ex-mm'))$('ex-mm').value=EX.mm;
+  const png=EX.modo==='png';
+  $('ex-g-mm').hidden=png;$('ex-g-px').hidden=!png;$('ex-copiar').hidden=png;
+  $('ex-ayuda').textContent=EX_AYUDA[EX.modo];
+  let info;
+  if(png){const [W,H]=exDims();info=`${EX.c} × ${EX.r} módulos · ${W} × ${H} píxeles`;}
+  else info=`${EX.c} × ${EX.r} módulos · ${mmTxt(EX.c*EX.mm)} × ${mmTxt(EX.r*EX.mm)} mm`;
+  if((EX.modo==='svg'||png)&&(EX.c>4||EX.r>3)&&Object.keys(st.over).length)info+=' · Los retoques sueltos se repiten cada 4 × 3 módulos.';
+  $('ex-info').textContent=info;
+  $('ex-vista').innerHTML=exSvg(true);
+  $('ex-msg').textContent='';
+}
+async function entregar(blob,nombre){
+  const tactil=matchMedia('(pointer:coarse)').matches;
+  try{const file=new File([blob],nombre,{type:blob.type});
+    if(tactil&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return 'Listo: elige «Guardar en Archivos», «Guardar imagen» o la app donde quieras usarlo.';}}
+  catch(e){if(e&&e.name==='AbortError')return '';}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},5000);
+  return `Descargado: ${nombre}`;
+}
+function aPng(svg,W,H){return new Promise((ok,mal)=>{const img=new Image();
+  img.onload=()=>{try{const cv=document.createElement('canvas');cv.width=W;cv.height=H;cv.getContext('2d').drawImage(img,0,0,W,H);cv.toBlob(b=>b?ok(b):mal(new Error('png')),'image/png');}catch(e){mal(e);}};
+  img.onerror=()=>mal(new Error('svg'));img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);});}
+$('exportar').onclick=()=>{exPintar();window.abrirDlg('dlg-exportar');};
+['ex-x','ex-cerrar'].forEach(id=>$(id).onclick=()=>window.cerrarDlg('dlg-exportar'));
+$('dlg-exportar').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const g=b.closest('[data-ex]');
+  if(g){EX[g.dataset.ex]=g.dataset.ex==='px'?+b.dataset.val:b.dataset.val;exGuardar();exPintar();}
+  else if(b.dataset.rep){const k=b.dataset.rep;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();exPintar();}
+});
+$('ex-mm').addEventListener('input',()=>{const v=+$('ex-mm').value;if(v>=10&&v<=1000){EX.mm=v;exGuardar();exPintar();}});
+$('ex-mm').addEventListener('change',()=>{$('ex-mm').value=EX.mm;});
+$('ex-bajar').onclick=async()=>{
+  const btn=$('ex-bajar');btn.disabled=true;$('ex-msg').textContent=EX.modo==='png'?'Preparando la imagen…':'';
+  try{let blob,nombre;
+    if(EX.modo==='png'){const [W,H]=exDims();blob=await aPng(exSvg(false),W,H);nombre=exNombre('png');}
+    else{blob=new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n'+exSvg(false)],{type:'image/svg+xml'});nombre=exNombre('svg');}
+    $('ex-msg').textContent=await entregar(blob,nombre);
+  }catch(e){$('ex-msg').textContent='No se ha podido crear el archivo. Prueba con menos repeticiones o con 2000 píxeles.';}
+  btn.disabled=false;
+};
+$('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(false));$('ex-msg').textContent='SVG copiado. Pégalo en un archivo .svg, en Inkscape o en tu programa de corte.';}catch(err){$('ex-msg').textContent='El navegador no ha dejado copiar. Usa «Descargar».';}};
+
 draw();
 // ---------- Trazado paso a paso ----------
 (function(){
@@ -659,6 +843,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=[
+    ["1.2",["⬇️ Botón Exportar en Colorear: descarga el dibujo en lugar de solo copiarlo","🎨 SVG en color en milímetros, para imprimir o cortar vinilo","🖼️ Imagen PNG de 2000 o 4000 píxeles","✂️ Láser: piezas del mosaico o celosía con marco, en líneas rojas de 0,1 mm","🔁 Elige cuántos módulos repetir: encajan sin costuras"]],
     ["1.1",["📲 Se instala en el móvil como una app, con su icono","📶 Funciona sin conexión","🔄 Se actualiza sola y te cuenta las novedades","⚙️ Ajustes: tamaño de letra, tema claro u oscuro, instalar, autores y versión","💾 El coloreado y el paso del trazado se guardan en el móvil","👆 Botones más grandes en el móvil"]],
   ];
   const verCmp=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){const d=(x[i]||0)-(y[i]||0);if(d)return d}return 0};
@@ -675,6 +860,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   aplicarPref();
   // ---- Ventanas ----
   let foco=null;
+  window.abrirDlg=id=>abrir(id);window.cerrarDlg=id=>cerrar(id);
   function abrir(id){foco=document.activeElement;q('#'+id).hidden=false;q('#'+id+' .x').focus()}
   function cerrar(id){q('#'+id).hidden=true;if(foco&&foco.focus)try{foco.focus()}catch(e){}}
   q('#aj-ver').textContent=VERSION;q('#aj-ver2').textContent=VERSION;
@@ -690,7 +876,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   document.addEventListener('keydown',e=>{
     const d=[...document.querySelectorAll('.dlg')].find(x=>!x.hidden);if(!d)return;
     if(e.key==='Escape'){cerrar(d.id);return}
-    if(e.key!=='Tab')return;const f=[...d.querySelectorAll('button')];const a=f[0],z=f[f.length-1];
+    if(e.key!=='Tab')return;const f=[...d.querySelectorAll('button:not([hidden]),input')].filter(x=>!x.closest('[hidden]'));const a=f[0],z=f[f.length-1];
     if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}
   });
   // Arrastrar la ventana hacia abajo para cerrarla

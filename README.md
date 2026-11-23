@@ -1,14 +1,23 @@
-# Lacería · Alicatados del Alcázar
+# Mosaicos · Lacería del Real Alcázar de Sevilla
 
 © 2026 **Adela Moreno Vega** y **Carlos Moreno Otto**. Todos los derechos reservados (ver [LICENSE](LICENSE)).
 
-App de dibujo geométrico con alicatados del Real Alcázar de Sevilla. Cada uno tiene su trazado paso a paso, que se puede repasar a mano con el dedo o el lápiz, y una pestaña para colorearlo como un alicatado y exportarlo: SVG en color, imagen PNG, lámina para pintar en PDF (A4 o A3, solo en línea) y archivos para corte láser (piezas del mosaico o celosía), con tantas repeticiones del módulo como se quiera.
+App de dibujo geométrico con regla y compás basada en el libro *El Real Alcázar de Sevilla con regla y compás*. Hasta la versión 1.6 se llamó «Lacería · Alicatados del Alcázar».
+
+Desde la versión 2.0 se organiza así (rutas con `#` en el enlace):
+
+- **Inicio** (`#inicio`): seguir donde se dejó, Aprender a trazar, Alicatados del Alcázar y Mis dibujos. El glosario y los ajustes están en la cabecera.
+- **Aprender a trazar** (`#aprender`, cada una en `#c/<id>`): las 23 construcciones básicas de las págs. 164 a 175 (objeto `CONS`), agrupadas, paso a paso. El glosario de la pág. 176 está en `GLOSARIO`, con definiciones propias.
+- **Alicatados del Alcázar** (`#alicatados`, cada uno en `#a/<id>/<etapa>`): cuatro etapas, Trazar → Teselar → Colorear → Imprimir.
+- **Mis dibujos** (`#mis`): lo coloreado o repasado a mano.
+
+Cada dibujo empieza por la figura terminada (paso ★), para que se vea el objetivo. Cada alicatado tiene su trazado paso a paso, que se puede repasar a mano con el dedo o el lápiz, y una pestaña para colorearlo como un alicatado y exportarlo: SVG en color, imagen PNG, lámina para pintar en PDF (A4 o A3, solo en línea) y archivos para corte láser (piezas del mosaico o celosía), con tantas repeticiones del módulo como se quiera.
 
 Con «Carta de acuarela» se pinta con los colores de Van Gogh (Royal Talens), Daniel Smith o Cotman (Winsor & Newton), con su nombre y número, y la app dice qué pintura va en cada pieza; los colores están en `CARTAS` y para añadir otra marca basta con otra entrada.
 
 Está en español y en inglés (Ajustes › Idioma; «Automático» sigue al idioma del móvil). Los textos en inglés de cada alicatado están en `PAT_EN` y los de la página, en `ES_EN`.
 
-Alicatados (versión 1.6):
+Alicatados (versión 2.0):
 
 | Alicatado | Lugar | Páginas del libro |
 | --- | --- | --- |
@@ -23,10 +32,10 @@ Alicatados (versión 1.6):
 | Octógonos y estrellas de cuatro | Rodapié de los zócalos | 158 y 159 |
 | Estrellas de seis y de ocho | Zaguán, segunda sala | 32 a 35 |
 
-El lazo de 8 lleva sus piezas calculadas de antemano. Los demás se describen en el `index.html` (objeto `PATRONES`) solo con las líneas de un módulo; el motor (`MOTOR`) corta las líneas en sus cruces, saca las piezas, encadena las cintas y, en los de cinta, decide qué cinta pasa por encima en cada cruce. Para añadir un alicatado basta con sus líneas, los nombres de sus piezas, sus paletas y los pasos del trazado. Con `?patron=<id>` en el enlace se abre directamente uno de ellos.
+El lazo de 8 lleva sus piezas calculadas de antemano. Los demás se describen en el `index.html` (objeto `PATRONES`) solo con las líneas de un módulo; el motor (`MOTOR`) corta las líneas en sus cruces, saca las piezas, encadena las cintas y, en los de cinta, decide qué cinta pasa por encima en cada cruce. Para añadir un alicatado basta con sus líneas, los nombres de sus piezas, sus paletas y los pasos del trazado. Con `#a/<id>/trazado` en el enlace se abre directamente uno de ellos (el antiguo `?patron=<id>` sigue funcionando).
 
-Se publica con GitHub Pages: https://indalo-apps.github.io/laceria/  
-Enlace para instalarla en el móvil: https://indalo-apps.github.io/laceria/?instalar
+Se publica con GitHub Pages: https://indalo-apps.github.io/mosaicos/  
+Enlace para instalarla en el móvil: https://indalo-apps.github.io/mosaicos/?instalar
 
 Sigue la «Guía común para nuestras apps» (proyecto APPS de Claude): se instala como app, funciona sin conexión, se actualiza sola y enseña sus novedades.
 
@@ -36,7 +45,7 @@ Sigue la «Guía común para nuestras apps» (proyecto APPS de Claude): se insta
 2. Añadir sus novedades arriba del todo en `NOVEDADES` (index.html).
 3. El mensaje del commit empieza por la versión: `v1.2: …`.
 
-La app comprueba la versión al abrirse, al volver a ella y cada 90 segundos, y se recarga sola cuando no hay ninguna ventana abierta. El coloreado, el paso del trazado y lo repasado a mano se guardan en el móvil, así que no se pierden al actualizar.
+La app comprueba la versión al abrirse, al volver a ella y cada 90 segundos, y se recarga sola cuando no hay ninguna ventana abierta. Los datos se guardan con claves `laceria-…` (se mantienen de la 1.x). El coloreado, el paso del trazado y lo repasado a mano se guardan en el móvil, así que no se pierden al actualizar.
 
 ## Autores
 Adela Moreno Vega y Carlos Moreno Otto.

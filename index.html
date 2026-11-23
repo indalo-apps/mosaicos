@@ -7,7 +7,7 @@
   Mosaicos · Lacería del Real Alcázar de Sevilla
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.2.1">
+<meta name="app-version" content="2.3">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -174,6 +174,7 @@ button.peligro{border-color:#b5444b;color:#b5444b}
 @keyframes fd{to{opacity:1}}
 .dim{opacity:.4}
 .lc-vista{background:#e9e3d6;border-radius:10px;padding:10px;text-align:center}.lc-vista img{max-width:100%;max-height:58vh;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.metodo{margin-bottom:10px}.metodo[hidden]{display:none}.metodo button{flex:1}
 .capas{display:grid}.capas>*{grid-area:1/1;min-width:0}
 .row[hidden]{display:none}
 .galeria{display:flex;gap:8px;overflow-x:auto;margin:6px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
@@ -493,6 +494,7 @@ const IK = (function(){
   <div class="tz">
     <div class="stage"><p class="paso-chip" id="paso-chip" aria-hidden="true"></p><div id="tzsvg" role="img" aria-label="Dibujo del paso"></div></div>
     <div class="tzside">
+      <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
       <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div>
         <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div>
@@ -575,7 +577,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.2.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.3 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -662,6 +664,9 @@ const IK = (function(){
 <script>
 // ---------- Inglés (v1.5): textos fijos de la página ----------
 const ES_EN={
+ "Método de trazado":"Drawing method",
+ "📐 Con compás":"📐 With compass",
+ "▦ Con cuadrícula":"▦ With a grid",
  "🛒 Lista de la compra":"🛒 Shopping list",
  "Lista de la compra":"Shopping list",
  "Llévala a la tienda y marca cada tubo cuando lo tengas. Los colores en pantalla son aproximados.":"Take it to the shop and tick each tube once you have it. On-screen colors are approximate.",
@@ -1669,14 +1674,34 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
        const h=G.R-r/s2;for(const [x,y] of [[0,1],[0,-1],[1,0],[-1,0]])M.push(x?[X(x*h),Y(-r/s2),X(x*h),Y(r/s2)]:[X(-r/s2),Y(y*h),X(r/s2),Y(y*h)]);
        return animar(L,'#2b4f73',0.07)+animar(M,RO,0.08);}},
     {h:'Remarcar',t:'De las líneas obtenidas en los pasos anteriores, remarca las indicadas: con ellas se obtiene el módulo generador de la composición.',c:'Las puntas de la estrella se cruzan y siguen hasta el octógono, donde doblan; en las esquinas queda media estrella pequeña.',tipo:'remarcar'},
-    {h:'Repetir el módulo',t:'El módulo se repite por traslación en la dirección de los lados del cuadrado.',c:'Al repetirlo, entre cuatro ruedas se forma una estrella pequeña y entre dos, una flecha a cada lado.',tipo:'piezas'},
+    {h:'Repetir el módulo',t:'El módulo se repite por traslación en la dirección de los lados del cuadrado.',c:'Al repetirlo, entre cuatro ruedas se forma una estrella pequeña y entre dos, una flecha a cada lado.',tipo:'piezas',vt:[0,0,36,36]},
     {h:'La cinta',t:'La cinta se dibuja trazando paralelas equidistantes a los ejes definidos en el paso 6. La línea interior de la cinta pasa por los puntos medios de los lados de los cuadrados iniciales.',c:'Los puntos rojos son esos puntos medios: marcan el ancho de la cinta.',tipo:'cinta',
      guia(){const L=[[1,0],[-1,0],[0,1],[0,-1]];return `<g fill="${RO}">`+L.map(([x,y])=>`<circle cx="${X(x)}" cy="${Y(y)}" r="0.22"/>`).join('')+'</g>';}},
     {h:'Paralelas y cruces',t:'Con esa misma distancia, traza paralelas al resto de los ejes. Remarca los trazos adecuados para que, en los cruces, las cintas pasen por encima o por debajo en orden alterno.',c:'En el zócalo los sinos alternan negro y verde; los zafates son verdes junto al sino negro y azules junto al verde, y las flechas, negras. El mismo dibujo está en unas jambas del Patio de las Doncellas.',tipo:'color'}]});
+  // Segundo método (pág. 113): con una cuadrícula de 28 cuadros, con la secuencia 5-9-9-5. El módulo va de centro a centro de las estrellas de las esquinas (23 cuadros).
+  const g=1/11.5,ln2=(a,b2)=>[X(a[0]),Y(a[1]),X(b2[0]),Y(b2[1])],caja2=[X(-14*g),Y(-14*g),X(14*g),Y(14*g)];
+  const rejilla=()=>{const L=[],F=[];for(let i=-14;i<=14;i++){const v=i*g;(Math.abs(i)===14||Math.abs(i)===9||i===0?F:L).push(ln2([v,-14*g],[v,14*g]),ln2([-14*g,v],[14*g,v]));}
+    const cot=[[-14,-9,5],[-9,0,9],[0,9,9],[9,14,5]].map(([a,b2,n])=>`<text x="${X((a+b2)/2*g)}" y="${Y(-15.3*g)}" font-size="0.75" text-anchor="middle" fill="#2b4f73" font-family="Inter,sans-serif">${n}</text>`).join('');
+    return guia(L,AZ,0.03)+guia(F,'#2b4f73',0.07)+cot;};
+  const esquinas=()=>{const L=[],h=2.5*g,r=2.5*s2*g;for(const [cx,cy] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const Q=[[cx-h,cy-h],[cx+h,cy-h],[cx+h,cy+h],[cx-h,cy+h]],D=[[cx+r,cy],[cx,cy+r],[cx-r,cy],[cx,cy-r]];for(const P of [Q,D])for(let i=0;i<4;i++)L.push(ln2(P[i],P[(i+1)%4]));}return L;};
+  const RB=9*s2*g,rc=2.5*s2*g;
+  p.pasosB=[
+    {h:'Cuadrícula 5-9-9-5',t:'Para dibujar el módulo con una cuadrícula, remarca la secuencia 5-9-9-5 y dibuja las estrellas de los cuatro ángulos: un cuadrado de 5 × 5 cuadros y un rombo con el mismo centro.',c:'El centro de cada estrella pequeña es una esquina del módulo.',anim:'fade',
+     guia(){return rejilla()+animar(esquinas(),RO,0.07);}},
+    {h:'Circunferencia y dos cuadrados',t:'Dibuja una circunferencia que pase por los vértices de las cuatro estrellas más próximos al centro. Dibuja los dos cuadrados inscritos en ella.',c:'El cuadrado derecho coincide con las líneas remarcadas del 9.',anim:'draw',
+     guia(){const Q=[[RB,0],[0,RB],[-RB,0],[0,-RB]],S=[[9*g,9*g],[-9*g,9*g],[-9*g,-9*g],[9*g,-9*g]],L=[];for(const P of [Q,S])for(let i=0;i<4;i++)L.push(ln2(P[i],P[(i+1)%4]));return circulos([C],RB*k,'#2b4f73',0.05)+animar(L,RO,0.07);}},
+    {h:'Diagonales del octógono',t:'Los dos cuadrados se cortan formando un octógono. Traza sus diagonales: ocho radios desde el centro hasta sus vértices.',c:'Quedan a 22,5° de los ejes de la cuadrícula.',anim:'draw',
+     guia(){const r=9*g/Math.cos(rad(22.5)),L=[];for(let i=0;i<8;i++){const a=rad(22.5+45*i);L.push(ln2([0,0],[r*Math.cos(a),r*Math.sin(a)]));}return animar(L,'#2b4f73',0.06);}},
+    {h:'Circunferencia central',t:'Dibuja una circunferencia central cuyo radio sea igual al de la circunferencia circunscrita a una de las estrellas de los ángulos.',c:'Mide el radio en la estrella de una esquina, con el compás, y llévalo al centro.',anim:'fade',
+     guia(){return circulos([C,[X(-1),Y(-1)]],rc*k,'#2b4f73',0.06);}},
+    {h:'Paralelas a las diagonales',t:'Traza paralelas a las diagonales del paso 3 por los puntos donde estas cortan a la circunferencia del paso anterior.',c:'Por cada punto pasa una paralela a la diagonal que está a 45°: salen las ocho rectas giradas de la estrella.',anim:'draw',
+     guia(){const L=[];for(let i=0;i<8;i++){const a=rad(22.5+45*i),P=[rc*Math.cos(a),rc*Math.sin(a)],d=[Math.cos(a+rad(45)),Math.sin(a+rad(45))],sg=recta([X(P[0]),Y(P[1])],d,caja2);if(sg)L.push(sg);}return animar(L,RO,0.07);}},
+    {h:'Remarcar',t:'Remarca los trazos adecuados para obtener el esquema lineal de la composición.',c:'Es el mismo módulo que con el compás: la cuadrícula da una aproximación muy buena.',tipo:'remarcar'},
+    ...p.pasos.slice(6)];
 })();
 
 // Dibuja un paso del trazado de un patrón nuevo
-function dibujarPaso(p,n,render){const vt=p.vt,[x0,y0,w,h]=vt,s=p.pasos[n-1],pad=w*0.03;
+function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt||p.vt,[x0,y0,w,h]=vt,pad=w*0.03;
   const marco=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="#2b2b2b" stroke-width="0.08"/>`;
   if(s.tipo==='cinta'){const o={x0,y0,w,h,cols:Array(p.nombres.length).fill('#ffffff'),over:{},ribbon:'#ffffff',outline:'#222222',rw:p.rw,ow:0.06,interlace:false,frame:true};
     const sv=render(p.D,o).replace('<svg ','<svg style="pointer-events:none" ');
@@ -1686,7 +1711,7 @@ function dibujarPaso(p,n,render){const vt=p.vt,[x0,y0,w,h]=vt,s=p.pasos[n-1],pad
     const o={x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:s.tipo==='color'?p.rw:0.1,ow:s.tipo==='color'?p.ow:0,interlace:p.tipo!=='mosaico',frame:true};
     return `<div class="fade">${render(p.D,o).replace('<svg ','<svg style="pointer-events:none" ')}</div>`;}
   let g='';
-  p.pasos.slice(0,n).forEach((q,i)=>{if(!q.guia)return;const cur=i===n-1;let gq=q.guia(p,vt);
+  PS.slice(0,n).forEach((q,i)=>{if(!q.guia)return;const cur=i===n-1;let gq=q.guia(p,vt);
     // los pasos anteriores ya están dibujados: sin animación, solo el paso actual se traza
     if(!cur)gq=gq.replace(/ class="(draw|fade)"/g,'');
     g+=`<g class="${cur?(q.anim||'fade'):''}${s.tipo==='remarcar'?' dim':''}">${gq}</g>`;});
@@ -1835,6 +1860,13 @@ const PAT_EN={
   nombres:['Black sino (central star)','Green sino (central star)','Blue zafate','Green zafate','Arrow','Small corner star','Piece between two rosettes','Small piece'],
   resumen:'An eight-fold rosette whose central star is “skewed”: its points cross as they turn, ringed by eight zafates, with small stars and arrows between the rosettes.',
   pie:'It all comes from a circle divided into eight parts: two star octagons give the eight turned lines of the star, and eight small circles give the frame. The module repeats by translation.',
+  pasosB:[
+   {h:'5-9-9-5 grid',t:'To draw the module on a grid, ink the 5-9-9-5 sequence and draw the stars at the four corners: a 5 × 5 square and a rhombus with the same center.',c:'The center of each small star is a corner of the module.'},
+   {h:'Circle and two squares',t:'Draw a circle through the corners of the four stars nearest the center. Draw the two squares inscribed in it.',c:'The upright square lies on the inked 9 lines.'},
+   {h:'Diagonals of the octagon',t:'The two squares cross and make an octagon. Draw its diagonals: eight radii from the center to its corners.',c:'They are 22.5° from the grid axes.'},
+   {h:'Central circle',t:'Draw a central circle whose radius equals that of the circle around one of the corner stars.',c:'Take the radius from a corner star with the compass and carry it to the center.'},
+   {h:'Parallels to the diagonals',t:'Draw parallels to the diagonals of step 3 through the points where they cut the circle of the previous step.',c:'Through each point runs a parallel to the diagonal 45° away: these are the eight turned lines of the star.'},
+   {h:'Ink',t:'Ink the right strokes to get the line scheme of the composition.',c:'It is the same module as with the compass: the grid gives a very good approximation.'}],
   pasos:[
    {h:'Circle and two squares',t:'Draw a circle and divide it into eight equal parts with its axes and diagonals. Join every other point: you get two inscribed squares, one upright and one standing on a corner.',c:'It is the construction on p. 168 in “Learn to draw”. The upright square will be the edge of the module.'},
    {h:'First star octagon',t:'The sides of the two squares cross at eight points. Take them as the vertices of a star octagon: join each point to the third one after it.',c:'Its sides come out horizontal, vertical and at 45°.'},
@@ -1863,6 +1895,7 @@ if(EN){
     for(const k of ['nombre','lugar','resumen','pie','intro'])if(e[k])p[k]=e[k];
     if(e.nombres&&e.nombres.length===p.nombres.length)p.nombres=e.nombres;
     if(e.pasos&&p.pasos)p.pasos=p.pasos.map((q,i)=>Object.assign({},q,e.pasos[i]||{}));
+    if(p.pasosB)p.pasosB=p.pasosB.map((q,i)=>Object.assign({},q,(e.pasosB||[])[i]||(i>=6?e.pasos[i]:{})||{}));
     p.titulo=p.nombre+' · '+p.lugar;
     if(id!=='lazo8')p.intro=`The tile pattern on pages ${p.pags.replace(/ (a|y) /,'–')} of ${LIBRO_EN}. ${p.resumen}`;}
 }
@@ -2328,8 +2361,9 @@ let step=1;
 // v2.0: el mismo reproductor sirve para las construcciones básicas (window.MODO.c) y empieza por el objetivo (paso 0)
 window.MODO=window.MODO||{c:null};
 const lt=x=>Array.isArray(x)?(EN?x[1]:x[0]):x;
-const pasos=()=>MODO.c?MODO.c.pasos.map(q=>({h:lt(q.h),t:lt(q.t),c:''})):(PAT.id==='lazo8'?STEPS:PAT.pasos);
-const clave=()=>MODO.c?'laceria-paso-c-'+MODO.c.id:(PAT.id==='lazo8'?'laceria-paso':'laceria-paso-'+PAT.id);
+const metB=()=>!MODO.c&&PAT.pasosB&&(()=>{try{return localStorage.getItem('laceria-metodo-'+PAT.id)==='B'}catch(e){return false}})();
+const pasos=()=>MODO.c?MODO.c.pasos.map(q=>({h:lt(q.h),t:lt(q.t),c:''})):(PAT.id==='lazo8'?STEPS:(metB()?PAT.pasosB:PAT.pasos));
+const clave=()=>MODO.c?'laceria-paso-c-'+MODO.c.id:(PAT.id==='lazo8'?'laceria-paso':'laceria-paso-'+PAT.id+(metB()?'-B':''));
 function leerPaso(){step=0;try{const v=localStorage.getItem(clave());const s=+v;if(v!==null&&s>=0&&s<=pasos().length)step=s;}catch(e){}}
 leerPaso();
 const white={cols:Array(9).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222',rw:0.62,ow:0.08};
@@ -2348,7 +2382,7 @@ function show(){
     else{const pal=Object.values(PAT.paletas)[0],[vx,vy,vw,vh]=PAT.vistas['2x2'];
       svg=`<div class="fade">${renderLazo(datos(PAT),{x0:vx,y0:vy,w:vw,h:vh,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:PAT.rw,ow:PAT.ow,interlace:PAT.tipo!=='mosaico'}).replace('<svg ','<svg style="pointer-events:none" ')}</div>`;}}
   else if(MODO.c)svg=consSvg(MODO.c,step);
-  else if(PAT.id!=='lazo8')svg=PATRONES.dibujarPaso(PAT,step,renderLazo);
+  else if(PAT.id!=='lazo8')svg=PATRONES.dibujarPaso(PAT,step,renderLazo,PS);
   else if(step<=6){svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3.5 -4.5 31 31.5" width="100%"><rect x="-2.5" y="-2.5" width="29" height="29" fill="#fffefa"/><defs><clipPath id="tzclip"><rect x="-2.5" y="-2.5" width="29" height="29"/></clipPath></defs>${layers(step)}</svg>`;}
   else{const o={x0:-2.5,y0:-2.5,w:29,h:29,...white,interlace:step>=8,frame:true};
     if(step===9){const p=PRESETS['Alcázar'];o.cols=p.cols;o.ribbon=p.ribbon;o.outline=p.outline;}
@@ -2361,6 +2395,7 @@ function show(){
    else el.innerHTML=svg;}
   const foco=document.activeElement&&document.activeElement.id;
   document.getElementById('dots').innerHTML=`<button data-step="0" class="${step===0?'on':''}" title="${obj.h}" aria-label="${obj.h}"${step===0?' aria-current="step"':''}>★</button>`+PS.map((_,i)=>`<button data-step="${i+1}" class="${i+1===step?'on':''}" title="${PS[i].h}" aria-label="${tr('Paso','Step')} ${i+1}: ${PS[i].h}"${i+1===step?' aria-current="step"':''}>${i+1}</button>`).join('');
+  {const m=document.getElementById('metodo'),hay=!MODO.c&&!!PAT.pasosB;m.hidden=!hay;if(hay)m.querySelectorAll('[data-met]').forEach(b=>{const on=(b.dataset.met==='B')===!!metB();b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
   document.getElementById('tzsvg').setAttribute('aria-label',step===0?obj.h:tr(`Dibujo del paso ${step}: ${s.h}`,`Drawing for step ${step}: ${s.h}`));
   document.getElementById('prev').disabled=step===0;
   document.getElementById('next').textContent=step===0?tr('Empezar →','Start →'):tr('Siguiente →','Next →');
@@ -2373,7 +2408,7 @@ function show(){
 // ---------- Repasar a mano (v1.5): trazos guardados por patrón, en las coordenadas del dibujo ----------
 const PR_KEY='laceria-practica-v1';let PR={},practicando=false,lapiz=false,actual=null;
 try{PR=JSON.parse(localStorage.getItem(PR_KEY)||'{}')||{};}catch(e){PR={};}
-const prK=()=>MODO.c?'c-'+MODO.c.id:PAT.id;
+const prK=()=>MODO.c?'c-'+MODO.c.id:PAT.id+(metB()?'-B':'');
 const trazos=()=>PR[prK()]||(PR[prK()]=[]);
 function prGuardar(){try{localStorage.setItem(PR_KEY,JSON.stringify(PR))}catch(e){}}
 function prSvg(){return document.querySelector('#tzsvg .nuevo svg')||document.querySelector('#tzsvg svg');}
@@ -2432,6 +2467,9 @@ function tab(n,sinHash){document.querySelectorAll('.tab').forEach(x=>x.classList
   if(n==='teselar'&&window.pintarTeselar)window.pintarTeselar();if(n==='imprimir'&&window.pintarImprimir)window.pintarImprimir();}
 window.tabEtapa=tab;
 window.trazadoCambio=()=>{leerPaso();show();};
+// Método de trazado (compás o cuadrícula), para los alicatados que tienen los dos
+document.getElementById('metodo').addEventListener('click',e=>{const b=e.target.closest('[data-met]');if(!b||!PAT.pasosB)return;
+  try{localStorage.setItem('laceria-metodo-'+PAT.id,b.dataset.met)}catch(err){}leerPaso();show();b.focus();});
 })();
 
 </script>
@@ -2545,6 +2583,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.3",["▦ Skewed rosette: a second way to draw it, on the 5-9-9-5 grid (p. 113), next to the compass one","🔁 “Repeat the module” now shows several rosettes"]],
     ["2.2.1",["🧭 The back button now says where it takes you: “‹ Home”, “‹ Learn to draw” or “‹ Tile patterns”"]],
     ["2.2",["🛒 New shopping list: a card with a swatch, the reference and the pieces of each paint, and boxes to tick in the shop. Share it as an image, copy it as text or save it as a PDF to print","✏️ Draw: in the color steps the new drawing fades in over the previous one, without going blank","🔺 Moves in the plane: the original figure stays still from one move to the next","📐 Learn to draw: five constructions that went past the edge of the drawing now fit (the equilateral triangle from its side among them)"]],
     ["2.1.1",["📏 Skewed rosette: the strap width and steps 6 to 9 now follow the book exactly (pp. 111–112)","✏️ Draw: going to the next step only draws the new lines; the earlier ones stay in place","🐞 Opening a link straight to the eight-fold knot no longer shows an empty drawing"]],
@@ -2560,6 +2599,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.3",["▦ Rueda sesgada: segunda forma de trazarla, con la cuadrícula 5-9-9-5 (pág. 113), junto a la del compás","🔁 «Repetir el módulo» enseña ahora varias ruedas"]],
     ["2.2.1",["🧭 El botón de volver dice ahora a dónde vuelves: «‹ Inicio», «‹ Aprender a trazar» o «‹ Alicatados»"]],
     ["2.2",["🛒 Lista de la compra nueva: una tarjeta con la muestra, la referencia y las piezas de cada pintura, y casillas para marcar en la tienda. Compártela como imagen, cópiala como texto o guárdala en PDF para imprimir","✏️ Trazar: en los pasos de color el dibujo nuevo aparece sobre el anterior, sin pasar por blanco","🔺 Movimientos en el plano: la figura original se queda quieta de un movimiento a otro","📐 Aprender a trazar: cinco construcciones que se salían del dibujo ya caben enteras (entre ellas, el triángulo equilátero a partir del lado)"]],
     ["2.1.1",["📏 Rueda sesgada: el ancho de la cinta y los pasos 6 a 9 siguen ahora exactamente al libro (págs. 111 y 112)","✏️ Trazar: al pasar de paso solo se dibujan las líneas nuevas; las anteriores se quedan quietas","🐞 Al abrir un enlace directo al lazo de 8 ya no sale el dibujo vacío"]],

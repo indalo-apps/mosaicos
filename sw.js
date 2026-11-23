@@ -1,7 +1,7 @@
 // © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 // Service worker de Lacería: permite usarla sin conexión.
 // Al subir una versión nueva, cambia el nombre de la caché y se borra la anterior.
-const CACHE = "laceria-1.6";
+const CACHE = "laceria-1.6.1";
 const PRECACHE = ["./", "index.html", "manifest.webmanifest", "icon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "icon-152.png", "icon-167.png", "icon-maskable-512.png", "favicon-32.png",
   "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap"];
 self.addEventListener("install", e => {

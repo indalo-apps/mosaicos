@@ -7,7 +7,7 @@
   Lacería · Alicatados del Alcázar
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="1.6">
+<meta name="app-version" content="1.6.1">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,8 +43,8 @@ h1{font:600 30px/1.1 "Cormorant Garamond",Georgia,serif;margin:0;letter-spacing:
 header p{margin:6px 0 0;color:var(--muted);max-width:820px}
 .cz{grid-template-columns:minmax(0,1fr) 330px;gap:22px;padding:12px 28px 28px;align-items:start}
 @media (max-width:900px){.cz{grid-template-columns:1fr}}
-.stage{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;position:sticky;top:12px}
-.stage svg{display:block;max-height:calc(100vh - 140px);cursor:crosshair}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;position:sticky;top:60px}
+.stage svg{display:block;max-height:calc(100vh - 260px);cursor:crosshair}
 .viewbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
 .viewbar span{color:var(--muted);margin-right:4px}
 button,.chip{font:inherit;border:1px solid var(--line);background:var(--btn);border-radius:7px;padding:6px 10px;cursor:pointer;color:var(--ink)}
@@ -68,6 +68,14 @@ input[type=color]{width:30px;height:28px;border:1px solid var(--line);border-rad
 input[type=range]{width:130px;accent-color:var(--accent)}
 .msg{font-size:12.5px;color:var(--accent);min-height:18px;margin-top:6px}
 .tabs{display:flex;gap:6px;margin-top:14px}
+/* v1.6.1: pestañas fijas arriba, acciones bajo el dibujo, chip del paso */
+.barra-tabs{position:sticky;top:0;z-index:20;background:var(--paper);padding:8px 28px 8px;padding-top:max(8px,env(safe-area-inset-top))}
+.barra-tabs .tabs{margin-top:0}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.acciones .msg{margin:0;min-height:0}
+.paso-chip{font-size:calc(12px * var(--esc));color:var(--muted);margin:0 0 8px;letter-spacing:.04em}
+.gal-n{margin:12px 0 0;color:var(--muted);font-size:calc(12.5px * var(--esc))}
+@media (pointer:coarse){.solo-teclado{display:none}}
 .tabs button{padding:8px 14px}
 .tab{display:none}.tab.show{display:grid}
 section.tab.show{display:block}
@@ -84,7 +92,7 @@ h1 .sub{display:block;font:500 calc(15px * var(--esc))/1.3 Inter,system-ui,sans-
 .card p{margin:0 0 8px}
 .tip{background:var(--tipbg);border-radius:7px;padding:8px 10px;font-size:calc(13px * var(--esc));color:var(--tipt)}
 .tip:empty{display:none}
-#tzsvg svg{display:block;max-height:calc(100vh - 190px);margin:auto}
+#tzsvg svg{display:block;max-height:calc(100vh - 250px);margin:auto}
 /* Modo práctica: el dibujo se atenúa y se repasa encima con el dedo o el lápiz */
 #tzsvg.practicando{touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none}
 #tzsvg.practicando svg>:not(.trazos){opacity:.38}
@@ -110,7 +118,7 @@ button.peligro{border-color:#b5444b;color:#b5444b}
 @keyframes fd{to{opacity:1}}
 .dim{opacity:.4}
 .row[hidden]{display:none}
-.galeria{display:flex;gap:8px;overflow-x:auto;margin:14px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
+.galeria{display:flex;gap:8px;overflow-x:auto;margin:6px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
 .galeria::after{content:'';flex:none;width:20px}
 .pat{display:flex;align-items:center;gap:9px;flex:none;text-align:left;padding:6px 12px 6px 6px;border-radius:10px;min-height:60px}
 .pat svg{width:48px;height:48px;border-radius:6px;flex:none;background:#fff;display:block}
@@ -392,13 +400,14 @@ const IK = (function(){
   <button class="btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes">⚙️</button>
   <h1 id="titulo">Lazo de 8<span class="sub">Patio de las Muñecas · Real Alcázar de Sevilla</span></h1>
   <p id="intro">Es el módulo de las páginas 133 a 136 de <em>El Real Alcázar de Sevilla con regla y compás</em>, trazado sobre la cuadrícula 5-7-5-7.</p>
+  <p class="gal-n" id="gal-n"></p>
   <nav class="galeria" id="galeria" aria-label="Elige el alicatado"></nav>
-  <div class="tabs" role="tablist" aria-label="Modo"><button role="tab" id="t-trazado" aria-controls="tab-trazado" data-tab="trazado">Trazado paso a paso</button><button role="tab" id="t-colorear" aria-controls="tab-colorear" data-tab="colorear">Colorear</button></div>
 </header>
 <main id="app">
+<div class="barra-tabs"><div class="tabs" role="tablist" aria-label="Modo"><button role="tab" id="t-trazado" aria-controls="tab-trazado" data-tab="trazado">Trazado paso a paso</button><button role="tab" id="t-colorear" aria-controls="tab-colorear" data-tab="colorear">Colorear</button></div></div>
 <section id="tab-trazado" class="tab" role="tabpanel" aria-labelledby="t-trazado">
   <div class="tz">
-    <div class="stage"><div id="tzsvg" role="img" aria-label="Dibujo del paso"></div></div>
+    <div class="stage"><p class="paso-chip" id="paso-chip" aria-hidden="true"></p><div id="tzsvg" role="img" aria-label="Dibujo del paso"></div></div>
     <div class="tzside">
       <div class="dots" id="dots"></div>
       <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div>
@@ -406,7 +415,7 @@ const IK = (function(){
         <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
         <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
       </div>
-      <p class="hint">También puedes avanzar con las flechas del teclado.</p>
+      <p class="hint solo-teclado">También puedes avanzar con las flechas del teclado.</p>
     </div>
   </div>
 </section>
@@ -420,6 +429,7 @@ const IK = (function(){
     </div>
     <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
     <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
+    <div class="acciones"><button id="deshacer" disabled>↶ Deshacer</button><button id="exportar">⬇️ Exportar…</button></div>
   </section>
   <aside>
     <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div>
@@ -431,7 +441,7 @@ const IK = (function(){
     <div class="card"><h2>Pincel</h2>
       <div class="brush" id="brush"></div>
       <div class="row"><label for="solo">Pintar solo la pieza pulsada</label><input type="checkbox" id="solo"></div>
-      <p class="hint">Elige un color y toca una pieza (con el teclado: entra en el dibujo con Tab, muévete con las flechas y pinta con Intro). Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.</p>
+      <p class="hint">Elige un color y toca una pieza. <span class="solo-teclado">Con el teclado: entra en el dibujo con Tab, muévete con las flechas y pinta con Intro. </span>Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.</p>
     </div>
     <div class="card" id="card-pintar" hidden><h2>Con qué pintar</h2><ul class="lista-pint" id="lista-pint"></ul>
       <div class="ops" style="margin-top:10px"><button id="copiar-compra">📋 Copiar la lista de la compra</button></div><p class="msg" id="msg-compra" role="status" aria-live="polite"></p></div>
@@ -447,13 +457,13 @@ const IK = (function(){
       <div class="row"><label for="wc">Simular acuarela</label><input type="checkbox" id="wc"></div>
       <div class="row" id="row-grid"><label for="grid">Cuadrícula</label><input type="checkbox" id="grid"></div>
       <div class="row" id="row-construct"><label for="construct">Trazado (5-7 y diagonales)</label><input type="checkbox" id="construct"></div>
-      <div class="row" style="margin-top:12px"><button id="exportar">⬇️ Exportar…</button><button id="reset">Restablecer</button></div>
+      <div class="row" style="margin-top:12px;justify-content:flex-end"><button id="reset">Restablecer</button></div>
       <div class="msg" id="msg"></div>
     </div>
   </aside>
 </div>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.6 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.6.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -529,7 +539,8 @@ const ES_EN={
  'Vista':'View','Módulo (29×29)':'Module (29×29)','Zócalo 3 × 2':'Dado 3 × 2','dibujo':'drawing',
  'Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla.':'Drawing to color. Use the arrow keys to choose a piece and Enter to paint it.',
  'Paletas':'Palettes','Pincel':'Brush','Pintar solo la pieza pulsada':'Paint only the piece you tap',
- 'Elige un color y toca una pieza (con el teclado: entra en el dibujo con Tab, muévete con las flechas y pinta con Intro). Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.':'Choose a color and tap a piece (with the keyboard: Tab into the drawing, move with the arrow keys and paint with Enter). With this option off, every piece of the same type is painted, as when tiling.',
+ 'Elige un color y toca una pieza.':'Choose a color and tap a piece.','Con el teclado: entra en el dibujo con Tab, muévete con las flechas y pinta con Intro.':'With the keyboard: Tab into the drawing, move with the arrow keys and paint with Enter.',
+ 'Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.':'With this option off, every piece of the same type is painted, as when tiling.','↶ Deshacer':'↶ Undo',
  'Tipos de pieza':'Piece types','Quitar retoques sueltos':'Remove single-piece touches','Cinta':'Strapwork','Color de la cinta':'Strap color','Contorno':'Outline','Ancho de la cinta':'Strap width',
  'Entrelazado (sobre/bajo)':'Interlacing (over/under)','Ver':'Show','Simular acuarela':'Watercolor effect','Cuadrícula':'Grid','Trazado (5-7 y diagonales)':'Construction (5-7 and diagonals)',
  '⬇️ Exportar…':'⬇️ Export…','Restablecer':'Reset','Cerrar':'Close','Apariencia':'Appearance','Tamaño de letra':'Text size','Normal':'Normal','Grande':'Large','Muy grande':'Extra large',
@@ -1369,7 +1380,7 @@ function pintarCarta(){
     :tr('Daniel Smith es una marca de Daniel Smith Inc. 223 colores de su carta de acuarela (sin los Duochrome, nacarados, iridiscentes ni de interferencia).','Daniel Smith is a brand of Daniel Smith Inc. 223 colors from its watercolor chart (without the Duochrome, pearlescent, iridescent and interference colors).');
   $('lista-pint').innerHTML=L.map(e=>`<li><i style="background:${e.c[3]}" aria-hidden="true"></i><span>${e.exacta?'':'≈ '}<b>${pNombre(e.c)}</b><small>${e.q.join(', ')}</small></span></li>`).join('');}
 function aCarta(){const f=h=>{const r=pintura(h);return r?r[0][3]:h;};st.cols=st.cols.map(f);st.ribbon=f(st.ribbon);for(const k in st.over)st.over[k]=f(st.over[k]);st.brush=f(st.brush);}
-$('cartas').addEventListener('click',e=>{const b=e.target.closest('[data-cv]');if(!b)return;CARTA=b.dataset.cv;try{localStorage.setItem(CARTA_KEY,JSON.stringify(CARTA))}catch(err){}if(CARTA)aCarta();draw();b.focus();});
+$('cartas').addEventListener('click',e=>{const b=e.target.closest('[data-cv]');if(!b)return;CARTA=b.dataset.cv;try{localStorage.setItem(CARTA_KEY,JSON.stringify(CARTA))}catch(err){}snap();if(CARTA)aCarta();draw();b.focus();});
 // Lista de la compra: marca, referencia y nombre de cada pintura
 $('copiar-compra').onclick=async()=>{const K=CARTAS[CARTA];if(!K)return;const L=listaPinturas();
   const t=`${tr('Lacería','Lacería')} · ${PAT.nombre}\n${K.marca===K.nombre?K.nombre:K.nombre+' ('+K.marca+')'} · ${tr('acuarela','watercolor')}\n`+L.map(e=>`- ${e.c[0]?e.c[0]+' ':''}${EN?e.c[2]:e.c[1]}${e.exacta?'':' (≈)'} — ${e.q.join(', ')}`).join('\n');
@@ -1377,7 +1388,7 @@ $('copiar-compra').onclick=async()=>{const K=CARTAS[CARTA];if(!K)return;const L=
     else{await navigator.clipboard.writeText(t);ok=tr('Lista copiada: pégala en una nota o un mensaje.','List copied: paste it into a note or a message.');}}
   catch(err){if(!(err&&err.name==='AbortError'))ok=tr('No se ha podido copiar. Apunta las referencias de la lista.','Could not copy. Note down the references in the list.');}
   $('msg-compra').textContent=ok;};
-$('convertir').onclick=()=>{aCarta();draw();$('convertir').closest('.card').querySelector('button.on')?.focus();};
+$('convertir').onclick=()=>{snap();aCarta();draw();$('convertir').closest('.card').querySelector('button.on')?.focus();};
 // ---------- Pintar con el teclado: flechas para elegir pieza, Intro o espacio para pintar ----------
 let SEL=-1;
 function visibles(){const [x0,y0,w,h]=PAT.vistas[st.view];const out=[];
@@ -1387,7 +1398,13 @@ function marcarPieza(){const sv=$('svg').querySelector('svg');if(!sv)return;cons
   if(SEL<0||document.activeElement!==$('svg'))return;const pol=sv.querySelector(`polygon[data-i="${SEL}"]`);if(!pol)return;
   const m=pol.cloneNode();m.id='pieza-sel';m.removeAttribute('data-i');m.setAttribute('fill','none');m.setAttribute('stroke','#e0a526');m.setAttribute('stroke-width',String(Math.max(PAT.vistas[st.view][2]/120,0.15)));m.setAttribute('pointer-events','none');sv.appendChild(m);}
 function anunciar(){if(SEL<0)return;const k=D.F[SEL][0],c=(st.over[SEL]||st.cols[k]),n=BRUSH.indexOf(c);$('pieza-anuncio').textContent=PAT.nombres[k]+(CARTA?', '+txtPintura(c):(n>=0?', '+BRUSH_N[n].toLowerCase():''));}
-function pintarPieza(i){if(st.solo)st.over[i]=st.brush;else{const k=D.F[i][0];st.cols[k]=st.brush;for(const j in st.over)if(D.F[j][0]===k)delete st.over[j];}draw();}
+// ---------- Deshacer (v1.6.1): copias del coloreado antes de cada cambio, por patrón ----------
+let HIST=[],editando=false;
+const copia=()=>JSON.stringify(st);
+function snap(){const c=copia();if(HIST[HIST.length-1]!==c){HIST.push(c);if(HIST.length>60)HIST.shift();}$('deshacer').disabled=false;}
+function deshacer(){const c=HIST.pop();if(c){st=JSON.parse(c);draw();}$('deshacer').disabled=!HIST.length;}
+$('deshacer').onclick=()=>{deshacer();if($('deshacer').disabled)$('exportar').focus();};
+function pintarPieza(i){snap();if(st.solo)st.over[i]=st.brush;else{const k=D.F[i][0];st.cols[k]=st.brush;for(const j in st.over)if(D.F[j][0]===k)delete st.over[j];}draw();}
 $('svg').addEventListener('focus',()=>{const V=visibles();if(!V.some(v=>v[0]===SEL)){const [x0,y0,w,h]=PAT.vistas[st.view],cx=x0+w/2,cy=y0+h/2;
   V.sort((a,b)=>Math.hypot(a[1]-cx,a[2]-cy)-Math.hypot(b[1]-cx,b[2]-cy));SEL=V.length?V[0][0]:-1;}marcarPieza();anunciar();});
 $('svg').addEventListener('blur',()=>marcarPieza());
@@ -1401,22 +1418,27 @@ function pintarPaletas(){$('presets').innerHTML=Object.entries(PAT.paletas).map(
 document.addEventListener('click',e=>{
   const t=e.target;
   if(t.dataset.v){st.view=t.dataset.v;draw();}
-  else if(t.closest('[data-p]')){const p=PAT.paletas[t.closest('[data-p]').dataset.p];st.cols=[...p.cols];st.ribbon=p.ribbon;st.outline=p.outline;st.over={};if(CARTA)aCarta();draw();}
+  else if(t.closest('[data-p]')){snap();const p=PAT.paletas[t.closest('[data-p]').dataset.p];st.cols=[...p.cols];st.ribbon=p.ribbon;st.outline=p.outline;st.over={};if(CARTA)aCarta();draw();}
   else if(t.dataset.c){st.brush=t.dataset.c;draw();}
   else if(t.tagName==='polygon'&&t.dataset.i){SEL=+t.dataset.i;pintarPieza(SEL);}
 });
 document.addEventListener('input',e=>{
-  const t=e.target;
+  const t=e.target;if(!editando&&t.closest&&t.closest('#tab-colorear')&&(t.dataset.t||['ribbon','outline','rw'].includes(t.id))){snap();editando=true;}
   if(t.dataset.t){st.cols[+t.dataset.t]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
   else if(t.id==='brushc'){st.brush=t.value;document.querySelectorAll('.sw').forEach(s=>{s.classList.remove('sel');s.setAttribute('aria-pressed','false');});}
   else if(t.id==='ribbon'||t.id==='outline'){st[t.id]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
   else if(t.id==='rw'){st.rw=+t.value;$('svg').innerHTML=renderLazo(D,opts());}
 });
 document.addEventListener('input',()=>guardar());
-document.addEventListener('change',e=>{const t=e.target;if(['interlace','wc','grid','construct','solo'].includes(t.id)){st[t.id]=t.checked;draw();}
+document.addEventListener('change',e=>{const t=e.target;editando=false;if(['interlace','wc','grid','construct','solo'].includes(t.id)){if(t.id!=='solo')snap();st[t.id]=t.checked;draw();}
   else if(CARTA&&t.type==='color'&&t.closest('#tab-colorear'))draw();});
-$('clearOver').onclick=()=>{st.over={};draw();};
-$('reset').onclick=()=>{st=fresh(PAT);draw();};
+$('clearOver').onclick=()=>{snap();st.over={};draw();};
+// Restablecer pide un segundo toque (y se puede deshacer)
+let resetArmado=0;
+$('reset').onclick=()=>{const b=$('reset');
+  if(Date.now()-resetArmado>4000){resetArmado=Date.now();b.classList.add('peligro');b.textContent=tr('¿Volver a los colores iniciales? Toca otra vez','Back to the starting colors? Tap again');
+    setTimeout(()=>{if(Date.now()-resetArmado>=3900){b.classList.remove('peligro');b.textContent=tr('Restablecer','Reset');}},4000);return;}
+  resetArmado=0;b.classList.remove('peligro');b.textContent=tr('Restablecer','Reset');snap();st=fresh(PAT);draw();};
 // ---------- Exportar (v1.2): SVG en color, PNG, y láser (piezas o celosía) ----------
 // Cada patrón se repite cada W × H (un módulo). Se exporta un rectángulo de c × r módulos que encaja sin costuras.
 const fx=n=>+(+n).toFixed(3);
@@ -1639,10 +1661,12 @@ $('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(f
 // ---------- Galería de patrones ----------
 function miniatura(p){const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
   return renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');}
-function pintarGaleria(){$('galeria').innerHTML=Object.values(PATS).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small></span></button>`).join('');}
+function contarGaleria(){const n=Object.keys(PATS).length,t=matchMedia('(pointer:coarse)').matches;
+  $('gal-n').textContent=tr(`${n} alicatados`,`${n} tile patterns`)+(t?tr(' · desliza para ver todos',' · swipe to see them all'):'');}
+function pintarGaleria(){contarGaleria();$('galeria').innerHTML=Object.values(PATS).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small></span></button>`).join('');}
 function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${tr('Real Alcázar de Sevilla','Royal Alcázar of Seville')}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
-function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
+function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);HIST=[];$('deshacer').disabled=true;SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
 $('galeria').addEventListener('click',e=>{const b=e.target.closest('[data-pat]');if(b)cambiarPatron(b.dataset.pat);});
 cargar(new URLSearchParams(location.search).get('patron')||ESTADO.pat);pintarPaletas();pintarGaleria();cabecera();
 draw();
@@ -1720,6 +1744,7 @@ function show(){
   try{localStorage.setItem(clave(),step)}catch(e){}
   const s=PS[step-1];
   document.getElementById('stepn').textContent=tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
+  document.getElementById('paso-chip').textContent=tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`)+' · '+s.h;
   document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c;
   let svg;
   if(PAT.id!=='lazo8')svg=PATRONES.dibujarPaso(PAT,step,renderLazo);
@@ -1764,6 +1789,12 @@ tz.addEventListener('pointermove',e=>{if(!actual||e.pointerId!==actual.id)return
   actual.el.setAttribute('d',pathD(actual.pts));});
 function prFin(e){if(!actual||e.pointerId!==actual.id)return;const t=trazos();t.push(actual.pts);if(t.length>400)t.shift();actual=null;prGuardar();pintarTrazos();}
 tz.addEventListener('pointerup',prFin);tz.addEventListener('pointercancel',prFin);
+// Deslizar el dibujo a izquierda o derecha cambia de paso (no mientras se repasa)
+let tx=null;
+tz.addEventListener('touchstart',e=>{tx=(!practicando&&e.touches.length===1)?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
+tz.addEventListener('touchend',e=>{if(!tx)return;const t=e.changedTouches[0],dx=t.clientX-tx[0],dy=t.clientY-tx[1];tx=null;
+  if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*0.6)return;
+  if(dx<0&&step<pasos().length){step++;show();}else if(dx>0&&step>1){step--;show();}},{passive:true});
 let borrarArmado=0;
 $pr('pr-on').onclick=()=>prModo(!practicando);
 $pr('pr-undo').onclick=()=>{trazos().pop();prGuardar();pintarTrazos();};
@@ -1799,6 +1830,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["1.6.1",["↶ Undo in Color","⬇️ Export is now right under the drawing","🧭 The Step-by-step / Color tabs stay at the top","👉 Swipe the drawing to change step","🔢 The step number is shown on the drawing","🛡️ Reset asks for a second tap"]],
     ["1.6",["🎨 In Palettes, choose the brand (Van Gogh, Daniel Smith or Winsor & Newton Cotman): the colors switch to its paints, with name and reference","🧾 “What to paint with”: the paints your coloring uses, the pieces each one goes on and a shopping list to copy or share","🔁 Switch your colors (or any palette) to the nearest paint in the chart","📄 The sheet to paint can include the list of paints"]],
     ["1.5",["🧩 New tile pattern: six- and eight-pointed stars from the second room of the zaguán, with its step-by-step drawing","✏️ Trace by hand: go over each step with your finger or a stylus; your lines are saved","📄 Sheet to paint: A4 or A3 PDF with the drawing in line only, ready for watercolor","🌍 The app is now in English too (Settings › Language)"]],
     ["1.4.2",["♿ Paint piece by piece with the keyboard","🗣️ The screen reader announces each step, tab, view and brush color","👆 Easier to tap controls on phones","🌗 The chosen theme also applies to the install help"]],
@@ -1807,6 +1839,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["1.6.1",["↶ Deshacer en Colorear","⬇️ Exportar está ahora justo debajo del dibujo","🧭 Las pestañas Trazado y Colorear se quedan fijas arriba","👉 Desliza el dibujo para cambiar de paso","🔢 El número del paso se ve sobre el dibujo","🛡️ Restablecer pide un segundo toque"]],
     ["1.6",["🎨 En Paletas, elige la marca (Van Gogh, Daniel Smith o Cotman de Winsor & Newton): los colores pasan a sus pinturas, con nombre y referencia","🧾 «Con qué pintar»: las pinturas que usa tu coloreado, en qué piezas va cada una y la lista de la compra para copiar o compartir","🔁 Pasa tus colores (o cualquier paleta) a la pintura más parecida de la carta","📄 La lámina para pintar puede llevar la lista de pinturas"]],
     ["1.5",["🧩 Alicatado nuevo: estrellas de seis y de ocho de la segunda sala del zaguán, con su trazado paso a paso","✏️ Repasar a mano: repasa cada paso con el dedo o el lápiz; tu trazo se guarda","📄 Lámina para pintar: PDF en A4 o A3 con el dibujo solo en línea, lista para la acuarela","🌍 La app ya está también en inglés (Ajustes › Idioma)","🧵 Los cruces de las cintas se ven más limpios"]],
     ["1.4.2",["♿ Se puede pintar pieza a pieza con el teclado: flechas para moverse e Intro para pintar","🗣️ El lector de pantalla anuncia cada paso, la pestaña, la vista y el color del pincel","👆 Casillas y deslizador más fáciles de tocar en el móvil","📐 En el móvil el dibujo ocupa menos y las vistas caben en una línea","🌗 El tema elegido en Ajustes se aplica también a la ayuda de instalar y a la barra del móvil","🛠️ Arreglos para que la copia sin conexión siempre sea buena"]],

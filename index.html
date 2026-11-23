@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.4">
+<meta name="app-version" content="2.4.1">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -196,6 +196,8 @@ button.peligro{border-color:#b5444b;color:#b5444b}
 .acceso b{display:block;font-weight:600}.acceso small{color:var(--muted)}
 .acc-ic svg{width:40px;height:40px;display:block;border-radius:8px;flex:none}
 @media (max-width:520px){.accesos{grid-template-columns:1fr}}
+.leyenda-paso{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 0;font-size:calc(13px * var(--esc,1));color:var(--muted)}.leyenda-paso[hidden]{display:none}
+.lp-prev,.lp-act{display:inline-block;width:28px;border-radius:2px}.lp-prev{height:2px;background:#a7a196}.lp-act{height:5px;background:var(--ink);margin-left:10px}
 .capas{display:grid}.capas>*{grid-area:1/1;min-width:0}
 .row[hidden]{display:none}
 .galeria{display:flex;gap:8px;overflow-x:auto;margin:6px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
@@ -492,7 +494,7 @@ const IK = (function(){
   <a class="seguir" id="seguir" href="#inicio" hidden></a>
   <div class="monus">
     <a class="monu" href="#alicatados"><span class="monu-img" id="im-alcazar" aria-hidden="true"></span><span class="monu-txt"><h2>Real Alcázar de Sevilla</h2><small id="n-alcazar"></small></span></a>
-    <a class="monu" href="#alhambra"><span class="monu-img" id="im-alhambra" aria-hidden="true"></span><span class="monu-txt"><h2>La Alhambra</h2><small id="n-alhambra"></small></span></a>
+    <a class="monu" href="#alhambra"><span class="monu-img" id="im-alhambra" aria-hidden="true"></span><span class="monu-txt"><h2>La Alhambra de Granada</h2><small id="n-alhambra"></small></span></a>
   </div>
   <div class="accesos">
     <a class="acceso" href="#aprender"><span class="acc-ic" id="ic-aprender" aria-hidden="true"></span><span><b>Aprender a trazar</b><small id="n-aprender"></small></span></a>
@@ -517,7 +519,7 @@ const IK = (function(){
   <button role="tab" id="t-imprimir" aria-controls="tab-imprimir" data-tab="imprimir"><span>4</span>Imprimir</button></div></div>
 <section id="tab-trazado" class="tab" role="tabpanel" aria-labelledby="t-trazado">
   <div class="tz">
-    <div class="stage"><p class="paso-chip" id="paso-chip" aria-hidden="true"></p><div id="tzsvg" role="img" aria-label="Dibujo del paso"></div></div>
+    <div class="stage"><p class="paso-chip" id="paso-chip" aria-hidden="true"></p><div id="tzsvg" role="img" aria-label="Dibujo del paso"></div><p class="leyenda-paso" id="leyenda-paso" hidden><span class="lp-prev" aria-hidden="true"></span>Lo ya trazado <span class="lp-act" aria-hidden="true"></span>Este paso</p></div>
     <div class="tzside">
       <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
@@ -602,7 +604,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.4 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.4.1 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -689,6 +691,9 @@ const IK = (function(){
 <script>
 // ---------- Inglés (v1.5): textos fijos de la página ----------
 const ES_EN={
+ "La Alhambra de Granada":"The Alhambra of Granada",
+ "Lo ya trazado":"Already drawn",
+ "Este paso":"This step",
  "Lacería con regla y compás":"Strapwork with ruler and compass",
  "Real Alcázar de Sevilla":"Royal Alcázar of Seville",
  "La Alhambra":"The Alhambra",
@@ -1090,7 +1095,7 @@ return {L,grupos:{mov:tx('Movimientos','Moves'),tri:tx('Triángulo y hexágono',
 function consSvg(c,n,soloFinal){const [x0,y0,w,h]=c.vb,u=w/100,lt=t=>EN?t[1]:t[0];
   const f=n=>+n.toFixed(2);
   const pinta=(e,estado)=>{ // estado: 'prev' | 'cur' | 'fin'
-    const s=e.s,anim=estado==='cur'&&e.k!=='p'&&s!=='f'?' class="draw"':'';
+    const s=e.s,anim=estado==='cur'&&e.k!=='p'&&s!=='f'?' class="draw actual"':estado==='prev'&&e.k!=='p'&&s!=='f'?' class="previo"':'';
     const tinta=s==='t',col=s==='t'?'#1b1b1b':s==='b'?'#4f7fb0':'#b5444b';
     const sw=(tinta?0.55:0.3)*u*(estado==='prev'&&!tinta?0.85:1),dash=estado==='prev'&&!tinta?` stroke-dasharray="${f(1.4*u)} ${f(0.9*u)}"`:'';
     const op=estado==='prev'&&!tinta?' opacity="0.55"':'';
@@ -1805,11 +1810,11 @@ function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt
   PS.slice(0,n).forEach((q,i)=>{if(!q.guia)return;const cur=i===n-1;let gq=q.guia(p,vt);
     // los pasos anteriores ya están dibujados: sin animación, solo el paso actual se traza
     if(!cur)gq=gq.replace(/ class="(draw|fade)"/g,'');
-    g+=`<g class="${cur?(q.anim||'fade'):''}${s.tipo==='remarcar'?' dim':''}">${gq}</g>`;});
+    g+=`<g class="${cur?(q.anim||'fade')+' actual':'previo'}${s.tipo==='remarcar'?' dim':''}">${gq}</g>`;});
   if(s.tipo==='remarcar'){const L=[];for(const [cl,pts] of p.D.S)for(let k=0;k+2<pts.length+(cl?2:0);k+=2){const a=k,b=(k+2)%pts.length;
       const sg=[pts[a],pts[a+1],pts[b],pts[b+1]],mg=giro?w*0.25:1;if(Math.max(sg[0],sg[2])<x0-mg||Math.min(sg[0],sg[2])>x0+w+mg||Math.max(sg[1],sg[3])<y0-mg||Math.min(sg[1],sg[3])>y0+h+mg)continue;L.push(sg);}
     const cx=x0+w/2,cy=y0+h/2;L.sort((a,b)=>Math.hypot((a[0]+a[2])/2-cx,(a[1]+a[3])/2-cy)-Math.hypot((b[0]+b[2])/2-cx,(b[1]+b[3])/2-cy));
-    g+=giro?`<g transform="rotate(${giro.join(' ')})">${animar(L,'#1b1b1b',0.17)}</g>`:animar(L,'#1b1b1b',0.17);}
+    g+=`<g class="actual">`+(giro?`<g transform="rotate(${giro.join(' ')})">${animar(L,'#1b1b1b',0.17)}</g>`:animar(L,'#1b1b1b',0.17))+'</g>';}
   const fz=Math.max(w,h)/24;if(Math.abs(fz-1)>0.2){g=g.replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(v*fz).toFixed(3)}"`).replace(/stroke-dasharray="([\d. ]+)"/g,(m,v)=>`stroke-dasharray="${v.split(' ').map(n=>+(n*fz).toFixed(3)).join(' ')}"`);}
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${y0-pad} ${w+2*pad} ${h+2*pad}" width="100%"><rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#fffefa"/><defs><clipPath id="tzclip2"><rect x="${x0}" y="${y0}" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#tzclip2)">${g}</g>${marco}</svg>`;}
 return {P,recta,redTriangulos,poligono,contorno,dibujarPaso};
@@ -1854,7 +1859,7 @@ const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',p
 for(const p of Object.values(PATRONES.P)){const m=+(p.W*0.06).toFixed(2);
   PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H]},
     titulo:p.nombre+' · '+p.lugar,intro:p.coleccion==='alhambra'?`Es el alicatado n.º ${p.num} de <em>La Alhambra con regla y compás</em>. ${p.resumen}`:`Es el alicatado de las páginas ${p.pags} de <em>El Real Alcázar de Sevilla con regla y compás</em>. ${p.resumen}`});}
-const MONU={alcazar:['Real Alcázar de Sevilla','Royal Alcázar of Seville'],alhambra:['La Alhambra','The Alhambra']};
+const MONU={alcazar:['Real Alcázar de Sevilla','Royal Alcázar of Seville'],alhambra:['La Alhambra de Granada','The Alhambra of Granada']};
 const monu=p=>tr(...MONU[p.coleccion||'alcazar']);
 // ---------- Inglés (v1.5): nombres, textos y pasos de cada alicatado ----------
 const LIBRO_EN='<em>El Real Alcázar de Sevilla con regla y compás</em> (“The Royal Alcázar of Seville with ruler and compass”)';
@@ -2425,9 +2430,9 @@ for(const k in segs)segs[k].sort((p,q)=>dist(p)-dist(q));
 const ln=(a,b,attr,i,n)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" pathLength="1" ${attr}${i!=null?` style="animation-delay:${(i/n*1.6).toFixed(2)}s"`:''}/>`;
 
 function layers(step){
-  const L=[];const cur=k=>k===step?' draw':'';const dim=k=>(step>4&&k<4)?' dim':'';
+  const L=[];const cur=k=>k===step?' draw actual':(k<step?' previo':'');const dim=k=>(step>4&&k<4)?' dim':'';
   // 1 cuadrícula
-  let g=`<g class="${step===1?'fade':''}${step>=4?' dim':''}" fill="none">`;
+  let g=`<g class="${step===1?'fade actual':'previo'}${step>=4?' dim':''}" fill="none">`;
   for(let i=0;i<=29;i++){g+=`<line x1="${i-2.5}" y1="-2.5" x2="${i-2.5}" y2="26.5" stroke="#9cbbd6" stroke-width="0.03"/><line x1="-2.5" y1="${i-2.5}" x2="26.5" y2="${i-2.5}" stroke="#9cbbd6" stroke-width="0.03"/>`;}
   for(const c of [0,5,12,17,24,29]){g+=`<line x1="${c-2.5}" y1="-2.5" x2="${c-2.5}" y2="26.5" stroke="#2b4f73" stroke-width="0.09"/><line x1="-2.5" y1="${c-2.5}" x2="26.5" y2="${c-2.5}" stroke="#2b4f73" stroke-width="0.09"/>`;}
   g+='</g>';
@@ -2443,7 +2448,7 @@ function layers(step){
       s+=`<polygon pathLength="1" points="${cx},${cy-3.5} ${cx+3.5},${cy} ${cx},${cy+3.5} ${cx-3.5},${cy}" style="animation-delay:${(n++/tot*1.4).toFixed(2)}s"/>`;}
     L.push(s+'</g>');}
   // 3 prolongar diagonales
-  if(step>=3){let s=`<g class="${step===3?'fade':''}${step>=4?' dim':''}" stroke="#b5444b" stroke-width="0.06" stroke-dasharray="0.35 0.2" fill="none" clip-path="url(#tzclip)">`;
+  if(step>=3){let s=`<g class="${step===3?'fade actual':'previo'}${step>=4?' dim':''}" stroke="#b5444b" stroke-width="0.06" stroke-dasharray="0.35 0.2" fill="none" clip-path="url(#tzclip)">`;
     for(let k=-2;k<=6;k++)for(const e of [-3.5,3.5]){const c=12*k+e;
       s+=`<line x1="-2.5" y1="${c+2.5}" x2="26.5" y2="${c-26.5}"/><line x1="-2.5" y1="${-2.5-c}" x2="26.5" y2="${26.5-c}"/>`;}
     L.push(s+'</g>');}
@@ -2476,6 +2481,12 @@ const clave=()=>MODO.c?'laceria-paso-c-'+MODO.c.id:(PAT.id==='lazo8'?'laceria-pa
 function leerPaso(){step=0;try{const v=localStorage.getItem(clave());const s=+v;if(v!==null&&s>=0&&s<=pasos().length)step=s;}catch(e){}}
 leerPaso();
 const white={cols:Array(9).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222',rw:0.62,ow:0.08};
+// Paso actual en negro y más grueso; lo ya trazado, en gris claro. Así se distinguen sin depender del color.
+function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')||document.getElementById('tzsvg');
+  const pinta=(sel,fn)=>raiz.querySelectorAll(sel).forEach(g=>[g,...g.querySelectorAll('*')].forEach(e=>{const st=e.getAttribute('stroke');if(!st||st==='none')return;const f=e.getAttribute('fill');if(f&&f!=='none'&&e.tagName!=='g')return;fn(e);}));
+  pinta('.previo',e=>{e.setAttribute('stroke','#a7a196');});
+  pinta('.actual',e=>{e.setAttribute('stroke','#161616');const w=parseFloat(e.getAttribute('stroke-width'));if(w)e.setAttribute('stroke-width',+(w*1.5).toFixed(3));});
+  const hay=!!raiz.querySelector('.previo')&&!!raiz.querySelector('.actual');document.getElementById('leyenda-paso').hidden=!hay;}
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
@@ -2505,6 +2516,7 @@ function show(){
   const foco=document.activeElement&&document.activeElement.id;
   document.getElementById('dots').innerHTML=`<button data-step="0" class="${step===0?'on':''}" title="${obj.h}" aria-label="${obj.h}"${step===0?' aria-current="step"':''}>★</button>`+PS.map((_,i)=>`<button data-step="${i+1}" class="${i+1===step?'on':''}" title="${PS[i].h}" aria-label="${tr('Paso','Step')} ${i+1}: ${PS[i].h}"${i+1===step?' aria-current="step"':''}>${i+1}</button>`).join('');
   {const m=document.getElementById('metodo'),hay=!MODO.c&&!!PAT.pasosB;m.hidden=!hay;if(hay)m.querySelectorAll('[data-met]').forEach(b=>{const on=(b.dataset.met==='B')===!!metB();b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
+  marcarPaso();
   document.getElementById('tzsvg').setAttribute('aria-label',step===0?obj.h:tr(`Dibujo del paso ${step}: ${s.h}`,`Drawing for step ${step}: ${s.h}`));
   document.getElementById('prev').disabled=step===0;
   document.getElementById('next').textContent=step===0?tr('Empezar →','Start →'):tr('Siguiente →','Next →');
@@ -2615,8 +2627,8 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y comp
   if(!$('im-alcazar').firstChild)$('im-alcazar').innerHTML=banda(PATS.zaguan2,0,2,24,9);
   if(!$('im-alhambra').firstChild&&PATS.barca)$('im-alhambra').innerHTML=banda(PATS.barca,0,0,24,9);
   const na=deCol('alcazar').length,nh=deCol('alhambra').length;
-  $('n-alcazar').textContent=tr(`Sevilla · ${na} alicatados`,`Seville · ${na} tile patterns`);
-  $('n-alhambra').textContent=tr(`Granada · ${nh} ${nh===1?'alicatado':'alicatados'} · se irán añadiendo más`,`Granada · ${nh} tile ${nh===1?'pattern':'patterns'} · more coming`);
+  $('n-alcazar').textContent=tr(`${na} alicatados`,`${na} tile patterns`);
+  $('n-alhambra').textContent=tr(`${nh} ${nh===1?'alicatado':'alicatados'} · se irán añadiendo más`,`${nh} tile ${nh===1?'pattern':'patterns'} · more coming`);
   $('n-aprender').textContent=tr(`${CONS.L.length} construcciones`,`${CONS.L.length} constructions`);
   const n=misDibujos().length;$('n-mis').textContent=n?tr(`${n} guardados`,`${n} saved`):tr('Aún no hay ninguno','None yet');}
 // ---- Aprender a trazar
@@ -2633,7 +2645,7 @@ function construccion(id){const c=CONS.L.find(x=>x.id===id);if(!c){location.hash
 // ---- Alicatados
 const deCol=col=>Object.values(PATS).filter(p=>(p.coleccion||'alcazar')===col);
 function alicatados(col){col=col||'alcazar';mostrar('alicatados');const n=deCol(col).length;
-  if(col==='alhambra')cab(tr('La Alhambra','The Alhambra'),tr(`Granada · ${n} ${n===1?'alicatado':'alicatados'} por ahora`,`Granada · ${n} tile ${n===1?'pattern':'patterns'} so far`),'#inicio',tr('Los alicatados de <i>La Alhambra con regla y compás</i>. Se irán añadiendo más.','The tile patterns from <i>La Alhambra con regla y compás</i> (“The Alhambra with ruler and compass”). More will be added.'));
+  if(col==='alhambra')cab(tr('La Alhambra de Granada','The Alhambra of Granada'),tr(`${n} ${n===1?'alicatado':'alicatados'} por ahora`,`${n} tile ${n===1?'pattern':'patterns'} so far`),'#inicio',tr('Los alicatados de <i>La Alhambra con regla y compás</i>. Se irán añadiendo más.','The tile patterns from <i>La Alhambra con regla y compás</i> (“The Alhambra with ruler and compass”). More will be added.'));
   else cab(tr('Real Alcázar de Sevilla','Royal Alcázar of Seville'),tr(`${n} alicatados del libro`,`${n} tile patterns from the book`),'#inicio','');
   pintarGaleria(col);}
 // ---- Alicatado en 4 etapas
@@ -2701,6 +2713,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.4.1",["✏️ Draw: what is already drawn turns light gray and the current step is drawn in black and thicker, so it stands out without relying on color","🏛️ “The Alhambra of Granada”"]],
     ["2.4",["🏛️ New home screen with the two monuments: the Royal Alcázar of Seville and the Alhambra","🧩 First Alhambra tile pattern: eight-pointed stars and Y pieces from the Hall of the Boat (no. 16), with its 11 steps from the book","📖 The glossary button now says “Glossary”"]],
     ["2.3",["▦ Skewed rosette: a second way to draw it, on the 5-9-9-5 grid (p. 113), next to the compass one","🔁 “Repeat the module” now shows several rosettes"]],
     ["2.2.1",["🧭 The back button now says where it takes you: “‹ Home”, “‹ Learn to draw” or “‹ Tile patterns”"]],
@@ -2718,6 +2731,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.4.1",["✏️ Trazar: lo ya trazado pasa a gris claro y el paso actual se dibuja en negro y más grueso, para distinguirlo sin depender del color","🏛️ «La Alhambra de Granada»"]],
     ["2.4",["🏛️ Portada nueva con los dos monumentos: el Real Alcázar de Sevilla y la Alhambra","🧩 Primer alicatado de la Alhambra: estrellas de ocho y piezas en Y de la Sala de la Barca (n.º 16), con sus 11 pasos del libro","📖 El botón del glosario dice ahora «Glosario»"]],
     ["2.3",["▦ Rueda sesgada: segunda forma de trazarla, con la cuadrícula 5-9-9-5 (pág. 113), junto a la del compás","🔁 «Repetir el módulo» enseña ahora varias ruedas"]],
     ["2.2.1",["🧭 El botón de volver dice ahora a dónde vuelves: «‹ Inicio», «‹ Aprender a trazar» o «‹ Alicatados»"]],

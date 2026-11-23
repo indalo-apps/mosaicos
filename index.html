@@ -7,7 +7,7 @@
   Lacería · Alicatados del Alcázar
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="1.5">
+<meta name="app-version" content="1.6">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -91,6 +91,19 @@ h1 .sub{display:block;font:500 calc(15px * var(--esc))/1.3 Inter,system-ui,sans-
 #tzsvg.practicando .fade>svg>:not(.trazos){opacity:.38}
 .practica{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 button.peligro{border-color:#b5444b;color:#b5444b}
+/* Carta de acuarela (v1.6) */
+.carta-caja{max-height:250px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(30px,1fr));gap:4px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.carta-caja .sw{width:100%;height:30px;border-radius:5px}
+@media (pointer:coarse){.carta-caja{grid-template-columns:repeat(auto-fill,minmax(44px,1fr))}.carta-caja .sw{height:44px}}
+.brush .carta-caja{flex:1 1 100%}
+.card h3.sub-h{font:600 calc(12px * var(--esc)) Inter;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 8px}
+.pintura{display:block;color:var(--muted);font-size:calc(12px * var(--esc));line-height:1.3}
+#brush-nom{margin:8px 0 0;font-weight:600}
+.lista-pint{list-style:none;margin:0;padding:0}
+.lista-pint li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+.lista-pint li:first-child{border-top:0}
+.lista-pint i{flex:none;width:22px;height:22px;border-radius:5px;border:1px solid rgba(0,0,0,.2);margin-top:1px}
+.lista-pint small{display:block;color:var(--muted)}
 .draw line,.draw polygon,.draw path{stroke-dasharray:1;stroke-dashoffset:1;animation:dr .9s ease forwards}
 @keyframes dr{to{stroke-dashoffset:0}}
 .fade{opacity:0;animation:fd .8s ease forwards}
@@ -409,12 +422,19 @@ const IK = (function(){
     <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
   </section>
   <aside>
-    <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div></div>
+    <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div>
+      <h3 class="sub-h" id="h-casa">Pinturas de la casa</h3>
+      <div class="ops" id="cartas" role="group" aria-labelledby="h-casa"><button data-cv="">Ninguna</button><button data-cv="vg">Van Gogh</button><button data-cv="ds">Daniel Smith</button><button data-cv="wn">Cotman (W&amp;N)</button></div>
+      <p class="hint">Elige la marca de acuarela: la paleta se pasa a sus colores, con el nombre y la referencia de cada uno para comprarlos. El pincel mostrará su carta. Los colores en pantalla son aproximados.</p>
+      <div class="row" id="row-convertir" hidden><button id="convertir">🎨 Pasar mis colores a la carta</button></div>
+      <p class="hint" id="carta-marca" hidden></p></div>
     <div class="card"><h2>Pincel</h2>
       <div class="brush" id="brush"></div>
       <div class="row"><label for="solo">Pintar solo la pieza pulsada</label><input type="checkbox" id="solo"></div>
       <p class="hint">Elige un color y toca una pieza (con el teclado: entra en el dibujo con Tab, muévete con las flechas y pinta con Intro). Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.</p>
     </div>
+    <div class="card" id="card-pintar" hidden><h2>Con qué pintar</h2><ul class="lista-pint" id="lista-pint"></ul>
+      <div class="ops" style="margin-top:10px"><button id="copiar-compra">📋 Copiar la lista de la compra</button></div><p class="msg" id="msg-compra" role="status" aria-live="polite"></p></div>
     <div class="card types"><h2>Tipos de pieza</h2><div id="types"></div>
       <button id="clearOver" style="margin-top:6px">Quitar retoques sueltos</button></div>
     <div class="card"><h2 id="h-cinta">Cinta</h2>
@@ -433,7 +453,7 @@ const IK = (function(){
   </aside>
 </div>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.5 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 1.6 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -485,7 +505,8 @@ const IK = (function(){
    <p>Papel</p><div class="ops" data-ex="papel" role="group" aria-label="Papel"><button data-val="A4">A4</button><button data-val="A3">A3</button></div>
    <p style="margin-top:10px">Orientación</p><div class="ops" data-ex="ori" role="group" aria-label="Orientación"><button data-val="v">Vertical</button><button data-val="h">Horizontal</button></div>
    <p style="margin-top:10px">Línea</p><div class="ops" data-ex="linea" role="group" aria-label="Línea"><button data-val="gris">Gris suave</button><button data-val="negra">Negra</button></div>
-   <p class="muted" style="margin-top:8px">Con la línea gris suave, el trazo casi desaparece bajo la acuarela.</p></div>
+   <p class="muted" style="margin-top:8px">Con la línea gris suave, el trazo casi desaparece bajo la acuarela.</p>
+   <div class="row" id="row-leyenda" hidden><label for="ex-leyenda">Añadir la lista de pinturas de la carta</label><input type="checkbox" id="ex-leyenda"></div></div>
   <div class="grupo" id="ex-g-px" hidden><h3>Resolución</h3>
    <div class="ops" data-ex="px" role="group" aria-label="Resolución"><button data-val="2000">2000 px</button><button data-val="4000">4000 px</button></div></div>
   <div class="ex-vista" id="ex-vista" aria-hidden="true"></div>
@@ -524,7 +545,10 @@ const ES_EN={
  'Filas':'Rows','Una fila menos':'One row fewer','Una fila más':'One more row','El dibujo encaja sin costuras: puedes repetirlo como un azulejo.':'The drawing repeats seamlessly, like a tile.',
  'Tamaño':'Size','Ancho de cada módulo (mm)':'Width of each module (mm)','Lámina':'Sheet','Papel':'Paper','Orientación':'Orientation','Vertical':'Portrait','Horizontal':'Landscape',
  'Línea':'Line','Gris suave':'Soft gray','Negra':'Black','Con la línea gris suave, el trazo casi desaparece bajo la acuarela.':'With the soft gray line, the drawing almost disappears under watercolor.',
- 'Resolución':'Resolution','⬇️ Descargar':'⬇️ Download','Copiar SVG':'Copy SVG','Actualizando a la versión nueva…':'Updating to the new version…'
+ 'Resolución':'Resolution','Pinturas de la casa':'Paints from the brand','📋 Copiar la lista de la compra':'📋 Copy the shopping list',
+ 'Elige la marca de acuarela: la paleta se pasa a sus colores, con el nombre y la referencia de cada uno para comprarlos. El pincel mostrará su carta. Los colores en pantalla son aproximados.':'Choose a watercolor brand: the palette switches to its colors, with the name and reference of each one so you can buy them. The brush will show its chart. On-screen colors are approximate.','Ninguna':'None','Con qué pintar':'What to paint with',
+ 'Elige tu caja de acuarelas: el pincel mostrará sus colores con su nombre y verás con qué pintura va cada pieza. Los colores en pantalla son aproximados.':'Choose your watercolor set: the brush will show its colors with their names and you will see which paint goes on each piece. On-screen colors are approximate.',
+ '🎨 Pasar mis colores a la carta':'🎨 Switch my colors to the chart','Añadir la lista de pinturas de la carta':'Add the list of paints from the chart','⬇️ Descargar':'⬇️ Download','Copiar SVG':'Copy SVG','Actualizando a la versión nueva…':'Updating to the new version…'
 };
 function traducirPagina(){
   const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const L=[];while(w.nextNode())L.push(w.currentNode);
@@ -1147,6 +1171,25 @@ const PRESETS={
 };
 const BRUSH=['#161616','#1f5f5b','#2f4fa3','#c98b2b','#6f8f45','#b8694d','#e8b49a','#9ab6dc','#d4a83c','#7a2e3a','#ffffff'];
 const BRUSH_N=EN?['Black','Green','Cobalt blue','Honey','Olive green','Terracotta','Light pink','Light blue','Gold','Garnet','White']:['Negro','Verde','Azul cobalto','Melado','Verde oliva','Terracota','Rosa claro','Azul claro','Oro','Granate','Blanco'];
+// ---------- Cartas de acuarela (v1.6): [número, nombre en español, nombre en inglés, color aproximado] ----------
+// Colores tomados de las cartas publicadas por cada marca; en pantalla son aproximados. Para añadir otra marca basta con otra entrada.
+const CARTAS={
+ vg:{nombre:'Van Gogh',marca:'Royal Talens',colores:[["108", "Blanco de China", "Chinese white", "#fbfaf6"], ["106", "Blanco opaco", "Opaque white", "#ffffff"], ["291", "Buff titanio", "Titanium buff", "#e6dacc"], ["254", "Amarillo limón perm.", "Permanent lemon yellow", "#f6e66c"], ["272", "Amarillo transparente medio", "Transparent yellow medium", "#f9e152"], ["268", "Amarillo azo claro", "Azo yellow light", "#ffdc00"], ["269", "Amarillo azo medio", "Azo yellow medium", "#feca00"], ["270", "Amarillo azo oscuro", "Azo yellow deep", "#fbb900"], ["238", "Gomaguta", "Gamboge", "#feca0e"], ["244", "Amarillo indio", "Indian yellow", "#fbbb00"], ["224", "Amarillo Nápoles rojo", "Naples yellow red", "#fcd7b0"], ["266", "Anaranjado permanente", "Permanent orange", "#f5a002"], ["278", "Anaranjado pyrrole", "Pyrrole orange", "#e95208"], ["311", "Bermellón", "Vermilion", "#e7450b"], ["370", "Rojo permanente claro", "Permanent red light", "#e4130f"], ["371", "Rojo permanente oscuro", "Permanent red deep", "#e30a12"], ["327", "Laca granza clara", "Madder lake light", "#e94762"], ["331", "Laca granza oscura", "Madder lake deep", "#e3032a"], ["318", "Carmín", "Carmine", "#e40231"], ["366", "Rosa quinacridona", "Quinacridone rose", "#e60b72"], ["357", "Rosa", "Pink", "#e35a9c"], ["567", "Violeta rojizo permanente", "Permanent red violet", "#e30057"], ["568", "Violeta azulado perm.", "Permanent blue violet", "#5f2483"], ["592", "Púrpura rojo quinacridona", "Quinacridone purple red", "#b80173"], ["593", "Púrpura azul quinacridona", "Quinacridone purple blue", "#a6076d"], ["525", "Lavanda", "Lavender", "#8a92c8"], ["506", "Azul ultramar oscuro", "Ultramarine deep", "#342c86"], ["512", "Azul cobalto (ultram.)", "Cobalt blue (ultram.)", "#4b6fb4"], ["535", "Azul cerúleo (ftalo)", "Cerulean blue (phthalo)", "#257ec2"], ["570", "Azul ftalo", "Phthalo blue", "#2b4698"], ["508", "Azul de Prusia", "Prussian blue", "#262c80"], ["533", "Índigo", "Indigo", "#214062"], ["522", "Azul turquesa", "Turquoise blue", "#0081b7"], ["661", "Verde turquesa", "Turquoise green", "#4fbbba"], ["633", "Verde amarillento perm.", "Permanent yellowish green", "#84bb22"], ["644", "Verde Hooker claro", "Hooker’s green light", "#1e9d34"], ["645", "Verde Hooker oscuro", "Hooker’s green deep", "#007a36"], ["662", "Verde permanente", "Permanent green", "#009c37"], ["616", "Verde esmeralda", "Viridian", "#01a889"], ["675", "Verde ftalo", "Phthalo green", "#007f7c"], ["623", "Verde vejiga", "Sap green", "#6fa424"], ["620", "Verde oliva", "Olive green", "#aea73f"], ["296", "Azometino verde amarillo", "Azomethine green yellow", "#daac00"], ["227", "Ocre amarillo", "Yellow ochre", "#f9b622"], ["234", "Tierra de Siena natural", "Raw sienna", "#f0a40b"], ["408", "Tierra sombra natural", "Raw umber", "#6c4f20"], ["411", "Tierra de Siena tostada", "Burnt sienna", "#b63915"], ["339", "Rojo inglés", "English red", "#bd3318"], ["409", "Tierra sombra tostada", "Burnt umber", "#693316"], ["416", "Sepia", "Sepia", "#8c6e46"], ["403", "Pardo Van Dyck", "Van Dyck brown", "#846a52"], ["708", "Gris Payne", "Payne’s grey", "#303540"], ["748", "Gris Davy", "Davy’s grey", "#7b7e56"], ["715", "Color neutro", "Neutral tint", "#61595a"], ["735", "Negro óxido", "Oxide black", "#3a3734"], ["701", "Negro marfil", "Ivory black", "#2a2522"], ["230", "Crepúsculo amarillo", "Twilight yellow", "#aea162"], ["373", "Crepúsculo rosa", "Twilight pink", "#923b68"], ["560", "Crepúsculo violeta", "Twilight violet", "#6d566d"], ["630", "Crepúsculo verde", "Twilight green", "#30776b"]]},
+ ds:{nombre:'Daniel Smith',marca:'Daniel Smith',colores:[["", "Buff Titanium", "Buff Titanium", "#ede1c0"], ["", "Nickel Titanate Yellow", "Nickel Titanate Yellow", "#fbe97e"], ["", "Bismuth Vanadate Yellow", "Bismuth Vanadate Yellow", "#fef32c"], ["", "Hansa Yellow Light", "Hansa Yellow Light", "#feeb3d"], ["", "Azo Yellow", "Azo Yellow", "#f9eb14"], ["", "Quinophthalone Yellow", "Quinophthalone Yellow", "#f7ed45"], ["", "Cadmium Yellow Light Hue", "Cadmium Yellow Light Hue", "#feed11"], ["", "Cadmium Yellow Medium Hue", "Cadmium Yellow Medium Hue", "#f9ec0e"], ["", "Aureolin (Cobalt Yellow)", "Aureolin (Cobalt Yellow)", "#fde23d"], ["", "Cadmium Yellow Deep Hue", "Cadmium Yellow Deep Hue", "#fdbe2a"], ["", "Hansa Yellow Medium", "Hansa Yellow Medium", "#fed51b"], ["", "Mayan Yellow", "Mayan Yellow", "#f9e710"], ["", "Lemon Yellow", "Lemon Yellow", "#f1d612"], ["", "Indian Yellow", "Indian Yellow", "#fdb724"], ["", "Jaune Brilliant No. 1", "Jaune Brilliant No. 1", "#d6c386"], ["", "Naples Yellow", "Naples Yellow", "#fbc36f"], ["", "Jaune Brilliant No. 2", "Jaune Brilliant No. 2", "#fdce76"], ["", "Hansa Yellow Deep", "Hansa Yellow Deep", "#fdb329"], ["", "New Gamboge", "New Gamboge", "#fa9c2c"], ["", "Isoindoline Yellow", "Isoindoline Yellow", "#f9c015"], ["", "Permanent Yellow Deep", "Permanent Yellow Deep", "#f79528"], ["", "Aussie Red Gold", "Aussie Red Gold", "#d1832f"], ["", "Pyrrol Orange", "Pyrrol Orange", "#f57725"], ["", "Permanent Orange", "Permanent Orange", "#e8915e"], ["", "Cadmium Orange Hue", "Cadmium Orange Hue", "#f25a25"], ["", "Perinone Orange", "Perinone Orange", "#e84d2e"], ["", "Cadmium Red Scarlet Hue", "Cadmium Red Scarlet Hue", "#e98273"], ["", "Transparent Pyrrol Orange", "Transparent Pyrrol Orange", "#e94e30"], ["", "Organic Vermilion", "Organic Vermilion", "#e76a63"], ["", "Mayan Orange", "Mayan Orange", "#f16249"], ["", "Quinacridone Coral", "Quinacridone Coral", "#e85258"], ["", "Pyrrol Scarlet", "Pyrrol Scarlet", "#e64e3c"], ["", "Perylene Scarlet", "Perylene Scarlet", "#da4338"], ["", "Anthraquinoid Scarlet", "Anthraquinoid Scarlet", "#f3826b"], ["", "Cadmium Red Medium Hue", "Cadmium Red Medium Hue", "#f04836"], ["", "Pyrrol Red", "Pyrrol Red", "#e27a7e"], ["", "Perylene Red", "Perylene Red", "#e24e47"], ["", "Permanent Red", "Permanent Red", "#d13031"], ["", "Permanent Red Deep", "Permanent Red Deep", "#dd4249"], ["", "Quinacridone Red", "Quinacridone Red", "#d3353f"], ["", "Anthraquinoid Red", "Anthraquinoid Red", "#d33942"], ["", "Mayan Red", "Mayan Red", "#c3362a"], ["", "Alizarin Crimson", "Alizarin Crimson", "#b62f34"], ["", "Perm. Alizarin Crimson", "Perm. Alizarin Crimson", "#ea6181"], ["", "Rhodonite Genuine", "Rhodonite Genuine", "#dc566c"], ["", "Carmine", "Carmine", "#c73041"], ["", "Rose Madder Permanent", "Rose Madder Permanent", "#ad383f"], ["", "Opera Pink", "Opera Pink", "#ec559c"], ["", "Potters Pink", "Potters Pink", "#dd7c90"], ["", "Quinacridone Pink", "Quinacridone Pink", "#d53454"], ["", "Quinacridone Rose", "Quinacridone Rose", "#d93e54"], ["", "Quinacridone Lilac", "Quinacridone Lilac", "#a42e6a"], ["", "Quinacridone Magenta", "Quinacridone Magenta", "#cc4e6a"], ["", "Pyrrol Crimson", "Pyrrol Crimson", "#aa2d3d"], ["", "Quinacridone Fuchsia", "Quinacridone Fuchsia", "#bb2a48"], ["", "Mayan Violet", "Mayan Violet", "#c2517d"], ["", "Bordeaux", "Bordeaux", "#c06585"], ["", "Permanent Violet", "Permanent Violet", "#934668"], ["", "Quinacridone Violet", "Quinacridone Violet", "#ad4465"], ["", "Perylene Violet", "Perylene Violet", "#5c3241"], ["", "Cobalt Violet", "Cobalt Violet", "#c375b1"], ["", "Cobalt Violet Deep", "Cobalt Violet Deep", "#7e569b"], ["", "Wisteria", "Wisteria", "#cda0cb"], ["", "Ultramarine Red", "Ultramarine Red", "#9a69a9"], ["", "Rose of Ultramarine", "Rose of Ultramarine", "#794f7d"], ["", "Quinacridone Purple", "Quinacridone Purple", "#652b68"], ["", "Imperial Purple", "Imperial Purple", "#7e5ea9"], ["", "Purpurite Genuine", "Purpurite Genuine", "#5f4155"], ["", "Ultramarine Violet", "Ultramarine Violet", "#6864a9"], ["", "Amethyst Genuine", "Amethyst Genuine", "#8065a9"], ["", "Manganese Violet", "Manganese Violet", "#9b52b0"], ["", "Carbazole Violet", "Carbazole Violet", "#706aa4"], ["", "Cobalt Blue Violet", "Cobalt Blue Violet", "#727fba"], ["", "Moonglow", "Moonglow", "#656178"], ["", "Shadow Violet", "Shadow Violet", "#464754"], ["", "Sugilite Genuine", "Sugilite Genuine", "#a1a3b3"], ["", "Kyanite Genuine", "Kyanite Genuine", "#638fb2"], ["", "Indigo", "Indigo", "#45536a"], ["", "Mayan Dark Blue", "Mayan Dark Blue", "#0f5278"], ["", "Indanthrone Blue", "Indanthrone Blue", "#3c79ac"], ["", "Sodalite Genuine", "Sodalite Genuine", "#456783"], ["", "Lapis Lazuli Genuine", "Lapis Lazuli Genuine", "#7391c3"], ["", "French Ultramarine", "French Ultramarine", "#225caa"], ["", "Ultramarine Blue", "Ultramarine Blue", "#0833c7"], ["", "Cobalt Blue", "Cobalt Blue", "#187ec4"], ["", "Phthalo Blue (Green Shade)", "Phthalo Blue (Green Shade)", "#0876b7"], ["", "Lavender", "Lavender", "#7891c3"], ["", "King's Royal Blue", "King's Royal Blue", "#a8c7f9"], ["", "Verditer Blue", "Verditer Blue", "#69a3d7"], ["", "Phthalo Blue (Red Shade)", "Phthalo Blue (Red Shade)", "#0b96cc"], ["", "Prussian Blue", "Prussian Blue", "#1a7eb4"], ["", "Mayan Blue Genuine", "Mayan Blue Genuine", "#06415d"], ["", "Cerulean Blue", "Cerulean Blue", "#3daee3"], ["", "Cerulean Blue, Chromium", "Cerulean Blue, Chromium", "#0587be"], ["", "Manganese Blue Hue", "Manganese Blue Hue", "#0db9e5"], ["", "Phthalo Blue Turquoise", "Phthalo Blue Turquoise", "#1b7689"], ["", "Cobalt Teal Blue", "Cobalt Teal Blue", "#64cad3"], ["", "Phthalo Turquoise", "Phthalo Turquoise", "#098c96"], ["", "Kingman Green Turq. Gen.", "Kingman Green Turq. Gen.", "#83d0c8"], ["", "Ultramarine Turquoise", "Ultramarine Turquoise", "#06898f"], ["", "Sleeping Beauty Turq. Gen.", "Sleeping Beauty Turq. Gen.", "#51c4de"], ["", "Cobalt Turquoise", "Cobalt Turquoise", "#079697"], ["", "Amazonite Genuine", "Amazonite Genuine", "#0bb1a8"], ["", "Blue Apatite Genuine", "Blue Apatite Genuine", "#3a6877"], ["", "Lunar Blue", "Lunar Blue", "#547c8f"], ["", "Cobalt Green Pale", "Cobalt Green Pale", "#3ca498"], ["", "Cobalt Green Deep", "Cobalt Green Deep", "#3b7258"], ["", "Fuchsite Genuine", "Fuchsite Genuine", "#95d3c0"], ["", "Viridian", "Viridian", "#22a186"], ["", "Diopside Genuine", "Diopside Genuine", "#197745"], ["", "Phthalo Green (Blue Shade)", "Phthalo Green (Blue Shade)", "#149578"], ["", "Cascade Green", "Cascade Green", "#2f9e70"], ["", "Jadeite Genuine", "Jadeite Genuine", "#257a53"], ["", "Cobalt Green", "Cobalt Green", "#37a676"], ["", "Spring Green", "Spring Green", "#58bb59"], ["", "Permanent Green Light", "Permanent Green Light", "#07a54e"], ["", "Phthalo Yellow Green", "Phthalo Yellow Green", "#cfe289"], ["", "Permanent Green", "Permanent Green", "#74bd8d"], ["", "Phthalo Green (Yellow Shade)", "Phthalo Green (Yellow Shade)", "#18a26e"], ["", "Hooker's Green", "Hooker's Green", "#4da965"], ["", "Sap Green", "Sap Green", "#799d57"], ["", "Serpentine Genuine", "Serpentine Genuine", "#768f3b"], ["", "Chromium Green Oxide", "Chromium Green Oxide", "#637f5f"], ["", "Green Apatite Genuine", "Green Apatite Genuine", "#50713c"], ["", "Terre Verte", "Terre Verte", "#51826d"], ["", "Deep Sap Green", "Deep Sap Green", "#155248"], ["", "Perylene Green", "Perylene Green", "#1e2a2a"], ["", "Prussian Green", "Prussian Green", "#2c6262"], ["", "Rare Green Earth", "Rare Green Earth", "#4f6b5c"], ["", "Undersea Green", "Undersea Green", "#8a8f65"], ["", "Zoisite Genuine", "Zoisite Genuine", "#49604b"], ["", "Olive Green", "Olive Green", "#b4a25c"], ["", "Green Gold", "Green Gold", "#c3c32e"], ["", "Rich Green Gold", "Rich Green Gold", "#bea32e"], ["", "Nickel Azo Yellow", "Nickel Azo Yellow", "#f7d45b"], ["", "Bronzite Genuine", "Bronzite Genuine", "#dea974"], ["", "Verona Gold Ochre", "Verona Gold Ochre", "#e9c38d"], ["", "Burnt Bronzite Genuine", "Burnt Bronzite Genuine", "#b6786b"], ["", "French Ochre", "French Ochre", "#f7b049"], ["", "Raw Sienna Light", "Raw Sienna Light", "#e4bf4e"], ["", "Burgundy Yellow Ochre", "Burgundy Yellow Ochre", "#f39e3a"], ["", "Chrome Titanate Yellow", "Chrome Titanate Yellow", "#fabc50"], ["", "Yellow Ochre", "Yellow Ochre", "#ebb56a"], ["", "Mars Yellow", "Mars Yellow", "#d69147"], ["", "Yavapai Genuine", "Yavapai Genuine", "#c28868"], ["", "Raw Sienna", "Raw Sienna", "#ce834e"], ["", "Transparent Yellow Oxide", "Transparent Yellow Oxide", "#bc7939"], ["", "Monte Amiata Natural Sienna", "Monte Amiata Natural Sienna", "#eac56d"], ["", "Enviro-Friendly Red Iron Oxide", "Enviro-Friendly Red Iron Oxide", "#a9513a"], ["", "Goethite (Brown Ochre)", "Goethite (Brown Ochre)", "#de9560"], ["", "Quinacridone Deep Gold", "Quinacridone Deep Gold", "#d75229"], ["", "Italian Deep Ochre", "Italian Deep Ochre", "#c6693d"], ["", "Lunar Earth", "Lunar Earth", "#cf8764"], ["", "Burnt Yellow Ochre", "Burnt Yellow Ochre", "#af4a34"], ["", "Garnet Genuine", "Garnet Genuine", "#bc563c"], ["", "Roasted French Ochre", "Roasted French Ochre", "#a04529"], ["", "Burgundy Red Ochre", "Burgundy Red Ochre", "#c54c3e"], ["", "Indian Red", "Indian Red", "#ac6c5a"], ["", "Venetian Red", "Venetian Red", "#cc6f55"], ["", "Italian Burnt Sienna", "Italian Burnt Sienna", "#cd6139"], ["", "Quinacridone Burnt Orange", "Quinacridone Burnt Orange", "#da6638"], ["", "Quinacridone Sienna", "Quinacridone Sienna", "#e05a37"], ["", "Pompeii Red", "Pompeii Red", "#da795d"], ["", "Red Fuchsite Genuine", "Red Fuchsite Genuine", "#b56c6d"], ["", "Terre Ercolano", "Terre Ercolano", "#e6826e"], ["", "Earthy Light Red", "Earthy Light Red", "#c56830"], ["", "Coral Reef", "Coral Reef", "#e38074"], ["", "Minnesota Pipestone Genuine", "Minnesota Pipestone Genuine", "#dd9083"], ["", "Italian Venetian Red", "Italian Venetian Red", "#e2958e"], ["", "English Red Earth", "English Red Earth", "#b77269"], ["", "Red Jasper Genuine", "Red Jasper Genuine", "#bc6c57"], ["", "Hematite Burnt Scarlet Genuine", "Hematite Burnt Scarlet Genuine", "#9a5956"], ["", "Quinacridone Burnt Scarlet", "Quinacridone Burnt Scarlet", "#d26247"], ["", "Perylene Maroon", "Perylene Maroon", "#df6351"], ["", "Sedona Genuine", "Sedona Genuine", "#e77f69"], ["", "Deep Scarlet", "Deep Scarlet", "#e45c49"], ["", "Naphthamide Maroon", "Naphthamide Maroon", "#854339"], ["", "Lunar Red Rock", "Lunar Red Rock", "#986768"], ["", "Piemontite Genuine", "Piemontite Genuine", "#8b4a50"], ["", "Tiger's Eye Genuine", "Tiger's Eye Genuine", "#998260"], ["", "Burnt Tiger's Eye Genuine", "Burnt Tiger's Eye Genuine", "#a37c68"], ["", "Hematite Genuine", "Hematite Genuine", "#947970"], ["", "German Greenish Raw Umber", "German Greenish Raw Umber", "#c6aa91"], ["", "Hematite Violet Genuine", "Hematite Violet Genuine", "#6d464e"], ["", "Mummy Bauxite", "Mummy Bauxite", "#b06c53"], ["", "Permanent Brown", "Permanent Brown", "#ae5f4d"], ["", "Quinacridone Gold", "Quinacridone Gold", "#e3833b"], ["", "Raw Umber Violet", "Raw Umber Violet", "#9d695c"], ["", "Transparent Brown Oxide", "Transparent Brown Oxide", "#864a32"], ["", "Transparent Red Oxide", "Transparent Red Oxide", "#a7563b"], ["", "Fired Gold Ochre", "Fired Gold Ochre", "#a9482e"], ["", "Burnt Sienna Light", "Burnt Sienna Light", "#b76d44"], ["", "Enviro-Friendly Brown Iron Oxide", "Enviro-Friendly Brown Iron Oxide", "#6a4c3a"], ["", "Burnt Sienna", "Burnt Sienna", "#d38b67"], ["", "English Red Ochre", "English Red Ochre", "#b96e4c"], ["", "Burnt Umber", "Burnt Umber", "#785140"], ["", "Enviro-Friendly Yellow Iron Oxide", "Enviro-Friendly Yellow Iron Oxide", "#c67a47"], ["", "Raw Umber", "Raw Umber", "#53473a"], ["", "Sepia", "Sepia", "#91827a"], ["", "Sickerlite Genuine", "Sickerlite Genuine", "#3d3233"], ["", "Van Dyck Brown", "Van Dyck Brown", "#4b453c"], ["", "Bloodstone Genuine", "Bloodstone Genuine", "#403337"], ["", "Lunar Violet", "Lunar Violet", "#434954"], ["", "Neutral Tint", "Neutral Tint", "#554746"], ["", "Graphite Gray", "Graphite Gray", "#6f716d"], ["", "Jane's Grey", "Jane's Grey", "#605a6c"], ["", "Payne's Blue Gray", "Payne's Blue Gray", "#2c3740"], ["", "Payne's Gray", "Payne's Gray", "#566265"], ["", "Alvaro's Caliente Grey", "Alvaro's Caliente Grey", "#8b877d"], ["", "Alvaro's Fresco Grey", "Alvaro's Fresco Grey", "#605f6b"], ["", "Joseph Z's Warm Grey", "Joseph Z's Warm Grey", "#878379"], ["", "Joseph Z's Neutral Grey", "Joseph Z's Neutral Grey", "#7c7f7a"], ["", "Joseph Z's Cool Grey", "Joseph Z's Cool Grey", "#94979b"], ["", "McCracken Black", "McCracken Black", "#6b6a6f"], ["", "Jane's Black (Red/Green)", "Jane's Black (Red/Green)", "#434248"], ["", "Jane's Black (Blue/Orange)", "Jane's Black (Blue/Orange)", "#373037"], ["", "Ivory Black", "Ivory Black", "#56524d"], ["", "Lamp Black", "Lamp Black", "#5f615c"], ["", "Lunar Black", "Lunar Black", "#656562"], ["", "Black Tourmaline Genuine", "Black Tourmaline Genuine", "#415759"], ["", "Gray Titanium", "Gray Titanium", "#aca08a"], ["", "Chinese White", "Chinese White", "#fdfdfb"], ["", "Titanium White", "Titanium White", "#fdfdfb"]]},
+ wn:{nombre:'Cotman',marca:'Winsor & Newton',colores:[["346", "Tono de Amarillo Limón", "Lemon Yellow Hue", "#fcf178"], ["119", "Tono Amarillo de Cadmio Pálido", "Cadmium Yellow Pale Hue", "#fee700"], ["266", "Tono de Gutagamba", "Gamboge Hue", "#fed500"], ["109", "Tono Amarillo de Cadmio", "Cadmium Yellow Hue", "#febc3b"], ["090", "Tono de Cadmio Naranja", "Cadmium Orange Hue", "#f58220"], ["103", "Tono Rojo de Cadmio Pálido", "Cadmium Red Pale Hue", "#f48052"], ["095", "Tono Rojo de Cadmio", "Cadmium Red Hue", "#f04938"], ["098", "Tono Rojo de Cadmio Oscuro", "Cadmium Red Deep Hue", "#dc1e33"], ["003", "Tono de Carmesí Alizarina", "Alizarin Crimson Hue", "#ae1e2c"], ["502", "Rosa Permanente", "Permanent Rose", "#ef528b"], ["580", "Tono de Granza Rosa", "Rose Madder Hue", "#f05675"], ["544", "Laca Púrpura", "Purple Lake", "#831b57"], ["398", "Malva", "Mauve", "#9f258e"], ["231", "Violeta Dioxacina", "Dioxazine Violet", "#4e2d83"], ["660", "Ultramar", "Ultramarine", "#1e4498"], ["179", "Tono de Azul de Cobalto", "Cobalt Blue Hue", "#0377be"], ["139", "Tono de Azul Cerúleo", "Cerulean Blue Hue", "#1da8e0"], ["654", "Turquesa", "Turquoise", "#00aab8"], ["327", "Azul Intenso (Azul Ftalo)", "Intense Blue (Phthalo Blue)", "#243b7b"], ["538", "Azul de Prusia", "Prussian Blue", "#184479"], ["329", "Verde Intenso (Verde Ftalo)", "Intense Green (Phthalo Green)", "#008553"], ["696", "Tono de Viridiano", "Viridian Hue", "#008169"], ["235", "Esmeralda", "Emerald", "#7ac79b"], ["312", "Verde de Hooker Oscuro", "Hooker’s Green Dark", "#1f3d2c"], ["314", "Verde de Hooker Claro", "Hooker’s Green Light", "#068643"], ["599", "Verde Vejiga", "Sap Green", "#539542"], ["552", "Tierra de Siena Natural", "Raw Sienna", "#dc8326"], ["744", "Ocre Amarillo", "Yellow Ochre", "#c7912b"], ["554", "Tierra de Sombra Natural", "Raw Umber", "#4b351c"], ["074", "Tierra de Siena Tostada", "Burnt Sienna", "#741915"], ["362", "Rojo Claro", "Light Red", "#9c3320"], ["317", "Rojo Indio", "Indian Red", "#712228"], ["676", "Pardo Van Dyck", "Vandyke Brown", "#55240e"], ["076", "Tierra de Sombra Tostada", "Burnt Umber", "#562c0d"], ["609", "Sepia", "Sepia", "#211409"], ["322", "Índigo", "Indigo", "#041b31"], ["465", "Gris de Payne", "Payne’s Gray", "#1a2a38"], ["331", "Negro de Marfil", "Ivory Black", "#1b1a19"], ["337", "Negro de Humo", "Lamp Black", "#0e0e0e"], ["150", "Blanco de China", "Chinese White", "#fbfbf8"]]}
+};
+const CARTA_KEY='laceria-carta-v1';let CARTA='';try{CARTA=JSON.parse(localStorage.getItem(CARTA_KEY)||'""')||'';}catch(e){}if(!CARTAS[CARTA])CARTA='';
+const pNombre=c=>(c[0]?c[0]+' · ':'')+(EN?c[2]:c[1]);
+const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+function lab(h){const [r,g,b]=hexRgb(h).map(v=>{v/=255;return v>0.04045?Math.pow((v+0.055)/1.055,2.4):v/12.92;});
+  const f=t=>t>0.008856?Math.cbrt(t):7.787*t+16/116;const x=f((r*0.4124+g*0.3576+b*0.1805)/0.95047),y=f(r*0.2126+g*0.7152+b*0.0722),z=f((r*0.0193+g*0.1192+b*0.9505)/1.08883);
+  return [116*y-16,500*(x-y),200*(y-z)];}
+const LABC=new Map();const labc=h=>{h=h.toLowerCase();let v=LABC.get(h);if(!v){v=lab(h);LABC.set(h,v);}return v;};
+// La pintura de la carta más parecida a un color: [color de la carta, exacta]
+function pintura(h){if(!CARTA||!/^#[0-9a-f]{6}$/i.test(h))return null;const C=CARTAS[CARTA].colores,a=labc(h);const ex=C.find(c=>c[3].toLowerCase()===h.toLowerCase());if(ex)return [ex,true];let mejor=null,d0=1e9;
+  for(const c of C){if(/^Crep/.test(c[1]))continue; // los «Crepúsculo» granulan en varios tonos: solo a mano
+    const b=labc(c[3]),d=(a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2;if(d<d0){d0=d;mejor=c;}}return [mejor,d0<1];}
+const txtPintura=h=>{const r=pintura(h);return r?(r[1]?'':'≈ ')+pNombre(r[0]):'';};
 const VIEWS={mod:[-2.5,-2.5,29,29],'2x2':[0,0,48,48],'3x2':[0,0,72,48],'4x3':[0,0,96,72]};
 // ---------- Patrones (v1.3): el lazo de 8 y los alicatados nuevos ----------
 const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',pags:'133 a 136',tipo:'cinta',W:24,H:24,D:D_LAZO,nombres:NAMES,paletas:PRESETS,vistas:VIEWS,rw:0.62,ow:0.07,
@@ -1295,12 +1338,46 @@ function draw(){
   $('row-outline').hidden=mos;$('row-interlace').hidden=mos;$('row-grid').hidden=!lazo;$('row-construct').hidden=!lazo;
   $('h-cinta').textContent=mos?tr('Juntas','Joints'):tr('Cinta','Strapwork');$('l-ribbon').textContent=mos?tr('Color de las juntas','Joint color'):tr('Color de la cinta','Strap color');$('l-rw').textContent=mos?tr('Ancho de las juntas','Joint width'):tr('Ancho de la cinta','Strap width');
   $('rw').min=mos?0.04:+(PAT.rw*0.48).toFixed(2);$('rw').max=mos?0.5:+(PAT.rw*1.37).toFixed(2);
-  $('types').innerHTML=PAT.nombres.map((n,i)=>`<div class="row"><label for="t${i}">${n}</label><input type="color" id="t${i}" data-t="${i}" value="${st.cols[i]}"></div>`).join('');
+  $('types').innerHTML=PAT.nombres.map((n,i)=>`<div class="row"><label for="t${i}">${n}${CARTA?`<span class="pintura">${txtPintura(st.cols[i])}</span>`:''}</label><input type="color" id="t${i}" data-t="${i}" value="${st.cols[i]}"></div>`).join('');
+  if(CARTA){$('l-ribbon').insertAdjacentHTML('beforeend',`<span class="pintura">${txtPintura(st.ribbon)}</span>`);}
+  pintarCarta();
   $('ribbon').value=st.ribbon;$('outline').value=st.outline;$('rw').value=st.rw;
   ['interlace','wc','grid','construct','solo'].forEach(k=>$(k).checked=st[k]);
-  $('brush').innerHTML=BRUSH.map((c,i)=>`<button class="sw${c===st.brush?' sel':''}" style="background:${c}" data-c="${c}" title="${BRUSH_N[i]}" aria-label="${BRUSH_N[i]}" aria-pressed="${c===st.brush}"></button>`).join('')+`<input type="color" id="brushc" value="${st.brush}" title="${tr('Otro color','Other color')}" aria-label="${tr('Otro color del pincel','Other brush color')}">`;
+  const caja=document.querySelector('#brush .carta-caja'),sc=caja?caja.scrollTop:0;
+  const otro=`<input type="color" id="brushc" value="${st.brush}" title="${tr('Otro color','Other color')}" aria-label="${tr('Otro color del pincel','Other brush color')}">`;
+  if(CARTA){const C=CARTAS[CARTA].colores,b=st.brush.toLowerCase();
+    $('brush').innerHTML=`<div class="carta-caja" role="group" aria-label="${tr('Colores de la carta','Chart colors')} ${CARTAS[CARTA].nombre}">`+C.map(c=>{const on=c[3].toLowerCase()===b,n=pNombre(c);return `<button class="sw${on?' sel':''}" style="background:${c[3]}" data-c="${c[3]}" title="${n}" aria-label="${n}" aria-pressed="${on}"></button>`;}).join('')+`</div>`
+      +`<p id="brush-nom" aria-live="polite">${tr('Pincel','Brush')}: ${txtPintura(st.brush)}</p>`+otro;
+    const nc=document.querySelector('#brush .carta-caja');if(nc)nc.scrollTop=sc;}
+  else $('brush').innerHTML=BRUSH.map((c,i)=>`<button class="sw${c===st.brush?' sel':''}" style="background:${c}" data-c="${c}" title="${BRUSH_N[i]}" aria-label="${BRUSH_N[i]}" aria-pressed="${c===st.brush}"></button>`).join('')+otro;
   marcarPieza();
 }
+// ---------- Carta de acuarela: botones, conversión y lista «Con qué pintar» ----------
+// Pinturas que usa el coloreado: [color de la carta, exacta, piezas]
+function listaPinturas(){if(!CARTA)return[];const M=new Map(),add=(h,quien)=>{const r=pintura(h);if(!r)return;const k=r[0][3];let e=M.get(k);if(!e){e={c:r[0],exacta:true,q:[]};M.set(k,e);}if(!r[1])e.exacta=false;if(!e.q.includes(quien))e.q.push(quien);};
+  PAT.nombres.forEach((n,i)=>add(st.cols[i],n));
+  add(st.ribbon,PAT.tipo==='mosaico'?tr('Juntas','Joints'):tr('Cinta','Strapwork'));
+  for(const h of Object.values(st.over))add(h,tr('retoques sueltos','single-piece touches'));
+  return [...M.values()];}
+function pintarCarta(){
+  document.querySelectorAll('#cartas [data-cv]').forEach(b=>{const on=b.dataset.cv===CARTA;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  $('card-pintar').hidden=!CARTA;$('carta-marca').hidden=!CARTA;
+  if(!CARTA){$('row-convertir').hidden=true;return;}
+  const L=listaPinturas();$('row-convertir').hidden=L.every(e=>e.exacta);
+  $('carta-marca').textContent=CARTA==='vg'?tr('Van Gogh es una marca de Royal Talens. 60 colores de su carta de acuarela (sin los metálicos ni los de interferencia).','Van Gogh is a Royal Talens brand. 60 colors from its watercolor chart (without the metallic and interference colors).')
+    :CARTA==='wn'?tr('Cotman es una gama de Winsor & Newton. 40 colores de su carta de acuarela (sin los metálicos ni los iridiscentes).','Cotman is a Winsor & Newton range. 40 colors from its watercolor chart (without the metallic and iridescent colors).')
+    :tr('Daniel Smith es una marca de Daniel Smith Inc. 223 colores de su carta de acuarela (sin los Duochrome, nacarados, iridiscentes ni de interferencia).','Daniel Smith is a brand of Daniel Smith Inc. 223 colors from its watercolor chart (without the Duochrome, pearlescent, iridescent and interference colors).');
+  $('lista-pint').innerHTML=L.map(e=>`<li><i style="background:${e.c[3]}" aria-hidden="true"></i><span>${e.exacta?'':'≈ '}<b>${pNombre(e.c)}</b><small>${e.q.join(', ')}</small></span></li>`).join('');}
+function aCarta(){const f=h=>{const r=pintura(h);return r?r[0][3]:h;};st.cols=st.cols.map(f);st.ribbon=f(st.ribbon);for(const k in st.over)st.over[k]=f(st.over[k]);st.brush=f(st.brush);}
+$('cartas').addEventListener('click',e=>{const b=e.target.closest('[data-cv]');if(!b)return;CARTA=b.dataset.cv;try{localStorage.setItem(CARTA_KEY,JSON.stringify(CARTA))}catch(err){}if(CARTA)aCarta();draw();b.focus();});
+// Lista de la compra: marca, referencia y nombre de cada pintura
+$('copiar-compra').onclick=async()=>{const K=CARTAS[CARTA];if(!K)return;const L=listaPinturas();
+  const t=`${tr('Lacería','Lacería')} · ${PAT.nombre}\n${K.marca===K.nombre?K.nombre:K.nombre+' ('+K.marca+')'} · ${tr('acuarela','watercolor')}\n`+L.map(e=>`- ${e.c[0]?e.c[0]+' ':''}${EN?e.c[2]:e.c[1]}${e.exacta?'':' (≈)'} — ${e.q.join(', ')}`).join('\n');
+  let ok='';try{if(matchMedia('(pointer:coarse)').matches&&navigator.share){await navigator.share({title:tr('Lista de la compra','Shopping list'),text:t});ok=tr('Lista compartida.','List shared.');}
+    else{await navigator.clipboard.writeText(t);ok=tr('Lista copiada: pégala en una nota o un mensaje.','List copied: paste it into a note or a message.');}}
+  catch(err){if(!(err&&err.name==='AbortError'))ok=tr('No se ha podido copiar. Apunta las referencias de la lista.','Could not copy. Note down the references in the list.');}
+  $('msg-compra').textContent=ok;};
+$('convertir').onclick=()=>{aCarta();draw();$('convertir').closest('.card').querySelector('button.on')?.focus();};
 // ---------- Pintar con el teclado: flechas para elegir pieza, Intro o espacio para pintar ----------
 let SEL=-1;
 function visibles(){const [x0,y0,w,h]=PAT.vistas[st.view];const out=[];
@@ -1309,7 +1386,7 @@ function visibles(){const [x0,y0,w,h]=PAT.vistas[st.view];const out=[];
 function marcarPieza(){const sv=$('svg').querySelector('svg');if(!sv)return;const old=sv.querySelector('#pieza-sel');if(old)old.remove();
   if(SEL<0||document.activeElement!==$('svg'))return;const pol=sv.querySelector(`polygon[data-i="${SEL}"]`);if(!pol)return;
   const m=pol.cloneNode();m.id='pieza-sel';m.removeAttribute('data-i');m.setAttribute('fill','none');m.setAttribute('stroke','#e0a526');m.setAttribute('stroke-width',String(Math.max(PAT.vistas[st.view][2]/120,0.15)));m.setAttribute('pointer-events','none');sv.appendChild(m);}
-function anunciar(){if(SEL<0)return;const k=D.F[SEL][0],c=(st.over[SEL]||st.cols[k]),n=BRUSH.indexOf(c);$('pieza-anuncio').textContent=PAT.nombres[k]+(n>=0?', '+BRUSH_N[n].toLowerCase():'');}
+function anunciar(){if(SEL<0)return;const k=D.F[SEL][0],c=(st.over[SEL]||st.cols[k]),n=BRUSH.indexOf(c);$('pieza-anuncio').textContent=PAT.nombres[k]+(CARTA?', '+txtPintura(c):(n>=0?', '+BRUSH_N[n].toLowerCase():''));}
 function pintarPieza(i){if(st.solo)st.over[i]=st.brush;else{const k=D.F[i][0];st.cols[k]=st.brush;for(const j in st.over)if(D.F[j][0]===k)delete st.over[j];}draw();}
 $('svg').addEventListener('focus',()=>{const V=visibles();if(!V.some(v=>v[0]===SEL)){const [x0,y0,w,h]=PAT.vistas[st.view],cx=x0+w/2,cy=y0+h/2;
   V.sort((a,b)=>Math.hypot(a[1]-cx,a[2]-cy)-Math.hypot(b[1]-cx,b[2]-cy));SEL=V.length?V[0][0]:-1;}marcarPieza();anunciar();});
@@ -1324,7 +1401,7 @@ function pintarPaletas(){$('presets').innerHTML=Object.entries(PAT.paletas).map(
 document.addEventListener('click',e=>{
   const t=e.target;
   if(t.dataset.v){st.view=t.dataset.v;draw();}
-  else if(t.closest('[data-p]')){const p=PAT.paletas[t.closest('[data-p]').dataset.p];st.cols=[...p.cols];st.ribbon=p.ribbon;st.outline=p.outline;st.over={};draw();}
+  else if(t.closest('[data-p]')){const p=PAT.paletas[t.closest('[data-p]').dataset.p];st.cols=[...p.cols];st.ribbon=p.ribbon;st.outline=p.outline;st.over={};if(CARTA)aCarta();draw();}
   else if(t.dataset.c){st.brush=t.dataset.c;draw();}
   else if(t.tagName==='polygon'&&t.dataset.i){SEL=+t.dataset.i;pintarPieza(SEL);}
 });
@@ -1336,7 +1413,8 @@ document.addEventListener('input',e=>{
   else if(t.id==='rw'){st.rw=+t.value;$('svg').innerHTML=renderLazo(D,opts());}
 });
 document.addEventListener('input',()=>guardar());
-document.addEventListener('change',e=>{const t=e.target;if(['interlace','wc','grid','construct','solo'].includes(t.id)){st[t.id]=t.checked;draw();}});
+document.addEventListener('change',e=>{const t=e.target;if(['interlace','wc','grid','construct','solo'].includes(t.id)){st[t.id]=t.checked;draw();}
+  else if(CARTA&&t.type==='color'&&t.closest('#tab-colorear'))draw();});
 $('clearOver').onclick=()=>{st.over={};draw();};
 $('reset').onclick=()=>{st=fresh(PAT);draw();};
 // ---------- Exportar (v1.2): SVG en color, PNG, y láser (piezas o celosía) ----------
@@ -1429,9 +1507,14 @@ if(typeof module!=='undefined')module.exports.ex={svgLaser,celda,encoger,piezas,
 const PAPEL={A4:[210,297],A3:[297,420]};
 function lamina(){ // medidas en mm de la hoja y del dibujo
   let [pw,ph]=PAPEL[EX.papel]||PAPEL.A4;if(EX.ori==='h')[pw,ph]=[ph,pw];
-  const m=12,pie=8,aw=pw-2*m,ah=ph-2*m-pie,w=EX.c*PAT.W,h=EX.r*PAT.H,e=Math.min(aw/w,ah/h),dw=w*e,dh=h*e;
-  return {pw,ph,m,pie,dw,dh,dx:(pw-dw)/2,dy:m+(ah-dh)/2,umm:e};
+  const ley=CARTA&&EX.leyenda!==false?listaPinturas():[],nc=pw>250?3:2,fila=6,lh=ley.length?8+Math.ceil(ley.length/nc)*fila:0;
+  const m=12,pie=8,aw=pw-2*m,ah=ph-2*m-pie-lh,w=EX.c*PAT.W,h=EX.r*PAT.H,e=Math.min(aw/w,ah/h),dw=w*e,dh=h*e;
+  // leyenda de pinturas: debajo del dibujo, en columnas
+  const ly=ph-m-pie-lh+4,cw=aw/nc,items=ley.map((it,i)=>({it,x:m+(i%nc)*cw,y:ly+6+Math.floor(i/nc)*fila,w:cw-3}));
+  return {pw,ph,m,pie,dw,dh,dx:(pw-dw)/2,dy:m+(ah-dh)/2,umm:e,ley:items,ly,titLey:ley.length?`${tr('Pinturas','Paints')} · ${CARTAS[CARTA].nombre}`:''};
 }
+const textoLey=it=>`${it.exacta?'':'≈ '}${pNombre(it.c)} — ${it.q.join(', ')}`;
+const escXml=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 function svgLamina(L){ // dibujo en línea, con el grosor de línea en milímetros reales
   const col=EX.linea==='negra'?'#222222':'#8c8c8c',lw=(EX.linea==='negra'?0.35:0.3)/L.umm,mos=PAT.tipo==='mosaico';
   const blanco=Array(PAT.nombres.length).fill('#ffffff');
@@ -1440,7 +1523,9 @@ function svgLamina(L){ // dibujo en línea, con el grosor de línea en milímetr
   return svgColor(EX.c,EX.r,fx(L.dw)+'mm',fx(L.dh)+'mm',o);
 }
 function laminaVista(){const L=lamina();const d=svgLamina(L).replace(/^<svg /,`<svg x="${fx(L.dx)}" y="${fx(L.dy)}" `).replace(/width="[^"]*mm" height="[^"]*mm"/,`width="${fx(L.dw)}" height="${fx(L.dh)}"`);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${L.pw} ${L.ph}" style="max-height:240px;width:auto"><rect width="${L.pw}" height="${L.ph}" fill="#fff" stroke="#c9c2b5" stroke-width="0.8"/>${d}<text x="${L.m}" y="${L.ph-L.m}" font-size="3" fill="#8c8c8c" font-family="Inter,sans-serif">${PAT.nombre} · ${PAT.lugar}</text></svg>`;}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${L.pw} ${L.ph}" style="max-height:240px;width:auto"><rect width="${L.pw}" height="${L.ph}" fill="#fff" stroke="#c9c2b5" stroke-width="0.8"/>${d}<text x="${L.m}" y="${L.ph-L.m}" font-size="3" fill="#8c8c8c" font-family="Inter,sans-serif">${PAT.nombre} · ${PAT.lugar}</text>`
+  +(L.titLey?`<text x="${L.m}" y="${fx(L.ly+2)}" font-size="3" fill="#555" font-family="Inter,sans-serif" font-weight="600">${escXml(L.titLey)}</text>`:'')
+  +L.ley.map(o=>`<rect x="${fx(o.x)}" y="${fx(o.y-3.6)}" width="4.5" height="4.5" fill="${o.it.c[3]}" stroke="#999" stroke-width="0.2"/><text x="${fx(o.x+6)}" y="${fx(o.y)}" font-size="2.6" fill="#444" font-family="Inter,sans-serif">${escXml(textoLey(o.it)).slice(0,60)}</text>`).join('')+`</svg>`;}
 // PDF de una página con una imagen JPEG (sin librerías: funciona sin conexión)
 function pdfJpeg(jpg,wpx,hpx,wpt,hpt){
   const enc=new TextEncoder(),partes=[],off=[];let pos=0;
@@ -1468,6 +1553,11 @@ async function crearLamina(){
   cx.fillStyle='#8c8c8c';cx.font=`${Math.round(3*mmPx)}px Inter, system-ui, sans-serif`;cx.textBaseline='alphabetic';
   cx.textAlign='left';cx.fillText(`${PAT.nombre} · ${PAT.lugar} · ${tr('Real Alcázar de Sevilla','Royal Alcázar of Seville')}`,L.m*mmPx,(L.ph-L.m)*mmPx);
   cx.textAlign='right';cx.fillText('Lacería · indalo-apps.github.io/laceria',(L.pw-L.m)*mmPx,(L.ph-L.m)*mmPx);
+  if(L.ley.length){cx.textAlign='left';cx.fillStyle='#555555';cx.font=`600 ${Math.round(3*mmPx)}px Inter, system-ui, sans-serif`;cx.fillText(L.titLey,L.m*mmPx,(L.ly+2)*mmPx);
+    cx.font=`${Math.round(2.6*mmPx)}px Inter, system-ui, sans-serif`;
+    for(const o of L.ley){cx.fillStyle=o.it.c[3];cx.fillRect(o.x*mmPx,(o.y-3.6)*mmPx,4.5*mmPx,4.5*mmPx);cx.strokeStyle='#999999';cx.lineWidth=0.2*mmPx;cx.strokeRect(o.x*mmPx,(o.y-3.6)*mmPx,4.5*mmPx,4.5*mmPx);
+      let t=textoLey(o.it);const max=(o.w-6)*mmPx;cx.fillStyle='#444444';while(t.length>4&&cx.measureText(t).width>max)t=t.slice(0,-2);if(t!==textoLey(o.it))t=t.slice(0,-1)+'…';
+      cx.fillText(t,(o.x+6)*mmPx,o.y*mmPx);}}
   const jpg=await new Promise((ok,mal)=>cv.toBlob(b=>b?ok(b):mal(new Error('jpg')),'image/jpeg',0.92));
   const bytes=new Uint8Array(await jpg.arrayBuffer());cv.width=cv.height=1;
   return pdfJpeg(bytes,W,H,L.pw*72/25.4,L.ph*72/25.4);
@@ -1500,7 +1590,7 @@ function exPintar(){
   $('ex-c').textContent=EX.c;$('ex-r').textContent=EX.r;
   if(document.activeElement!==$('ex-mm'))$('ex-mm').value=EX.mm;
   const png=EX.modo==='png',lam=EX.modo==='lamina';
-  $('ex-g-mm').hidden=png||lam;$('ex-g-px').hidden=!png;$('ex-g-lam').hidden=!lam;$('ex-copiar').hidden=png||lam;
+  $('ex-g-mm').hidden=png||lam;$('ex-g-px').hidden=!png;$('ex-g-lam').hidden=!lam;$('row-leyenda').hidden=!CARTA;$('ex-leyenda').checked=EX.leyenda!==false;$('ex-copiar').hidden=png||lam;
   $('ex-ayuda').textContent=EX_AYUDA[EX.modo];
   let info;
   if(png){const [W,H]=exDims();info=`${EX.c} × ${EX.r} ${tr('módulos','modules')} · ${W} × ${H} ${tr('píxeles','pixels')}`;}
@@ -1531,6 +1621,7 @@ $('dlg-exportar').addEventListener('click',e=>{
   if(g){EX[g.dataset.ex]=g.dataset.ex==='px'?+b.dataset.val:b.dataset.val;exGuardar();exPintar();b.focus();}
   else if(b.dataset.rep){const k=b.dataset.rep;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();exPintar();}
 });
+$('ex-leyenda').addEventListener('change',()=>{EX.leyenda=$('ex-leyenda').checked;exGuardar();exPintar();});
 $('ex-mm').addEventListener('input',()=>{const v=+$('ex-mm').value;if(v>=10&&v<=1000){EX.mm=v;exGuardar();exPintar();}});
 $('ex-mm').addEventListener('change',()=>{$('ex-mm').value=EX.mm;});
 $('ex-bajar').onclick=async()=>{
@@ -1708,6 +1799,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["1.6",["🎨 In Palettes, choose the brand (Van Gogh, Daniel Smith or Winsor & Newton Cotman): the colors switch to its paints, with name and reference","🧾 “What to paint with”: the paints your coloring uses, the pieces each one goes on and a shopping list to copy or share","🔁 Switch your colors (or any palette) to the nearest paint in the chart","📄 The sheet to paint can include the list of paints"]],
     ["1.5",["🧩 New tile pattern: six- and eight-pointed stars from the second room of the zaguán, with its step-by-step drawing","✏️ Trace by hand: go over each step with your finger or a stylus; your lines are saved","📄 Sheet to paint: A4 or A3 PDF with the drawing in line only, ready for watercolor","🌍 The app is now in English too (Settings › Language)"]],
     ["1.4.2",["♿ Paint piece by piece with the keyboard","🗣️ The screen reader announces each step, tab, view and brush color","👆 Easier to tap controls on phones","🌗 The chosen theme also applies to the install help"]],
     ["1.4",["🧩 Four more tile patterns from the Pavilion of Charles V, the Patio de las Muñecas and the skirting","✏️ Each with its step-by-step drawing"]],
@@ -1715,6 +1807,7 @@ tab(location.hash==='#colorear'?'colorear':'trazado');show();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["1.6",["🎨 En Paletas, elige la marca (Van Gogh, Daniel Smith o Cotman de Winsor & Newton): los colores pasan a sus pinturas, con nombre y referencia","🧾 «Con qué pintar»: las pinturas que usa tu coloreado, en qué piezas va cada una y la lista de la compra para copiar o compartir","🔁 Pasa tus colores (o cualquier paleta) a la pintura más parecida de la carta","📄 La lámina para pintar puede llevar la lista de pinturas"]],
     ["1.5",["🧩 Alicatado nuevo: estrellas de seis y de ocho de la segunda sala del zaguán, con su trazado paso a paso","✏️ Repasar a mano: repasa cada paso con el dedo o el lápiz; tu trazo se guarda","📄 Lámina para pintar: PDF en A4 o A3 con el dibujo solo en línea, lista para la acuarela","🌍 La app ya está también en inglés (Ajustes › Idioma)","🧵 Los cruces de las cintas se ven más limpios"]],
     ["1.4.2",["♿ Se puede pintar pieza a pieza con el teclado: flechas para moverse e Intro para pintar","🗣️ El lector de pantalla anuncia cada paso, la pestaña, la vista y el color del pincel","👆 Casillas y deslizador más fáciles de tocar en el móvil","📐 En el móvil el dibujo ocupa menos y las vistas caben en una línea","🌗 El tema elegido en Ajustes se aplica también a la ayuda de instalar y a la barra del móvil","🛠️ Arreglos para que la copia sin conexión siempre sea buena"]],
     ["1.4.1",["🏷️ La app pasa a llamarse «Lacería · Alicatados del Alcázar»"]],

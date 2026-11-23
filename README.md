@@ -4,9 +4,11 @@
 
 App de dibujo geométrico con alicatados del Real Alcázar de Sevilla. Cada uno tiene su trazado paso a paso, que se puede repasar a mano con el dedo o el lápiz, y una pestaña para colorearlo como un alicatado y exportarlo: SVG en color, imagen PNG, lámina para pintar en PDF (A4 o A3, solo en línea) y archivos para corte láser (piezas del mosaico o celosía), con tantas repeticiones del módulo como se quiera.
 
+Con «Carta de acuarela» se pinta con los colores de Van Gogh (Royal Talens), Daniel Smith o Cotman (Winsor & Newton), con su nombre y número, y la app dice qué pintura va en cada pieza; los colores están en `CARTAS` y para añadir otra marca basta con otra entrada.
+
 Está en español y en inglés (Ajustes › Idioma; «Automático» sigue al idioma del móvil). Los textos en inglés de cada alicatado están en `PAT_EN` y los de la página, en `ES_EN`.
 
-Alicatados (versión 1.5):
+Alicatados (versión 1.6):
 
 | Alicatado | Lugar | Páginas del libro |
 | --- | --- | --- |

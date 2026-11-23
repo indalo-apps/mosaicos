@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.5">
+<meta name="app-version" content="2.5.1">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -604,7 +604,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.5 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.5.1 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -2796,6 +2796,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.5.1",["📐 Twelve-pointed stars of the Court of the Myrtles: the star and the steps now follow the book exactly","🖼️ New icon: the twelve-pointed stars in plaster-white straps on blue"]],
     ["2.5",["🧩 New Alhambra tile pattern: twelve-pointed stars from the entrance to the Court of the Myrtles (no. 7), with its steps from the book and hexagonal modules in Tessellate","🖼️ New app icon: the twelve-pointed star of the Court of the Myrtles","📄 Coloring sheet also in A5"]],
     ["2.4.1",["✏️ Draw: what is already drawn turns light gray and the current step is drawn in black and thicker, so it stands out without relying on color","🏛️ “The Alhambra of Granada”","🧱 Tessellate: the eight-pointed stars of the Alhambra, the skewed rosette and the six- and eight-pointed stars now repeat their minimal module, one by one"]],
     ["2.4",["🏛️ New home screen with the two monuments: the Royal Alcázar of Seville and the Alhambra","🧩 First Alhambra tile pattern: eight-pointed stars and Y pieces from the Hall of the Boat (no. 16), with its 11 steps from the book","📖 The glossary button now says “Glossary”"]],
@@ -2815,6 +2816,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.5.1",["📐 Estrellas de doce del Patio de los Arrayanes: la estrella y los pasos siguen ahora exactamente al libro","🖼️ Icono nuevo: las estrellas de doce con la cinta de yeso sobre azul"]],
     ["2.5",["🧩 Alicatado nuevo de la Alhambra: estrellas de doce del acceso al Patio de los Arrayanes (n.º 7), con sus pasos del libro y módulos hexagonales en Teselar","🖼️ Icono nuevo de la app: la estrella de doce del Patio de los Arrayanes","📄 Lámina para pintar también en A5"]],
     ["2.4.1",["✏️ Trazar: lo ya trazado pasa a gris claro y el paso actual se dibuja en negro y más grueso, para distinguirlo sin depender del color","🏛️ «La Alhambra de Granada»","🧱 Teselar: las estrellas de ocho de la Alhambra, la rueda sesgada y las estrellas de seis y de ocho repiten ahora su módulo mínimo, de uno en uno"]],
     ["2.4",["🏛️ Portada nueva con los dos monumentos: el Real Alcázar de Sevilla y la Alhambra","🧩 Primer alicatado de la Alhambra: estrellas de ocho y piezas en Y de la Sala de la Barca (n.º 16), con sus 11 pasos del libro","📖 El botón del glosario dice ahora «Glosario»"]],

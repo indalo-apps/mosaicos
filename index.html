@@ -7,7 +7,7 @@
   Mosaicos · Lacería del Real Alcázar de Sevilla
   © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.1.1">
+<meta name="app-version" content="2.1.2">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -165,6 +165,7 @@ button.peligro{border-color:#b5444b;color:#b5444b}
 .fade{opacity:0;animation:fd .8s ease forwards}
 @keyframes fd{to{opacity:1}}
 .dim{opacity:.4}
+.capas{display:grid}.capas>*{grid-area:1/1;min-width:0}
 .row[hidden]{display:none}
 .galeria{display:flex;gap:8px;overflow-x:auto;margin:6px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
 .galeria::after{content:'';flex:none;width:20px}
@@ -565,7 +566,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.1.1 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.1.2 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -1044,7 +1045,8 @@ function consSvg(c,n,soloFinal){const [x0,y0,w,h]=c.vb,u=w/100,lt=t=>EN?t[1]:t[0
     const ult=ps[ps.length-1];const els=c.obj||(ult.solo?ult.el:ult.el.filter(e=>e.s==='t'||e.s==='f'));
     g=els.map(e=>pinta(e,'fin')).join('');}
   else{const cur=ps[n-1];
-    if(cur.solo)g=cur.el.map(e=>pinta(e,'cur')).join('');
+    if(cur.solo){const ant=n>1&&ps[n-2].solo?new Set(ps[n-2].el.map(e=>JSON.stringify(e))):new Set(); // lo que ya estaba en el paso anterior no se vuelve a animar
+      g=cur.el.map(e=>pinta(e,ant.has(JSON.stringify(e))?'quieto':'cur')).join('');}
     else{for(let i=0;i<n-1;i++)g+=ps[i].el.filter(e=>e.k!=='p').map(e=>pinta(e,'prev')).join('');
       g+=cur.el.filter(e=>e.k!=='p').map(e=>pinta(e,'cur')).join('');
       for(let i=0;i<n;i++)g+=ps[i].el.filter(e=>e.k==='p').map(e=>pinta(e,i===n-1?'cur':'prev')).join('');}}
@@ -2276,7 +2278,12 @@ function show(){
   else{const o={x0:-2.5,y0:-2.5,w:29,h:29,...white,interlace:step>=8,frame:true};
     if(step===9){const p=PRESETS['Alcázar'];o.cols=p.cols;o.ribbon=p.ribbon;o.outline=p.outline;}
     svg=`<div class="fade">${renderLazo(D_LAZO,o).replace('<svg ','<svg style="pointer-events:none" ')}</div>`;}
-  document.getElementById('tzsvg').innerHTML=svg;
+  {const el=document.getElementById('tzsvg'),viejo=el.querySelector(':scope>.capas>.nuevo')||el;
+   // si el dibujo nuevo entra con fundido, el anterior se queda debajo (quieto) hasta que termina
+   if(/^<div class="fade">/.test(svg)&&step>0&&el.innerHTML){const v=(viejo===el?el.innerHTML:viejo.innerHTML).replace(/ class="([^"]*)"/g,(m,c)=>{const k=c.split(/\s+/).filter(x=>x&&x!=='draw'&&x!=='fade').join(' ');return k?` class="${k}"`:'';});
+     el.innerHTML=`<div class="capas"><div class="viejo" aria-hidden="true">${v}</div><div class="nuevo">${svg}</div></div>`;
+     clearTimeout(show.tv);show.tv=setTimeout(()=>{const x=el.querySelector('.capas>.viejo');if(x)x.remove();},1000);}
+   else el.innerHTML=svg;}
   const foco=document.activeElement&&document.activeElement.id;
   document.getElementById('dots').innerHTML=`<button data-step="0" class="${step===0?'on':''}" title="${obj.h}" aria-label="${obj.h}"${step===0?' aria-current="step"':''}>★</button>`+PS.map((_,i)=>`<button data-step="${i+1}" class="${i+1===step?'on':''}" title="${PS[i].h}" aria-label="${tr('Paso','Step')} ${i+1}: ${PS[i].h}"${i+1===step?' aria-current="step"':''}>${i+1}</button>`).join('');
   document.getElementById('tzsvg').setAttribute('aria-label',step===0?obj.h:tr(`Dibujo del paso ${step}: ${s.h}`,`Drawing for step ${step}: ${s.h}`));
@@ -2294,7 +2301,7 @@ try{PR=JSON.parse(localStorage.getItem(PR_KEY)||'{}')||{};}catch(e){PR={};}
 const prK=()=>MODO.c?'c-'+MODO.c.id:PAT.id;
 const trazos=()=>PR[prK()]||(PR[prK()]=[]);
 function prGuardar(){try{localStorage.setItem(PR_KEY,JSON.stringify(PR))}catch(e){}}
-function prSvg(){return document.querySelector('#tzsvg svg');}
+function prSvg(){return document.querySelector('#tzsvg .nuevo svg')||document.querySelector('#tzsvg svg');}
 function prAncho(sv){const vb=sv.viewBox.baseVal;return Math.max(vb.width,vb.height)/170;}
 const pathD=pts=>{let d='M'+pts[0]+' '+pts[1];for(let i=2;i<pts.length;i+=2)d+='L'+pts[i]+' '+pts[i+1];return pts.length===2?d+'l0.001 0':d;};
 function pintarTrazos(){const sv=prSvg();if(!sv)return;let g=sv.querySelector('.trazos');if(g)g.remove();
@@ -2460,6 +2467,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.1.2",["✏️ Draw: in the color steps the new drawing fades in over the previous one, without going blank","🔺 Moves in the plane: the original figure stays still from one move to the next"]],
     ["2.1.1",["📏 Skewed rosette: the strap width and steps 6 to 9 now follow the book exactly (pp. 111–112)","✏️ Draw: going to the next step only draws the new lines; the earlier ones stay in place","🐞 Opening a link straight to the eight-fold knot no longer shows an empty drawing"]],
     ["2.1",["🧩 New tile pattern: the skewed eight-fold rosette from the Hall of the Philip II Ceiling (pp. 110–114), with its eight-step drawing, tessellation and colors"]],
     ["2.0",["🏠 New name, Mosaicos, and a home screen: Continue, Learn to draw, Alcázar tile patterns and My drawings","📐 Learn to draw: the 23 basic ruler-and-compass constructions from the book (pp. 164–175), step by step","🖼️ Each drawing starts with the finished figure, so you know the goal","4️⃣ Each tile pattern in four stages: Draw → Tessellate → Color → Print","🧱 New Tessellate stage: repeat the module and see how it covers the wall","📖 Glossary of terms, with search"]],
@@ -2473,6 +2481,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.1.2",["✏️ Trazar: en los pasos de color el dibujo nuevo aparece sobre el anterior, sin pasar por blanco","🔺 Movimientos en el plano: la figura original se queda quieta de un movimiento a otro"]],
     ["2.1.1",["📏 Rueda sesgada: el ancho de la cinta y los pasos 6 a 9 siguen ahora exactamente al libro (págs. 111 y 112)","✏️ Trazar: al pasar de paso solo se dibujan las líneas nuevas; las anteriores se quedan quietas","🐞 Al abrir un enlace directo al lazo de 8 ya no sale el dibujo vacío"]],
     ["2.1",["🧩 Alicatado nuevo: la rueda de ocho sesgada del Salón del techo de Felipe II (págs. 110 a 114), con su trazado en ocho pasos, el teselado y los colores del zócalo"]],
     ["2.0",["🏠 La app pasa a llamarse Mosaicos y estrena portada: Seguir, Aprender a trazar, Alicatados del Alcázar y Mis dibujos","📐 Aprender a trazar: las 23 construcciones básicas con regla y compás del libro (págs. 164 a 175), paso a paso","🖼️ Cada dibujo empieza por la figura terminada, para saber cuál es el objetivo","4️⃣ Cada alicatado en cuatro etapas: Trazar → Teselar → Colorear → Imprimir","🧱 Etapa nueva, Teselar: repite el módulo y mira cómo cubre la pared","📖 Glosario de términos, con buscador"]],

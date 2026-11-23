@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!--
-  Mosaicos · Lacería del Real Alcázar de Sevilla
-  © 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.
+  Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
+  © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.3">
+<meta name="app-version" content="2.4">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Mosaicos">
-<meta name="author" content="Adela Moreno Vega y Carlos Moreno Otto">
-<meta name="copyright" content="© 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados.">
-<meta name="description" content="Aprende a trazar con regla y compás los alicatados del Real Alcázar de Sevilla: trazar, teselar, colorear e imprimir.">
+<meta name="author" content="Carlos Moreno Otto">
+<meta name="copyright" content="© 2026 Carlos Moreno Otto. Todos los derechos reservados.">
+<meta name="description" content="Aprende a trazar con regla y compás los alicatados del Real Alcázar de Sevilla y de la Alhambra: trazar, teselar, colorear e imprimir.">
 <title>Mosaicos</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -25,8 +25,8 @@
 <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Mosaicos · Lacería del Real Alcázar de Sevilla">
-<meta property="og:description" content="Aprende a trazar con regla y compás los alicatados del Real Alcázar de Sevilla: trazar, teselar, colorear e imprimir.">
+<meta property="og:title" content="Mosaicos · Lacería con regla y compás">
+<meta property="og:description" content="Aprende a trazar con regla y compás los alicatados del Real Alcázar de Sevilla y de la Alhambra: trazar, teselar, colorear e imprimir.">
 <meta property="og:url" content="https://indalo-apps.github.io/mosaicos/">
 <meta property="og:image" content="https://indalo-apps.github.io/mosaicos/og.png">
 <meta property="og:image:width" content="1200">
@@ -175,6 +175,27 @@ button.peligro{border-color:#b5444b;color:#b5444b}
 .dim{opacity:.4}
 .lc-vista{background:#e9e3d6;border-radius:10px;padding:10px;text-align:center}.lc-vista img{max-width:100%;max-height:58vh;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .metodo{margin-bottom:10px}.metodo[hidden]{display:none}.metodo button{flex:1}
+
+/* v2.4: portada con los monumentos */
+.btn-pill{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--btn);color:var(--ink);font:500 calc(15px * var(--esc,1)) Inter,system-ui,sans-serif;flex:none}
+.cab-top.en-inicio{justify-content:flex-end}.cab-top.en-inicio h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.portada{position:relative;border-radius:18px;overflow:hidden;margin-bottom:14px;background:#161616}
+.portada-img svg{display:block;width:100%;height:clamp(150px,30vw,260px)}
+.portada-txt{position:absolute;left:0;right:0;bottom:0;top:0;justify-content:flex-end;padding:28px 18px 14px;background:linear-gradient(rgba(10,10,10,0) 15%,rgba(10,10,10,.55) 50%,rgba(10,10,10,.9));color:#fff;display:flex;flex-direction:column}
+.portada-t{font:600 calc(42px * var(--esc,1))/1 "Cormorant Garamond",Georgia,serif;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.portada-s{font-size:calc(15px * var(--esc,1));opacity:.92;margin-top:4px}
+.monus{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:14px}
+.monu{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.monu:hover{border-color:#bfb4a0}
+.monu-img svg{display:block;width:100%;height:110px}
+.monu-txt{padding:12px 14px 14px;display:flex;flex-direction:column;gap:2px}
+.monu-txt h2{font:600 calc(24px * var(--esc,1))/1.1 "Cormorant Garamond",Georgia,serif;margin:0}
+.monu-txt small{color:var(--muted);font-size:calc(14px * var(--esc,1))}
+.accesos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acceso{display:flex;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.acceso b{display:block;font-weight:600}.acceso small{color:var(--muted)}
+.acc-ic svg{width:40px;height:40px;display:block;border-radius:8px;flex:none}
+@media (max-width:520px){.accesos{grid-template-columns:1fr}}
 .capas{display:grid}.capas>*{grid-area:1/1;min-width:0}
 .row[hidden]{display:none}
 .galeria{display:flex;gap:8px;overflow-x:auto;margin:6px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
@@ -459,21 +480,25 @@ const IK = (function(){
 <header>
   <div class="cab-top">
     <a class="btn-volver" id="volver" href="#inicio" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span id="volver-txt">Inicio</span></a>
-    <h1 id="titulo">Mosaicos<span class="sub">Lacería del Real Alcázar de Sevilla</span></h1>
-    <span class="hueco" aria-hidden="true"></span><button class="btn-redondo" id="btn-glosario" aria-label="Glosario" title="Glosario"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M8 7h7M8 11h7"/></svg></button>
+    <h1 id="titulo">Mosaicos<span class="sub">Lacería con regla y compás</span></h1>
+    <span class="hueco" aria-hidden="true"></span><button class="btn-pill" id="btn-glosario">Glosario</button>
     <button class="btn-redondo btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
   </div>
   <p id="intro" hidden></p>
 </header>
 <main id="app">
 <section id="v-inicio" class="vista" aria-labelledby="titulo" hidden>
+  <div class="portada" aria-hidden="true"><div class="portada-img" id="portada-img"></div><div class="portada-txt"><span class="portada-t">Mosaicos</span><span class="portada-s">Lacería con regla y compás</span></div></div>
   <a class="seguir" id="seguir" href="#inicio" hidden></a>
-  <div class="caminos">
-    <a class="camino" href="#aprender"><span class="cam-ic" id="ic-aprender" aria-hidden="true"></span><h2>Aprender a trazar</h2><p>Polígonos con regla y compás: la base de todos los mosaicos.</p><span class="cam-n" id="n-aprender"></span></a>
-    <a class="camino" href="#alicatados"><span class="cam-ic" id="ic-alicatados" aria-hidden="true"></span><h2>Alicatados del Alcázar</h2><p>Trazar, teselar, colorear e imprimir.</p><span class="cam-n" id="n-alicatados"></span></a>
-    <a class="camino ancho" href="#mis"><span class="cam-ic" id="ic-mis" aria-hidden="true"></span><h2>Mis dibujos</h2><p>Lo que has coloreado o repasado a mano.</p><span class="cam-n" id="n-mis"></span></a>
+  <div class="monus">
+    <a class="monu" href="#alicatados"><span class="monu-img" id="im-alcazar" aria-hidden="true"></span><span class="monu-txt"><h2>Real Alcázar de Sevilla</h2><small id="n-alcazar"></small></span></a>
+    <a class="monu" href="#alhambra"><span class="monu-img" id="im-alhambra" aria-hidden="true"></span><span class="monu-txt"><h2>La Alhambra</h2><small id="n-alhambra"></small></span></a>
   </div>
-  <p class="hint">Basado en <i>El Real Alcázar de Sevilla con regla y compás</i>. Funciona sin conexión.</p>
+  <div class="accesos">
+    <a class="acceso" href="#aprender"><span class="acc-ic" id="ic-aprender" aria-hidden="true"></span><span><b>Aprender a trazar</b><small id="n-aprender"></small></span></a>
+    <a class="acceso" href="#mis"><span class="acc-ic" id="ic-mis" aria-hidden="true"></span><span><b>Mis dibujos</b><small id="n-mis"></small></span></a>
+  </div>
+  <p class="hint">Basado en <i>El Real Alcázar de Sevilla con regla y compás</i> y <i>La Alhambra con regla y compás</i>. Funciona sin conexión.</p>
 </section>
 <section id="v-aprender" class="vista" aria-labelledby="titulo" hidden>
   <div id="lista-cons"></div>
@@ -577,7 +602,7 @@ const IK = (function(){
   </div>
 </section>
 </main>
-<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.3 · Novedades</button><br>© 2026 Adela Moreno Vega y Carlos Moreno Otto.</footer>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.4 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
 
 <div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
  <div class="hoja">
@@ -590,11 +615,11 @@ const IK = (function(){
   <div class="grupo"><h3>Instalar en el móvil</h3>
    <div class="ops"><button id="aj-instalar">📲 Cómo añadirla a la pantalla de inicio</button></div></div>
   <div class="grupo"><h3>Acerca de</h3>
-   <div class="acerca"><img src="icon-192.png" alt=""><div><b>Mosaicos</b><br><span class="muted">Lacería del Real Alcázar de Sevilla</span><br><span class="muted">Versión <span id="aj-ver"></span></span></div></div>
-   <p style="margin-top:10px">Creada por <b>Adela Moreno Vega</b> y <b>Carlos Moreno Otto</b>.</p>
-   <p class="muted">© 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p></div>
+   <div class="acerca"><img src="icon-192.png" alt=""><div><b>Mosaicos</b><br><span class="muted">Lacería con regla y compás</span><br><span class="muted">Versión <span id="aj-ver"></span></span></div></div>
+   <p style="margin-top:10px">Creada por <b>Carlos Moreno Otto</b>.</p>
+   <p class="muted">© 2026 Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p></div>
   <div class="grupo"><h3>Aviso</h3>
-   <p>Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable es el libro <i>El Real Alcázar de Sevilla con regla y compás</i>.</p></div>
+   <p>Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable son los libros <i>El Real Alcázar de Sevilla con regla y compás</i> y <i>La Alhambra con regla y compás</i>.</p></div>
   <div class="grupo"><h3>Versión</h3>
    <p>Versión <b id="aj-ver2"></b>. Se actualiza sola cuando hay una versión nueva.</p>
    <div class="ops"><button id="aj-buscar">🔄 Buscar actualizaciones</button><button id="aj-novedades">Ver novedades</button></div>
@@ -664,6 +689,10 @@ const IK = (function(){
 <script>
 // ---------- Inglés (v1.5): textos fijos de la página ----------
 const ES_EN={
+ "Lacería con regla y compás":"Strapwork with ruler and compass",
+ "Real Alcázar de Sevilla":"Royal Alcázar of Seville",
+ "La Alhambra":"The Alhambra",
+ " y ":" and ",
  "Método de trazado":"Drawing method",
  "📐 Con compás":"📐 With compass",
  "▦ Con cuadrícula":"▦ With a grid",
@@ -727,9 +756,9 @@ const ES_EN={
  '⬇️ Exportar…':'⬇️ Export…','Restablecer':'Reset','Cerrar':'Close','Apariencia':'Appearance','Tamaño de letra':'Text size','Normal':'Normal','Grande':'Large','Muy grande':'Extra large',
  'Tema':'Theme','Automático':'Automatic','Claro':'Light','Oscuro':'Dark','Instalar en el móvil':'Install on your phone','📲 Cómo añadirla a la pantalla de inicio':'📲 How to add it to the Home Screen',
  'Acerca de':'About','Versión':'Version','Creada por':'Made by','y':'and',
- '© 2026 Adela Moreno Vega y Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.':'© 2026 Adela Moreno Vega and Carlos Moreno Otto. All rights reserved. Free for personal and educational use.',
- '© 2026 Adela Moreno Vega y Carlos Moreno Otto.':'© 2026 Adela Moreno Vega and Carlos Moreno Otto.',
- 'Aviso':'Notice','Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable es el libro':'This app is an aid for practicing geometric drawing and may contain mistakes. If in doubt, the reliable source is the book',
+ '© 2026 Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.':'© 2026 Carlos Moreno Otto. All rights reserved. Free for personal and educational use.',
+ '© 2026 Carlos Moreno Otto.':'© 2026 Carlos Moreno Otto.',
+ 'Aviso':'Notice','Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable son los libros':'This app is an aid for practicing geometric drawing and may contain mistakes. If in doubt, the reliable sources are the books',
  '. Se actualiza sola cuando hay una versión nueva.':'. It updates itself when there is a new version.',
  '🔄 Buscar actualizaciones':'🔄 Check for updates','Ver novedades':'What’s new','Listo':'Done','Novedades':'What’s new','Entendido':'Got it',
  'Exportar':'Export','Qué quieres':'What you want','Tipo de archivo':'File type','🎨 Color (SVG)':'🎨 Color (SVG)','🖼️ Imagen (PNG)':'🖼️ Image (PNG)','✂️ Láser: piezas':'✂️ Laser: pieces','✂️ Láser: celosía':'✂️ Laser: lattice',
@@ -756,6 +785,8 @@ function renderLazo(D, o) {
   const u = 'lz' + (renderLazo.n = (renderLazo.n || 0) + 1);
   const W = o.rw + 2 * o.ow;
   const vb = `${o.x0} ${o.y0} ${o.w} ${o.h}`;
+  // o.giro=[ángulo,cx,cy]: el dibujo se gira dentro del marco (para enseñar el módulo como en el libro)
+  const cb = o.giro ? (() => { const cx = o.x0 + o.w / 2, cy = o.y0 + o.h / 2, r = Math.hypot(o.w, o.h) / 2; return { x0: cx - r, y0: cy - r, w: 2 * r, h: 2 * r }; })() : o;
   const size = o.unitmm ? `width="${f(o.w * o.unitmm)}mm" height="${f(o.h * o.unitmm)}mm"` : `width="100%"`;
   let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" ${size} preserveAspectRatio="xMidYMid meet">`;
   s += `<defs><clipPath id="${u}clip"><rect x="${o.x0}" y="${o.y0}" width="${o.w}" height="${o.h}"/></clipPath>`;
@@ -771,11 +802,12 @@ function renderLazo(D, o) {
   }
   s += `</defs><g clip-path="url(#${u}clip)">`;
   s += `<rect x="${o.x0}" y="${o.y0}" width="${o.w}" height="${o.h}" fill="${o.ribbon}"/>`;
+  if (o.giro) s += `<g transform="rotate(${o.giro.join(' ')})">`;
   // pieces
   s += `<g${o.wc ? ` filter="url(#${u}wc)"` : ''}>`;
   const inView = (pts) => {
     for (let i = 0; i < pts.length; i += 2)
-      if (pts[i] > o.x0 - 1 && pts[i] < o.x0 + o.w + 1 && pts[i + 1] > o.y0 - 1 && pts[i + 1] < o.y0 + o.h + 1) return true;
+      if (pts[i] > cb.x0 - 1 && pts[i] < cb.x0 + cb.w + 1 && pts[i + 1] > cb.y0 - 1 && pts[i + 1] < cb.y0 + cb.h + 1) return true;
     return false;
   };
   D.F.forEach((fc, i) => {
@@ -801,7 +833,7 @@ function renderLazo(D, o) {
   paths.forEach(d => { s += `<path d="${d}" ${ribbonAttrs} stroke="${o.ribbon}" stroke-width="${f(o.rw)}"/>`; });
   if (o.interlace) {
     D.O.forEach(([x, y, dx, dy, sn]) => {
-      if (x < o.x0 - 2 || x > o.x0 + o.w + 2 || y < o.y0 - 2 || y > o.y0 + o.h + 2) return;
+      if (x < cb.x0 - 2 || x > cb.x0 + cb.w + 2 || y < cb.y0 - 2 || y > cb.y0 + cb.h + 2) return;
       const cs = Math.sqrt(Math.max(0, 1 - sn * sn));
       const L = W / sn + W * cs / sn + 0.02;
       const a = `x1="${f(x - dx * L / 2)}" y1="${f(y - dy * L / 2)}" x2="${f(x + dx * L / 2)}" y2="${f(y + dy * L / 2)}"`;
@@ -839,6 +871,7 @@ function renderLazo(D, o) {
     }
     s += `</g>`;
   }
+  if (o.giro) s += `</g>`;
   s += `</g>`;
   if (o.frame) s += `<rect x="${o.x0}" y="${o.y0}" width="${o.w}" height="${o.h}" fill="none" stroke="${o.outline}" stroke-width="0.08"/>`;
   return s + `</svg>`;
@@ -1520,6 +1553,32 @@ P.felipe=escalar({id:'felipe',nombre:'Rueda de ocho sesgada',lugar:'Salón del t
 Object.assign(P.felipe,{rw:+(2*(q-1)/s2*6).toFixed(4),ow:0.07,G:{R,dA,dB,rho,s,K,c,q}});
 })();
 
+// ===== LA ALHAMBRA · Sala de la Barca, zócalo 1 (alicatado n.º 16) =====
+// Cuadrado de 8 × 8 con circunferencia de radio 1: paralelas a ejes y diagonales por sus cortes (pasos 1 a 6 del libro).
+// En el muro el módulo está girado 45°: aquí se guarda ya girado y los pasos lo enseñan derecho (p.giro).
+(function(){const S=Math.SQRT1_2,a=1+S,b=1+2*S,c3=1+3*S,t3=3*S,U=8*S;
+const F=[[S,-a,a,-a],[-S,-a,S,-c3],[S,-c3,t3,-c3],[t3,-c3,3,-4],[-3,-4,-4,-3]];
+const G=[(x,y)=>[x,y],(x,y)=>[-x,y],(x,y)=>[x,-y],(x,y)=>[-x,-y],(x,y)=>[y,x],(x,y)=>[-y,x],(x,y)=>[y,-x],(x,y)=>[-y,-x]];
+function modulo(){const L=[],vis=new Set();for(const g of G)for(const q of F){const p=g(q[0],q[1]),r=g(q[2],q[3]),k=[p,r].map(v=>v.map(n=>n.toFixed(4)).join(',')).sort().join('|');if(vis.has(k))continue;vis.add(k);L.push([...p,...r]);}return L;}
+const Rt=v=>[(v[0]-v[1])*S,(v[0]+v[1])*S];
+const area=Q=>{let A=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];A+=p[0]*q[1]-q[0]*p[1];}return Math.abs(A)/2;};
+P.barca=escalar({id:'barca',coleccion:'alhambra',num:16,nombre:'Estrellas de ocho y piezas en Y',lugar:'Sala de la Barca · Palacio de Comares',tipo:'cinta',
+  W:4*U,H:2*U,
+  lineas(){const L=[];for(const [cc,rr] of [[0,0],[2,0],[1,1],[3,1],[4,0],[0,2],[2,2],[4,2],[-1,1],[1,-1],[3,-1]])for(const s of modulo()){const p=Rt([s[0],s[1]]),q=Rt([s[2],s[3]]);L.push([p[0]+cc*U,p[1]+rr*U,q[0]+cc*U,q[1]+rr*U]);}return L;},
+  clase(Q,[x,y]){const n=Q.length,cc=Math.round(x/U),rr=Math.round(y/U),d=Math.hypot(x-cc*U,y-rr*U);
+    if(n===16&&d<0.3)return rr%2?0:((cc%4+4)%4===2?2:1);  // sinos: filas de azules y filas de melados y negros
+    if(n===12)return 3;if(n===4)return 5;return 4;},
+  nombres:['Sino azul','Sino melado','Sino negro','Alfardón (estrella de cuatro alargada)','Pieza en Y','Pieza cuadrada'],
+  paletas:{
+    'Alhambra':{cols:['#2f4fa3','#c98b2b','#161616','#3d7a62','#161616','#161616'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Verde y negro':{cols:['#1f5f5b','#c98b2b','#161616','#2f4fa3','#161616','#161616'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Terracota':{cols:['#8a4b36','#d98e6e','#5a3022','#e8b49a','#8a4b36','#8a4b36'],ribbon:'#fbf4ec',outline:'#8a4b36'},
+    'Para colorear':{cols:Array(6).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
+});
+// Paso 8: la cinta mide 2B, con B = A/10 y A la distancia entre las rectas x = ±(1+√2/2) del paso 4
+Object.assign(P.barca,{rw:+(2*(2*a/10)*P.barca.k).toFixed(4),ow:0.07,giro:-45,Gb:{S,a,b,c3,U}});
+})();
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -1700,15 +1759,47 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
     ...p.pasos.slice(6)];
 })();
 
+(function(){const p=P.barca,{S,a,b,c3}=p.Gb,k=p.k,X=v=>6+v*k,Y=v=>6+v*k,box=[X(-4),Y(-4),X(4),Y(4)];
+  const ln=(L,c,w,d)=>guia(L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]),c,w,d),an=(L,c,w)=>animar(L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]),c,w);
+  const ejes=(v)=>[[-4,v,4,v],[-4,-v,4,-v],[v,-4,v,4],[-v,-4,-v,4]];
+  const diag=(v)=>{const L=[];for(const sg of [1,-1])for(const t of [v,-v]){const s0=recta([X(0),Y(t)],[1,sg],box);if(s0)L.push(s0);}return L;}; // x∓y=±v
+  const vtM=[6-4*k-0.4,6-4*k-0.4,8*k+0.8,8*k+0.8],vtG=[5.25,5.25,25.5,25.5];
+  Object.assign(p,{vt:vtM,
+  resumen:'Cintas blancas que se entrelazan formando octógonos superpuestos, con estrellas de ocho azules, negras y meladas en sus centros, alfardones verdes y piezas negras en forma de Y.',
+  pie:'Todo sale de un cuadrado de 8 × 8 con una circunferencia de radio 1: por sus cortes con los ejes y las diagonales se trazan paralelas, y por los cortes de estas, otras. En el muro el módulo aparece girado 45°.',
+  pasos:[
+    {h:'Cuadrado de 8 × 8 y circunferencia',t:'Parte de un cuadrado dividido en 8 × 8 cuadros y remarca sus ejes y diagonales. Dibuja una circunferencia con centro en el del cuadrado y radio 1/8 del lado.',c:'Es la cuadrícula de «Aprender a trazar» (dividir el cuadrado en 8).',anim:'fade',
+     guia(){const L=[];for(let i=-4;i<=4;i++)L.push([i,-4,i,4],[-4,i,4,i]);return ln(L,AZ,0.04)+ln([[-4,0,4,0],[0,-4,0,4],[-4,-4,4,4],[-4,4,4,-4]],RO,0.05,'0.3 0.2')+circulos([[X(0),Y(0)]],k,'#2b4f73',0.06);}},
+    {h:'Paralelas a las diagonales',t:'Por los puntos donde la circunferencia corta a los ejes, traza paralelas a las diagonales hasta el borde del cuadrado.',c:'Salen cuatro rectas, dos en cada dirección.',anim:'draw',
+     guia(){return animar(diag(1),RO,0.07);}},
+    {h:'Paralelas a los ejes',t:'Por los puntos donde la circunferencia corta a las diagonales, traza rectas paralelas a los ejes.',c:'Quedan a 0,71 cuadros del centro.',anim:'draw',
+     guia(){return an(ejes(S),'#2b4f73',0.07);}},
+    {h:'Paralelas a los lados',t:'Por los puntos donde se cortan las rectas de los dos pasos anteriores, traza paralelas a los lados del cuadrado.',c:'Son los lados del cuadrado que rodea a la estrella central.',anim:'draw',
+     guia(){return an(ejes(a),RO,0.07);}},
+    {h:'Paralelas a las diagonales',t:'Por esos mismos puntos, traza ahora paralelas a las diagonales.',c:'Se cruzan sobre los ejes: serán las puntas de la estrella.',anim:'draw',
+     guia(){return animar(diag(b),'#2b4f73',0.07);}},
+    {h:'Más paralelas a los lados',t:'Por los puntos donde se cortan las rectas del paso 3 con las del paso 5, traza rectas paralelas a los lados del cuadrado.',c:'Son las últimas: ya están todas las líneas del módulo.',anim:'draw',
+     guia(){return an(ejes(c3),RO,0.07);}},
+    {h:'La estructura del módulo',t:'Con los trazos anteriores ya puedes dibujar la estructura lineal del módulo que genera la composición.',c:'Una estrella de ocho en el centro, rodeada de octógonos que se superponen, y un brazo hacia cada esquina.',tipo:'remarcar'},
+    {h:'La cinta',t:'Para dibujar la cinta, cuya anchura es 2B, traza paralelas a ambos lados del eje a una distancia B = A/10, siendo A la distancia entre las dos rectas del paso 4. La proporción entre cuerda y calle es 1/4.',c:'La raya azul marca A.',tipo:'cinta',
+     guia(){return `<g stroke="#2b4f73" stroke-width="0.06" fill="#2b4f73">${[[X(-a),Y(-a)-0.25,X(a),Y(-a)-0.25]].map(s=>ln_(s)).join('')}<text x="${X(0)}" y="${Y(-a)-0.45}" font-size="0.55" text-anchor="middle" font-family="Inter,sans-serif" stroke="none">A</text></g>`;}},
+    {h:'Las cintas se cruzan',t:'Una vez obtenido el contorno, solo queda prolongar algunos de sus lados para generar el efecto de lazo: unas cintas parecen pasar sobre otras en un ritmo alterno.',c:'Cada cinta pasa por encima en un cruce y por debajo en el siguiente.',tipo:'cinta',entrelazar:true},
+    {h:'Repetir el módulo',t:'La repetición por traslación del módulo permite cubrir el plano.',c:'Si se mira solo el contorno, el módulo se puede dividir en ocho partes iguales y simétricas.',tipo:'piezas',vt:vtG},
+    {h:'Girar 45°',t:'Para colocar el diseño en la posición en que aparece en el muro hay que girarlo 45°. En el zócalo los sinos son azules, negros y melados, los alfardones verdes y las piezas en Y, negras.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:vtG,sinGiro:true}]});
+  function ln_(s0){return `<line x1="${s0[0]}" y1="${s0[1]}" x2="${s0[2]}" y2="${s0[3]}"/>`;}
+})();
+
 // Dibuja un paso del trazado de un patrón nuevo
 function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt||p.vt,[x0,y0,w,h]=vt,pad=w*0.03;
+  // p.giro: el alicatado está girado en el muro; los pasos lo enseñan derecho, como en el libro (salvo s.sinGiro)
+  const giro=p.giro&&!s.sinGiro?[p.giro,x0+w/2,y0+h/2]:null;
   const marco=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="#2b2b2b" stroke-width="0.08"/>`;
-  if(s.tipo==='cinta'){const o={x0,y0,w,h,cols:Array(p.nombres.length).fill('#ffffff'),over:{},ribbon:'#ffffff',outline:'#222222',rw:p.rw,ow:0.06,interlace:false,frame:true};
+  if(s.tipo==='cinta'){const o={x0,y0,w,h,cols:Array(p.nombres.length).fill('#ffffff'),over:{},ribbon:'#ffffff',outline:'#222222',rw:p.rw,ow:0.06,interlace:!!s.entrelazar,frame:true,giro};
     const sv=render(p.D,o).replace('<svg ','<svg style="pointer-events:none" ');
     return `<div class="fade">${s.guia?sv.replace(/<\/svg>\s*$/,`<g class="fade">${s.guia(p,vt)}</g></svg>`):sv}</div>`;}
   if(s.tipo==='piezas'||s.tipo==='color'){
     const pal=s.tipo==='color'?Object.values(p.paletas)[0]:{cols:Array(p.nombres.length).fill('#ffffff'),ribbon:'#222222',outline:'#222222'};
-    const o={x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:s.tipo==='color'?p.rw:0.1,ow:s.tipo==='color'?p.ow:0,interlace:p.tipo!=='mosaico',frame:true};
+    const o={x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:s.tipo==='color'?p.rw:0.1,ow:s.tipo==='color'?p.ow:0,interlace:p.tipo!=='mosaico',frame:true,giro};
     return `<div class="fade">${render(p.D,o).replace('<svg ','<svg style="pointer-events:none" ')}</div>`;}
   let g='';
   PS.slice(0,n).forEach((q,i)=>{if(!q.guia)return;const cur=i===n-1;let gq=q.guia(p,vt);
@@ -1716,9 +1807,9 @@ function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt
     if(!cur)gq=gq.replace(/ class="(draw|fade)"/g,'');
     g+=`<g class="${cur?(q.anim||'fade'):''}${s.tipo==='remarcar'?' dim':''}">${gq}</g>`;});
   if(s.tipo==='remarcar'){const L=[];for(const [cl,pts] of p.D.S)for(let k=0;k+2<pts.length+(cl?2:0);k+=2){const a=k,b=(k+2)%pts.length;
-      const sg=[pts[a],pts[a+1],pts[b],pts[b+1]];if(Math.max(sg[0],sg[2])<x0-1||Math.min(sg[0],sg[2])>x0+w+1||Math.max(sg[1],sg[3])<y0-1||Math.min(sg[1],sg[3])>y0+h+1)continue;L.push(sg);}
+      const sg=[pts[a],pts[a+1],pts[b],pts[b+1]],mg=giro?w*0.25:1;if(Math.max(sg[0],sg[2])<x0-mg||Math.min(sg[0],sg[2])>x0+w+mg||Math.max(sg[1],sg[3])<y0-mg||Math.min(sg[1],sg[3])>y0+h+mg)continue;L.push(sg);}
     const cx=x0+w/2,cy=y0+h/2;L.sort((a,b)=>Math.hypot((a[0]+a[2])/2-cx,(a[1]+a[3])/2-cy)-Math.hypot((b[0]+b[2])/2-cx,(b[1]+b[3])/2-cy));
-    g+=animar(L,'#1b1b1b',0.17);}
+    g+=giro?`<g transform="rotate(${giro.join(' ')})">${animar(L,'#1b1b1b',0.17)}</g>`:animar(L,'#1b1b1b',0.17);}
   const fz=Math.max(w,h)/24;if(Math.abs(fz-1)>0.2){g=g.replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(v*fz).toFixed(3)}"`).replace(/stroke-dasharray="([\d. ]+)"/g,(m,v)=>`stroke-dasharray="${v.split(' ').map(n=>+(n*fz).toFixed(3)).join(' ')}"`);}
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${y0-pad} ${w+2*pad} ${h+2*pad}" width="100%"><rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#fffefa"/><defs><clipPath id="tzclip2"><rect x="${x0}" y="${y0}" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#tzclip2)">${g}</g>${marco}</svg>`;}
 return {P,recta,redTriangulos,poligono,contorno,dibujarPaso};
@@ -1762,10 +1853,12 @@ const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',p
   pie:'La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.'}};
 for(const p of Object.values(PATRONES.P)){const m=+(p.W*0.06).toFixed(2);
   PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H]},
-    titulo:p.nombre+' · '+p.lugar,intro:`Es el alicatado de las páginas ${p.pags} de <em>El Real Alcázar de Sevilla con regla y compás</em>. ${p.resumen}`});}
+    titulo:p.nombre+' · '+p.lugar,intro:p.coleccion==='alhambra'?`Es el alicatado n.º ${p.num} de <em>La Alhambra con regla y compás</em>. ${p.resumen}`:`Es el alicatado de las páginas ${p.pags} de <em>El Real Alcázar de Sevilla con regla y compás</em>. ${p.resumen}`});}
+const MONU={alcazar:['Real Alcázar de Sevilla','Royal Alcázar of Seville'],alhambra:['La Alhambra','The Alhambra']};
+const monu=p=>tr(...MONU[p.coleccion||'alcazar']);
 // ---------- Inglés (v1.5): nombres, textos y pasos de cada alicatado ----------
 const LIBRO_EN='<em>El Real Alcázar de Sevilla con regla y compás</em> (“The Royal Alcázar of Seville with ruler and compass”)';
-const PAL_EN={'Alcázar':'Alcázar','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
+const PAL_EN={'Alcázar':'Alcázar','Alhambra':'Alhambra','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
 const PAT_EN={
  lazo8:{nombre:'Eight-fold knot',lugar:'Patio de las Muñecas',
   nombres:['Corner star','Small piece by the star','Alfardón (long hexagon)','Side V piece','Triangle by the alfardón','Triangle by the central star','Edge star','Central V piece','Central star'],
@@ -1856,6 +1949,22 @@ const PAT_EN={
    {h:'Octagons',t:'Join in order the eight points where the axes and diagonals cut each circle: you get a regular octagon with one point up. Neighboring octagons touch at their points.',c:'The gaps left between four octagons are four-pointed stars.'},
    {h:'The pieces',t:'Two pieces: the octagon and the four-pointed star.',c:'At the edges of the panel half stars and quarter stars are used.'},
    {h:'Color',t:'The rows of octagons alternate green and black, and the stars are always white.',c:'Try other combinations in the Color tab.'}]},
+ barca:{nombre:'Eight-pointed stars and Y pieces',lugar:'Hall of the Boat · Comares Palace',
+  nombres:['Blue sino','Honey sino','Black sino','Alfardón (long four-pointed star)','Y piece','Square piece'],
+  resumen:'White straps interlace into overlapping octagons, with blue, black and honey eight-pointed stars at their centers, green alfardones and black Y-shaped pieces.',
+  pie:'It all comes from an 8 × 8 square with a circle of radius 1: parallels are drawn through where it cuts the axes and diagonals, and more through their crossings. On the wall the module is turned 45°.',
+  pasos:[
+   {h:'8 × 8 square and circle',t:'Start from a square divided into 8 × 8 squares and ink its axes and diagonals. Draw a circle centered on the square, with a radius of 1/8 of the side.',c:'It is the grid from “Learn to draw” (dividing the square into 8).'},
+   {h:'Parallels to the diagonals',t:'Through the points where the circle cuts the axes, draw parallels to the diagonals up to the edge of the square.',c:'You get four lines, two in each direction.'},
+   {h:'Parallels to the axes',t:'Through the points where the circle cuts the diagonals, draw lines parallel to the axes.',c:'They are 0.71 squares from the center.'},
+   {h:'Parallels to the sides',t:'Through the points where the lines of the two previous steps cross, draw parallels to the sides of the square.',c:'They are the sides of the square around the central star.'},
+   {h:'Parallels to the diagonals',t:'Through those same points, now draw parallels to the diagonals.',c:'They cross on the axes: they will be the points of the star.'},
+   {h:'More parallels to the sides',t:'Through the points where the lines of step 3 cross those of step 5, draw lines parallel to the sides of the square.',c:'These are the last ones: all the lines of the module are there.'},
+   {h:'The structure of the module',t:'With the previous strokes you can now draw the line structure of the module that generates the composition.',c:'An eight-pointed star in the center, surrounded by overlapping octagons, and an arm towards each corner.'},
+   {h:'The strap',t:'To draw the strap, whose width is 2B, draw parallels on both sides of the axis at a distance B = A/10, A being the distance between the two lines of step 4. The ratio between strap and gap is 1/4.',c:'The blue mark shows A.'},
+   {h:'The straps cross',t:'Once the outline is drawn, just extend some of its sides to create the interlace effect: some straps seem to pass over others in turn.',c:'Each strap goes over at one crossing and under at the next.'},
+   {h:'Repeat the module',t:'Repeating the module by translation covers the plane.',c:'Looking only at the outline, the module can be divided into eight equal, symmetrical parts.'},
+   {h:'Turn 45°',t:'To place the design as it appears on the wall, turn it 45°. On the dado the sinos are blue, black and honey, the alfardones green and the Y pieces black.',c:'Try other combinations in the Color tab.'}]},
  felipe:{nombre:'Skewed eight-fold rosette',lugar:'Hall of the Philip II Ceiling',
   nombres:['Black sino (central star)','Green sino (central star)','Blue zafate','Green zafate','Arrow','Small corner star','Piece between two rosettes','Small piece'],
   resumen:'An eight-fold rosette whose central star is “skewed”: its points cross as they turn, ringed by eight zafates, with small stars and arrows between the rosettes.',
@@ -1897,7 +2006,7 @@ if(EN){
     if(e.pasos&&p.pasos)p.pasos=p.pasos.map((q,i)=>Object.assign({},q,e.pasos[i]||{}));
     if(p.pasosB)p.pasosB=p.pasosB.map((q,i)=>Object.assign({},q,(e.pasosB||[])[i]||(i>=6?e.pasos[i]:{})||{}));
     p.titulo=p.nombre+' · '+p.lugar;
-    if(id!=='lazo8')p.intro=`The tile pattern on pages ${p.pags.replace(/ (a|y) /,'–')} of ${LIBRO_EN}. ${p.resumen}`;}
+    if(id!=='lazo8')p.intro=p.coleccion==='alhambra'?`Tile pattern no. ${p.num} in <em>La Alhambra con regla y compás</em> (“The Alhambra with ruler and compass”). ${p.resumen}`:`The tile pattern on pages ${p.pags.replace(/ (a|y) /,'–')} of ${LIBRO_EN}. ${p.resumen}`;}
 }
 const palNombre=n=>EN?(PAL_EN[n]||n):n;
 
@@ -2197,7 +2306,7 @@ async function crearLamina(){
   const img=await cargarImg(svgLamina(L).replace(/width="[^"]*mm" height="[^"]*mm"/,`width="${Math.round(L.dw*mmPx)}" height="${Math.round(L.dh*mmPx)}"`));
   cx.drawImage(img,Math.round(L.dx*mmPx),Math.round(L.dy*mmPx),Math.round(L.dw*mmPx),Math.round(L.dh*mmPx));
   cx.fillStyle='#8c8c8c';cx.font=`${Math.round(3*mmPx)}px Inter, system-ui, sans-serif`;cx.textBaseline='alphabetic';
-  cx.textAlign='left';cx.fillText(`${PAT.nombre} · ${PAT.lugar} · ${tr('Real Alcázar de Sevilla','Royal Alcázar of Seville')}`,L.m*mmPx,(L.ph-L.m)*mmPx);
+  cx.textAlign='left';cx.fillText(`${PAT.nombre} · ${PAT.lugar} · ${monu(PAT)}`,L.m*mmPx,(L.ph-L.m)*mmPx);
   cx.textAlign='right';cx.fillText('Mosaicos · indalo-apps.github.io/mosaicos',(L.pw-L.m)*mmPx,(L.ph-L.m)*mmPx);
   if(L.ley.length){cx.textAlign='left';cx.fillStyle='#555555';cx.font=`600 ${Math.round(3*mmPx)}px Inter, system-ui, sans-serif`;cx.fillText(L.titLey,L.m*mmPx,(L.ly+2)*mmPx);
     cx.font=`${Math.round(2.6*mmPx)}px Inter, system-ui, sans-serif`;
@@ -2286,8 +2395,8 @@ $('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(f
 function miniatura(p){const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
   return renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');}
 function contarGaleria(){}
-function pintarGaleria(){contarGaleria();$('galeria').innerHTML=Object.values(PATS).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small></span></button>`).join('');}
-function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${tr('Real Alcázar de Sevilla','Royal Alcázar of Seville')}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
+function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small></span></button>`).join('');}
+function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${monu(PAT)}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
 function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);HIST=[];$('deshacer').disabled=true;SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
 $('galeria').addEventListener('click',e=>{const b=e.target.closest('[data-pat]');if(b)location.hash='#a/'+b.dataset.pat+'/trazado';});
@@ -2482,17 +2591,17 @@ const ULT='laceria-ultimo-v1',store={get(k,d){try{const v=localStorage.getItem(k
 const ETAPAS=['trazado','teselar','colorear','imprimir'];
 const pasoGuardado=c=>{try{const v=localStorage.getItem('laceria-paso-c-'+c.id);return v===null?null:+v;}catch(e){return null;}};
 const mini=c=>consSvg(c,0,true).replace('width="100%"','aria-hidden="true" focusable="false"');
-const VOLVER={'#inicio':['Inicio','Home'],'#aprender':['Aprender a trazar','Learn to draw'],'#alicatados':['Alicatados','Tile patterns']};
+const VOLVER={'#inicio':['Inicio','Home'],'#aprender':['Aprender a trazar','Learn to draw'],'#alicatados':['Alcázar','Alcázar'],'#alhambra':['Alhambra','Alhambra']};
 function cab(t,sub,volver,intro){$('titulo').innerHTML=t+(sub?`<span class="sub">${sub}</span>`:'');
   if(volver){const n=lt(VOLVER[volver]||VOLVER['#inicio']);$('volver-txt').textContent=n;$('volver').setAttribute('aria-label',tr('Volver a ','Back to ')+n);}
-  document.querySelector('.cab-top').classList.toggle('con-volver',!!volver);document.title=(t==='Mosaicos'?'':t.replace(/<[^>]+>/g,'')+' · ')+'Mosaicos';
+  document.querySelector('.cab-top').classList.toggle('con-volver',!!volver);document.querySelector('.cab-top').classList.toggle('en-inicio',t==='Mosaicos'&&!volver);document.title=(t==='Mosaicos'?'':t.replace(/<[^>]+>/g,'')+' · ')+'Mosaicos';
   $('volver').hidden=!volver;if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';}
 function mostrar(v){['inicio','aprender','alicatados','mis'].forEach(n=>$('v-'+n).hidden=n!==v);
   const ali=v==='a',con=v==='c';$('barra-etapas').hidden=!ali;
   if(!ali&&!con)document.querySelectorAll('.tab').forEach(x=>x.classList.remove('show'));
   document.querySelector('footer #pie').hidden=!ali;}
 // ---- Inicio
-function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería del Real Alcázar de Sevilla','Strapwork from the Royal Alcázar of Seville'),null,'');
+function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y compás','Strapwork with ruler and compass'),null,'');
   const u=store.get(ULT,null);let html='';
   if(u){const m=u.match(/^a\/([\w-]+)\/(\w+)$/),c=u.match(/^c\/([\w-]+)$/);
     if(m&&PATS[m[1]]){const p=PATS[m[1]],e={trazado:tr('Trazar','Draw'),teselar:tr('Teselar','Tessellate'),colorear:tr('Colorear','Color'),imprimir:tr('Imprimir','Print')}[m[2]]||'';
@@ -2500,10 +2609,15 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería del Real Alcáza
     else if(c){const k=CONS.L.find(x=>x.id===c[1]);if(k)html=`${mini(k)}<span><small>${tr('Seguir donde lo dejaste','Continue where you left off')}</small><b>${lt(k.nombre)}</b></span>`;}}
   $('seguir').hidden=!html;if(html){$('seguir').innerHTML=html;$('seguir').href='#'+u;}
   $('ic-aprender').innerHTML=mini(CONS.L.find(x=>x.id==='cuad-oct-circ'));
-  $('ic-alicatados').innerHTML=miniatura(PATS.lazo8).replace('width="48" height="48"','width="64" height="64"');
-  $('ic-mis').innerHTML=`<svg viewBox="0 0 2 2" width="64" height="64"><rect width="1" height="1" fill="#1f5f5b"/><rect x="1" width="1" height="1" fill="#c98b2b"/><rect y="1" width="1" height="1" fill="#2f4fa3"/><rect x="1" y="1" width="1" height="1" fill="#161616"/></svg>`;
+  $('ic-mis').innerHTML=`<svg viewBox="0 0 2 2" width="40" height="40"><rect width="1" height="1" fill="#1f5f5b"/><rect x="1" width="1" height="1" fill="#c98b2b"/><rect y="1" width="1" height="1" fill="#2f4fa3"/><rect x="1" y="1" width="1" height="1" fill="#161616"/></svg>`;
+  const banda=(p,x0,y0,w,h)=>{const pal=Object.values(p.paletas)[0];return renderLazo(datos(p),{x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');};
+  if(!$('portada-img').firstChild)$('portada-img').innerHTML=banda(PATS.felipe,0,4,72,27);
+  if(!$('im-alcazar').firstChild)$('im-alcazar').innerHTML=banda(PATS.zaguan2,0,2,24,9);
+  if(!$('im-alhambra').firstChild&&PATS.barca)$('im-alhambra').innerHTML=banda(PATS.barca,0,0,24,9);
+  const na=deCol('alcazar').length,nh=deCol('alhambra').length;
+  $('n-alcazar').textContent=tr(`Sevilla · ${na} alicatados`,`Seville · ${na} tile patterns`);
+  $('n-alhambra').textContent=tr(`Granada · ${nh} ${nh===1?'alicatado':'alicatados'} · se irán añadiendo más`,`Granada · ${nh} tile ${nh===1?'pattern':'patterns'} · more coming`);
   $('n-aprender').textContent=tr(`${CONS.L.length} construcciones`,`${CONS.L.length} constructions`);
-  $('n-alicatados').textContent=tr(`${Object.keys(PATS).length} alicatados`,`${Object.keys(PATS).length} tile patterns`);
   const n=misDibujos().length;$('n-mis').textContent=n?tr(`${n} guardados`,`${n} saved`):tr('Aún no hay ninguno','None yet');}
 // ---- Aprender a trazar
 function aprender(){mostrar('aprender');cab(tr('Aprender a trazar','Learn to draw'),tr('Construcciones básicas · págs. 164 a 175','Basic constructions · pp. 164–175'),'#inicio',tr('Las construcciones con regla y compás del libro: la base de todos los alicatados. Cada una empieza por la figura terminada.','The ruler-and-compass constructions from the book: the basis of every tile pattern. Each one starts with the finished figure.'));
@@ -2517,12 +2631,16 @@ function construccion(id){const c=CONS.L.find(x=>x.id===id);if(!c){location.hash
   MODO.c=c;mostrar('c');cab(lt(c.nombre),tr('Aprender a trazar · pág. ','Learn to draw · p. ')+c.pags,'#aprender','');
   window.tabEtapa('trazado',true);window.trazadoCambio();store.set(ULT,'c/'+id);}
 // ---- Alicatados
-function alicatados(){mostrar('alicatados');cab(tr('Alicatados del Alcázar','Alcázar tile patterns'),tr(`${Object.keys(PATS).length} alicatados del libro`,`${Object.keys(PATS).length} tile patterns from the book`),'#inicio','');pintarGaleria();}
+const deCol=col=>Object.values(PATS).filter(p=>(p.coleccion||'alcazar')===col);
+function alicatados(col){col=col||'alcazar';mostrar('alicatados');const n=deCol(col).length;
+  if(col==='alhambra')cab(tr('La Alhambra','The Alhambra'),tr(`Granada · ${n} ${n===1?'alicatado':'alicatados'} por ahora`,`Granada · ${n} tile ${n===1?'pattern':'patterns'} so far`),'#inicio',tr('Los alicatados de <i>La Alhambra con regla y compás</i>. Se irán añadiendo más.','The tile patterns from <i>La Alhambra con regla y compás</i> (“The Alhambra with ruler and compass”). More will be added.'));
+  else cab(tr('Real Alcázar de Sevilla','Royal Alcázar of Seville'),tr(`${n} alicatados del libro`,`${n} tile patterns from the book`),'#inicio','');
+  pintarGaleria(col);}
 // ---- Alicatado en 4 etapas
 function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}if(!ETAPAS.includes(etapa))etapa='trazado';
   const antes=MODO.c;MODO.c=null;mostrar('a');
   if(PAT.id!==id)cambiarPatron(id);else if(antes||!$('dots').children.length)window.trazadoCambio();
-  cab(PAT.nombre,`${PAT.lugar} · ${tr('Real Alcázar de Sevilla','Royal Alcázar of Seville')}`,'#alicatados',PAT.intro);
+  cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',PAT.intro);
   window.tabEtapa(etapa,true);if(etapa==='colorear')draw();store.set(ULT,'a/'+id+'/'+etapa);}
 // ---- Mis dibujos
 function misDibujos(){const out=[];let E={};try{E=JSON.parse(localStorage.getItem('laceria-estado-v2')||'{}').p||{};}catch(e){}
@@ -2567,7 +2685,7 @@ function ruta(){let h=decodeURIComponent(location.hash.slice(1));
   if(!h&&q&&PATS[q]){location.replace('#a/'+q+'/trazado');return;}
   if(h==='trazado'||h==='colorear'){location.replace('#a/'+PAT.id+'/'+h);return;}
   if(!h||h==='inicio')return inicio();
-  if(h==='aprender')return aprender();if(h==='alicatados')return alicatados();if(h==='mis')return mis();
+  if(h==='aprender')return aprender();if(h==='alicatados')return alicatados('alcazar');if(h==='alhambra')return alicatados('alhambra');if(h==='mis')return mis();
   let m=h.match(/^c\/([\w-]+)$/);if(m)return construccion(m[1]);
   m=h.match(/^a\/([\w-]+)(?:\/(\w+))?$/);if(m)return alicatado(m[1],m[2]||'trazado');
   inicio();}
@@ -2583,6 +2701,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.4",["🏛️ New home screen with the two monuments: the Royal Alcázar of Seville and the Alhambra","🧩 First Alhambra tile pattern: eight-pointed stars and Y pieces from the Hall of the Boat (no. 16), with its 11 steps from the book","📖 The glossary button now says “Glossary”"]],
     ["2.3",["▦ Skewed rosette: a second way to draw it, on the 5-9-9-5 grid (p. 113), next to the compass one","🔁 “Repeat the module” now shows several rosettes"]],
     ["2.2.1",["🧭 The back button now says where it takes you: “‹ Home”, “‹ Learn to draw” or “‹ Tile patterns”"]],
     ["2.2",["🛒 New shopping list: a card with a swatch, the reference and the pieces of each paint, and boxes to tick in the shop. Share it as an image, copy it as text or save it as a PDF to print","✏️ Draw: in the color steps the new drawing fades in over the previous one, without going blank","🔺 Moves in the plane: the original figure stays still from one move to the next","📐 Learn to draw: five constructions that went past the edge of the drawing now fit (the equilateral triangle from its side among them)"]],
@@ -2599,6 +2718,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.4",["🏛️ Portada nueva con los dos monumentos: el Real Alcázar de Sevilla y la Alhambra","🧩 Primer alicatado de la Alhambra: estrellas de ocho y piezas en Y de la Sala de la Barca (n.º 16), con sus 11 pasos del libro","📖 El botón del glosario dice ahora «Glosario»"]],
     ["2.3",["▦ Rueda sesgada: segunda forma de trazarla, con la cuadrícula 5-9-9-5 (pág. 113), junto a la del compás","🔁 «Repetir el módulo» enseña ahora varias ruedas"]],
     ["2.2.1",["🧭 El botón de volver dice ahora a dónde vuelves: «‹ Inicio», «‹ Aprender a trazar» o «‹ Alicatados»"]],
     ["2.2",["🛒 Lista de la compra nueva: una tarjeta con la muestra, la referencia y las piezas de cada pintura, y casillas para marcar en la tienda. Compártela como imagen, cópiala como texto o guárdala en PDF para imprimir","✏️ Trazar: en los pasos de color el dibujo nuevo aparece sobre el anterior, sin pasar por blanco","🔺 Movimientos en el plano: la figura original se queda quieta de un movimiento a otro","📐 Aprender a trazar: cinco construcciones que se salían del dibujo ya caben enteras (entre ellas, el triángulo equilátero a partir del lado)"]],

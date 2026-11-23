@@ -1,6 +1,6 @@
-# Mosaicos · Lacería del Real Alcázar de Sevilla
+# Mosaicos · Lacería con regla y compás
 
-© 2026 **Adela Moreno Vega** y **Carlos Moreno Otto**. Todos los derechos reservados (ver [LICENSE](LICENSE)).
+© 2026 **Carlos Moreno Otto**. Todos los derechos reservados (ver [LICENSE](LICENSE)).
 
 App de dibujo geométrico con regla y compás basada en el libro *El Real Alcázar de Sevilla con regla y compás*. Hasta la versión 1.6 se llamó «Lacería · Alicatados del Alcázar».
 
@@ -33,6 +33,12 @@ Alicatados (versión 2.1):
 | Estrellas de seis y de ocho | Zaguán, segunda sala | 32 a 35 |
 | Rueda de ocho sesgada | Salón del techo de Felipe II | 110 a 114 |
 
+Alicatados de *La Alhambra con regla y compás* (colección `alhambra`, `#alhambra`):
+
+| Alicatado | Lugar | N.º en el libro |
+| --- | --- | --- |
+| Estrellas de ocho y piezas en Y | Sala de la Barca (Palacio de Comares) | 16 |
+
 El lazo de 8 lleva sus piezas calculadas de antemano. Los demás se describen en el `index.html` (objeto `PATRONES`) solo con las líneas de un módulo; el motor (`MOTOR`) corta las líneas en sus cruces, saca las piezas, encadena las cintas y, en los de cinta, decide qué cinta pasa por encima en cada cruce. Para añadir un alicatado basta con sus líneas, los nombres de sus piezas, sus paletas y los pasos del trazado. Con `#a/<id>/trazado` en el enlace se abre directamente uno de ellos (el antiguo `?patron=<id>` sigue funcionando).
 
 Se publica con GitHub Pages: https://indalo-apps.github.io/mosaicos/  
@@ -48,11 +54,11 @@ Sigue la «Guía común para nuestras apps» (proyecto APPS de Claude): se insta
 
 La app comprueba la versión al abrirse, al volver a ella y cada 90 segundos, y se recarga sola cuando no hay ninguna ventana abierta. Los datos se guardan con claves `laceria-…` (se mantienen de la 1.x). El coloreado, el paso del trazado y lo repasado a mano se guardan en el móvil, así que no se pierden al actualizar.
 
-## Autores
-Adela Moreno Vega y Carlos Moreno Otto.
+## Autor
+Carlos Moreno Otto.
 
 ## Licencia
 Todos los derechos reservados. Se permite usar la app publicada con fines personales y educativos; no se permite copiar, modificar ni distribuir el código o los contenidos sin autorización de los autores. Texto completo en [LICENSE](LICENSE).
 
 ## Aviso
-Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable es el libro «El Real Alcázar de Sevilla con regla y compás».
+Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable son los libros «El Real Alcázar de Sevilla con regla y compás» y «La Alhambra con regla y compás».

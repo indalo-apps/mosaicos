@@ -1,7 +1,7 @@
 {
-  "name": "Mosaicos · Lacería del Real Alcázar",
+  "name": "Mosaicos · Lacería con regla y compás",
   "short_name": "Mosaicos",
-  "description": "Aprende a trazar con regla y compás los alicatados del Real Alcázar de Sevilla: trazar, teselar, colorear e imprimir.",
+  "description": "Aprende a trazar con regla y compás los alicatados del Real Alcázar de Sevilla y de la Alhambra: trazar, teselar, colorear e imprimir.",
   "start_url": "./",
   "scope": "./",
   "id": "./",

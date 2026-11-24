@@ -1,0 +1,15 @@
+{
+  "name": "mosaicos",
+  "private": true,
+  "description": "Mosaicos · Lacería con regla y compás. La app se publica en un solo index.html, que se construye desde src/.",
+  "scripts": {
+    "construir": "node herramientas/construir.js",
+    "geometria": "node pruebas/geometria.js",
+    "navegador": "node pruebas/con-servidor.js pruebas/navegador.js",
+    "test": "node herramientas/construir.js --ver && node pruebas/geometria.js && node pruebas/con-servidor.js pruebas/navegador.js"
+  },
+  "devDependencies": {
+    "axe-core": "^4.10.0",
+    "playwright": "^1.48.0"
+  }
+}

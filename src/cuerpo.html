@@ -1,0 +1,234 @@
+<header>
+  <div class="cab-top">
+    <a class="btn-volver" id="volver" href="#inicio" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span id="volver-txt">Inicio</span></a>
+    <h1 id="titulo">Mosaicos<span class="sub">Lacería con regla y compás</span></h1>
+    <span class="hueco" aria-hidden="true"></span><button class="btn-pill" id="btn-glosario">Glosario</button>
+    <button class="btn-redondo btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
+  </div>
+  <div id="ficha" class="ficha" hidden></div>
+  <p id="intro" hidden></p>
+</header>
+<main id="app">
+<section id="v-inicio" class="vista" aria-labelledby="titulo" hidden>
+  <div class="portada" aria-hidden="true"><div class="portada-img" id="portada-img"></div><div class="portada-txt"><span class="portada-t">Mosaicos</span><span class="portada-s">Lacería con regla y compás</span></div></div>
+  <a class="seguir" id="seguir" href="#inicio" hidden></a>
+  <div class="monus">
+    <a class="monu" href="#alicatados"><span class="monu-img" id="im-alcazar" aria-hidden="true"></span><span class="monu-txt"><h2>Real Alcázar de Sevilla</h2><small id="n-alcazar"></small></span></a>
+    <a class="monu" href="#alhambra"><span class="monu-img" id="im-alhambra" aria-hidden="true"></span><span class="monu-txt"><h2>La Alhambra de Granada</h2><small id="n-alhambra"></small></span></a>
+  </div>
+  <div class="accesos">
+    <a class="acceso" href="#aprender"><span class="acc-ic" id="ic-aprender" aria-hidden="true"></span><span><b>Aprender a trazar</b><small id="n-aprender"></small></span></a>
+    <a class="acceso" href="#mis"><span class="acc-ic" id="ic-mis" aria-hidden="true"></span><span><b>Mis dibujos</b><small id="n-mis"></small></span></a>
+  </div>
+  <p class="hint">Basado en <i>El Real Alcázar de Sevilla con regla y compás</i> y <i>La Alhambra con regla y compás</i>. Funciona sin conexión.</p>
+</section>
+<section id="v-aprender" class="vista" aria-labelledby="titulo" hidden>
+  <div id="lista-cons"></div>
+  <p class="hint"><button class="linkbtn" id="glo-aprender">📖 Glosario de términos</button></p>
+</section>
+<section id="v-alicatados" class="vista" aria-labelledby="titulo" hidden>
+  <nav class="galeria" id="galeria" aria-label="Elige el alicatado"></nav>
+</section>
+<section id="v-mis" class="vista" aria-labelledby="titulo" hidden>
+  <div id="lista-mis"></div>
+</section>
+<div class="barra-tabs" id="barra-etapas"><div class="tabs etapas" role="tablist" aria-label="Etapas">
+  <button role="tab" id="t-trazado" aria-controls="tab-trazado" data-tab="trazado"><span>1</span>Trazar</button>
+  <button role="tab" id="t-teselar" aria-controls="tab-teselar" data-tab="teselar"><span>2</span>Teselar</button>
+  <button role="tab" id="t-colorear" aria-controls="tab-colorear" data-tab="colorear"><span>3</span>Colorear</button>
+  <button role="tab" id="t-imprimir" aria-controls="tab-imprimir" data-tab="imprimir"><span>4</span>Imprimir</button></div></div>
+<section id="tab-trazado" class="tab" role="tabpanel" aria-labelledby="t-trazado">
+  <div class="tz">
+    <div class="stage"><p class="paso-chip" id="paso-chip" aria-hidden="true"></p><div id="tzsvg" role="img" aria-label="Dibujo del paso"></div><p class="leyenda-paso" id="leyenda-paso" hidden><span class="lp-prev" aria-hidden="true"></span>Lo ya trazado <span class="lp-act" aria-hidden="true"></span>Este paso</p></div>
+    <div class="tzside">
+      <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
+      <div class="dots" id="dots"></div>
+      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div>
+        <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div>
+        <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
+        <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
+      </div>
+      <p class="hint solo-teclado">También puedes avanzar con las flechas del teclado.</p>
+    </div>
+  </div>
+</section>
+<div id="tab-colorear" class="tab cz" role="tabpanel" aria-labelledby="t-colorear">
+  <section class="stage">
+    <div class="viewbar" role="group" aria-label="Vista"><span aria-hidden="true">Vista</span>
+      <button data-v="mod">Módulo (29×29)</button>
+      <button data-v="2x2">2 × 2</button>
+      <button data-v="3x2">Zócalo 3 × 2</button>
+      <button data-v="4x3">4 × 3</button>
+    </div>
+    <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
+    <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
+    <div class="acciones"><button id="deshacer" disabled>↶ Deshacer</button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button></div>
+  </section>
+  <aside>
+    <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div>
+      <h3 class="sub-h" id="h-casa">Pinturas de la casa</h3>
+      <div class="ops" id="cartas" role="group" aria-labelledby="h-casa"><button data-cv="">Ninguna</button><button data-cv="vg">Van Gogh</button><button data-cv="ds">Daniel Smith</button><button data-cv="wn">Cotman (W&amp;N)</button></div>
+      <p class="hint">Elige la marca de acuarela: la paleta se pasa a sus colores, con el nombre y la referencia de cada uno para comprarlos. El pincel mostrará su carta. Los colores en pantalla son aproximados.</p>
+      <div class="row" id="row-convertir" hidden><button id="convertir">🎨 Pasar mis colores a la carta</button></div>
+      <p class="hint" id="carta-marca" hidden></p></div>
+    <div class="card"><h2>Pincel</h2>
+      <div class="brush" id="brush"></div>
+      <div class="row"><label for="solo">Pintar solo la pieza pulsada</label><input type="checkbox" id="solo"></div>
+      <p class="hint">Elige un color y toca una pieza. <span class="solo-teclado">Con el teclado: entra en el dibujo con Tab, muévete con las flechas y pinta con Intro. </span>Con esta opción desmarcada se pintan todas las piezas del mismo tipo, como al alicatar.</p>
+    </div>
+    <div class="card" id="card-pintar" hidden><h2>Con qué pintar</h2><ul class="lista-pint" id="lista-pint"></ul>
+      <div class="ops" style="margin-top:10px"><button id="copiar-compra">🛒 Lista de la compra</button></div><p class="msg" id="msg-compra" role="status" aria-live="polite"></p></div>
+    <div class="card types"><h2>Tipos de pieza</h2><div id="types"></div>
+      <button id="clearOver" style="margin-top:6px">Quitar retoques sueltos</button></div>
+    <div class="card"><h2 id="h-cinta">Cinta</h2>
+      <div class="row"><label id="l-ribbon" for="ribbon">Color de la cinta</label><input type="color" id="ribbon"></div>
+      <div class="row" id="row-outline"><label for="outline">Contorno</label><input type="color" id="outline"></div>
+      <div class="row"><label id="l-rw" for="rw">Ancho de la cinta</label><input type="range" id="rw" min="0.3" max="0.85" step="0.01"></div>
+      <div class="row" id="row-interlace"><label for="interlace">Entrelazado (sobre/bajo)</label><input type="checkbox" id="interlace"></div>
+    </div>
+    <div class="card"><h2>Ver</h2>
+      <div class="row"><label for="wc">Simular acuarela</label><input type="checkbox" id="wc"></div>
+      <div class="row" id="row-grid"><label for="grid">Cuadrícula</label><input type="checkbox" id="grid"></div>
+      <div class="row" id="row-construct"><label for="construct">Trazado (5-7 y diagonales)</label><input type="checkbox" id="construct"></div>
+      <div class="row" style="margin-top:12px;justify-content:flex-end"><button id="reset">Restablecer</button></div>
+      <div class="msg" id="msg"></div>
+    </div>
+  </aside>
+</div>
+<section id="tab-teselar" class="tab" role="tabpanel" aria-labelledby="t-teselar">
+  <div class="tz">
+    <div class="stage"><p class="paso-chip" id="ts-chip" aria-hidden="true"></p><div id="tssvg" role="img" aria-label="El módulo repetido"></div></div>
+    <div class="tzside"><div class="card">
+      <h2 class="steph">Teselar</h2>
+      <p>El módulo es la pieza mínima del dibujo. Repitiéndolo, desplazado sin girarlo ni voltearlo (por traslación), cubre la pared sin dejar huecos: eso es teselar.</p>
+      <div class="ex-rep">
+        <div><span id="ts-cl">Columnas</span><div class="paso"><button data-ts="c" data-d="-1" aria-label="Una columna menos">−</button><output id="ts-c" aria-labelledby="ts-cl" aria-live="polite"></output><button data-ts="c" data-d="1" aria-label="Una columna más">+</button></div></div>
+        <div><span id="ts-rl">Filas</span><div class="paso"><button data-ts="r" data-d="-1" aria-label="Una fila menos">−</button><output id="ts-r" aria-labelledby="ts-rl" aria-live="polite"></output><button data-ts="r" data-d="1" aria-label="Una fila más">+</button></div></div>
+      </div>
+      <div class="ops" id="ts-forma" role="group" aria-label="Módulo" hidden style="margin-top:10px"><button data-forma="hex">⬡ Hexágono</button><button data-forma="tri">△ Triángulo (mínimo)</button></div>
+      <div class="row"><label for="ts-marcar">Marcar los módulos</label><input type="checkbox" id="ts-marcar" checked></div>
+      <details class="tesela" id="ts-tesela">
+        <summary>✏️ Tu tesela <small>· dibuja y se repite</small></summary>
+        <p class="hint" style="margin:0 0 8px">Dibuja sobre el dibujo y tu trazo se repite en todos los módulos.</p>
+        <div class="ops"><button id="ts-dib" aria-pressed="false">✏️ Dibujar</button><button id="ts-undo">↶ Deshacer</button><button id="ts-borrar">Borrar</button></div>
+        <div id="ts-herr" class="ops" role="group" aria-label="Color y grosor del trazo" style="margin-top:8px">
+          <button data-tc="#1d4ed8" aria-label="Azul"><i class="tsw" style="background:#1d4ed8"></i></button><button data-tc="#161616" aria-label="Negro"><i class="tsw" style="background:#161616"></i></button><button data-tc="#1f5f5b" aria-label="Verde"><i class="tsw" style="background:#1f5f5b"></i></button><button data-tc="#c98b2b" aria-label="Melado"><i class="tsw" style="background:#c98b2b"></i></button><button data-tc="#b5444b" aria-label="Rojo"><i class="tsw" style="background:#b5444b"></i></button><button data-tc="#ffffff" aria-label="Blanco"><i class="tsw" style="background:#fff;border:1px solid #bbb"></i></button>
+          <button data-tg="0.006">Fino</button><button data-tg="0.012">Medio</button><button data-tg="0.025">Grueso</button>
+        </div>
+        <div class="row"><label for="ts-color">Con mis colores de Colorear</label><input type="checkbox" id="ts-color"></div>
+        <div class="ops"><button id="ts-fondo">📱 Fondo de pantalla</button></div>
+        <p class="msg" id="ts-msg" role="status" aria-live="polite"></p>
+      </details>
+
+      <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
+      <div class="row" style="justify-content:flex-start;gap:8px;margin-top:10px"><button id="ts-ant">← Trazar</button><button id="ts-sig" class="on">Siguiente: colorear →</button></div>
+    </div></div>
+  </div>
+</section>
+<section id="tab-imprimir" class="tab" role="tabpanel" aria-labelledby="t-imprimir">
+  <div class="vista-imp">
+    <div class="caminos">
+      <button class="camino" data-imp="lamina"><h2>📄 Lámina para pintar</h2><p>PDF en A5, A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.</p></button>
+      <button class="camino" data-imp="png"><h2>🖼️ Imagen</h2><p>PNG en alta resolución, para fondos de pantalla, redes o imprimir.</p></button>
+      <button class="camino" data-imp="svg"><h2>🎨 Vector en color</h2><p>SVG en milímetros, para imprimir a cualquier tamaño o cortar vinilo.</p></button>
+      <button class="camino" data-imp="piezas"><h2>✂️ Corte láser</h2><p>Las piezas del mosaico o la celosía de la cinta, en líneas de corte.</p></button>
+    </div>
+    <p class="hint" id="imp-info"></p>
+    <div class="row" style="justify-content:flex-start;gap:8px"><button id="imp-ant">← Colorear</button></div>
+  </div>
+</section>
+</main>
+<footer><span id="pie">La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.</span><br><button class="pie-ajustes" id="btn-version">Ajustes · Versión 2.6.1 · Novedades</button><br>© 2026 Carlos Moreno Otto.</footer>
+
+<div class="dlg" id="dlg-ajustes" hidden role="dialog" aria-modal="true" aria-labelledby="aj-tit">
+ <div class="hoja">
+  <button class="x" id="aj-x" aria-label="Cerrar">✕</button>
+  <h2 id="aj-tit">Ajustes</h2>
+  <div class="grupo"><h3>Apariencia</h3>
+   <p>Tamaño de letra</p><div class="ops" data-op="letra" role="group" aria-label="Tamaño de letra"><button data-val="normal">Normal</button><button data-val="grande">Grande</button><button data-val="muy-grande">Muy grande</button></div>
+   <p style="margin-top:10px">Tema</p><div class="ops" data-op="tema" role="group" aria-label="Tema"><button data-val="auto">Automático</button><button data-val="claro">Claro</button><button data-val="oscuro">Oscuro</button></div>
+   <p style="margin-top:10px">Idioma · Language</p><div class="ops" data-op="idioma" role="group" aria-label="Idioma · Language"><button data-val="auto">Automático</button><button data-val="es" lang="es">Español</button><button data-val="en" lang="en">English</button></div></div>
+  <div class="grupo"><h3>Instalar en el móvil</h3>
+   <div class="ops"><button id="aj-instalar">📲 Cómo añadirla a la pantalla de inicio</button></div></div>
+  <div class="grupo"><h3>Acerca de</h3>
+   <div class="acerca"><img src="icon-192.png" alt=""><div><b>Mosaicos</b><br><span class="muted">Lacería con regla y compás</span><br><span class="muted">Versión <span id="aj-ver"></span></span></div></div>
+   <p style="margin-top:10px">Creada por <b>Carlos Moreno Otto</b>.</p>
+   <p class="muted">© 2026 Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p></div>
+  <div class="grupo"><h3>Aviso</h3>
+   <p>Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable son los libros <i>El Real Alcázar de Sevilla con regla y compás</i> y <i>La Alhambra con regla y compás</i>.</p></div>
+  <div class="grupo"><h3>Versión</h3>
+   <p>Versión <b id="aj-ver2"></b>. Se actualiza sola cuando hay una versión nueva.</p>
+   <div class="ops"><button id="aj-buscar">🔄 Buscar actualizaciones</button><button id="aj-novedades">Ver novedades</button></div>
+   <p class="muted" id="aj-upd-msg" role="status" aria-live="polite" style="margin-top:8px"></p></div>
+  <button class="listo" id="aj-cerrar">Listo</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-novedades" hidden role="dialog" aria-modal="true" aria-labelledby="nov-titulo">
+ <div class="hoja">
+  <button class="x" id="nov-x" aria-label="Cerrar">✕</button>
+  <h2 id="nov-titulo">Novedades</h2>
+  <div id="nov-lista" aria-live="polite"></div>
+  <button class="listo" id="nov-cerrar">Entendido</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-exportar" hidden role="dialog" aria-modal="true" aria-labelledby="ex-tit">
+ <div class="hoja">
+  <button class="x" id="ex-x" aria-label="Cerrar">✕</button>
+  <h2 id="ex-tit">Exportar</h2>
+  <div class="grupo"><h3>Qué quieres</h3>
+   <div class="ops" data-ex="modo" role="group" aria-label="Tipo de archivo"><button data-val="svg">🎨 Color (SVG)</button><button data-val="png">🖼️ Imagen (PNG)</button><button data-val="piezas">✂️ Láser: piezas</button><button data-val="celosia">✂️ Láser: celosía</button><button data-val="lamina">📄 Lámina para pintar (PDF)</button></div>
+   <p class="muted" id="ex-ayuda" style="margin-top:8px"></p></div>
+  <div class="grupo"><h3>Repeticiones del módulo</h3>
+   <div class="ex-rep">
+    <div><span id="ex-cl">Columnas</span><div class="paso"><button data-rep="c" data-d="-1" aria-label="Una columna menos">−</button><output id="ex-c" aria-labelledby="ex-cl" aria-live="polite"></output><button data-rep="c" data-d="1" aria-label="Una columna más">+</button></div></div>
+    <div><span id="ex-rl">Filas</span><div class="paso"><button data-rep="r" data-d="-1" aria-label="Una fila menos">−</button><output id="ex-r" aria-labelledby="ex-rl" aria-live="polite"></output><button data-rep="r" data-d="1" aria-label="Una fila más">+</button></div></div>
+   </div>
+   <p class="muted" style="margin-top:8px">El dibujo encaja sin costuras: puedes repetirlo como un azulejo.</p></div>
+  <div class="grupo" id="ex-g-mm"><h3>Tamaño</h3>
+   <div class="row"><label for="ex-mm">Ancho de cada módulo (mm)</label><input type="number" id="ex-mm" min="10" max="1000" step="1" inputmode="decimal"></div></div>
+  <div class="grupo" id="ex-g-lam" hidden><h3>Lámina</h3>
+   <p>Papel</p><div class="ops" data-ex="papel" role="group" aria-label="Papel"><button data-val="A5">A5</button><button data-val="A4">A4</button><button data-val="A3">A3</button></div>
+   <p style="margin-top:10px">Orientación</p><div class="ops" data-ex="ori" role="group" aria-label="Orientación"><button data-val="v">Vertical</button><button data-val="h">Horizontal</button></div>
+   <p style="margin-top:10px">Línea</p><div class="ops" data-ex="linea" role="group" aria-label="Línea"><button data-val="gris">Gris suave</button><button data-val="negra">Negra</button></div>
+   <p class="muted" style="margin-top:8px">Con la línea gris suave, el trazo casi desaparece bajo la acuarela.</p>
+   <div class="row" id="row-leyenda" hidden><label for="ex-leyenda">Añadir la lista de pinturas de la carta</label><input type="checkbox" id="ex-leyenda"></div></div>
+  <div class="grupo" id="ex-g-px" hidden><h3>Resolución</h3>
+   <div class="ops" data-ex="px" role="group" aria-label="Resolución"><button data-val="2000">2000 px</button><button data-val="4000">4000 px</button></div></div>
+  <div class="ex-vista" id="ex-vista" aria-hidden="true"></div>
+  <p class="muted" id="ex-info"></p>
+  <div class="ops"><button id="ex-bajar" class="prim">⬇️ Descargar</button><button id="ex-copiar">Copiar SVG</button></div>
+  <p class="msg" id="ex-msg" role="status" aria-live="polite"></p>
+  <button class="listo" id="ex-cerrar">Listo</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-compra" hidden role="dialog" aria-modal="true" aria-labelledby="lc-tit">
+ <div class="hoja">
+  <button class="x" id="lc-x" aria-label="Cerrar">✕</button>
+  <h2 id="lc-tit">Lista de la compra</h2>
+  <p class="muted" style="margin:0 0 10px">Llévala a la tienda y marca cada tubo cuando lo tengas. Los colores en pantalla son aproximados.</p>
+  <div class="lc-vista"><img id="lc-img" alt=""></div>
+  <div class="ops" style="margin-top:12px"><button id="lc-imagen" class="on">🖼️ Compartir imagen</button><button id="lc-texto">📋 Copiar texto</button><button id="lc-pdf">🖨️ PDF para imprimir</button></div>
+  <p class="msg" id="lc-msg" role="status" aria-live="polite"></p>
+  <button class="listo" id="lc-cerrar">Listo</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-comparar" hidden role="dialog" aria-modal="true" aria-labelledby="cmp-tit">
+ <div class="hoja">
+  <button class="x" id="cmp-x" aria-label="Cerrar">✕</button>
+  <h2 id="cmp-tit">Mismo dibujo, otro color</h2>
+  <p class="muted" style="margin:0 0 10px">La trama es la misma en todos; solo cambia cómo se reparten los colores. Fíjate en qué figuras aparecen: estrellas, rosetas, cintas… Toca uno para usarlo.</p>
+  <div class="cmp-grid" id="cmp-grid"></div>
+  <div class="ops" style="margin-top:12px"><button id="cmp-otras">🔀 Otras combinaciones</button></div>
+  <button class="listo" id="cmp-cerrar">Listo</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-glosario" hidden role="dialog" aria-modal="true" aria-labelledby="glo-tit">
+ <div class="hoja">
+  <button class="x" id="glo-x" aria-label="Cerrar">✕</button>
+  <h2 id="glo-tit">Glosario</h2>
+  <div class="row"><label for="glo-buscar" class="sr">Buscar</label><input type="search" id="glo-buscar" placeholder="Buscar…" autocomplete="off"></div>
+  <dl id="glo-lista" class="glo"></dl>
+  <button class="listo" id="glo-cerrar">Listo</button>
+ </div>
+</div>
+<div class="barra-act" id="barra-act" hidden role="status">Actualizando a la versión nueva…</div>

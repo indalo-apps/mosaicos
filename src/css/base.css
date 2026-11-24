@@ -1,0 +1,256 @@
+:root{--paper:#f6f2ea;--ink:#22201c;--muted:#6f685d;--line:#ddd5c6;--card:#fffdf8;--accent:#1f5f5b;--btn:#fff;--btn-on:#22201c;--btn-on-t:#fff;--tipbg:#f1ebdf;--tipt:#4d463b;--accent-t:#fff;--esc:1;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:calc(14px * var(--esc))/1.45 Inter,system-ui,sans-serif;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+header{padding:22px 28px 10px}
+h1{font:600 30px/1.1 "Cormorant Garamond",Georgia,serif;margin:0;letter-spacing:.2px}
+header p{margin:6px 0 0;color:var(--muted);max-width:820px}
+.cz{grid-template-columns:minmax(0,1fr) 330px;gap:22px;padding:12px 28px 28px;align-items:start}
+@media (max-width:760px){.cz{grid-template-columns:1fr}}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;position:sticky;top:60px}
+.stage svg{display:block;max-height:calc(100vh - 260px);cursor:crosshair}
+.viewbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.viewbar span{color:var(--muted);margin-right:4px}
+button,.chip{font:inherit;border:1px solid var(--line);background:var(--btn);border-radius:7px;padding:6px 10px;cursor:pointer;color:var(--ink)}
+button:hover{border-color:#bfb4a0}
+button.on{background:var(--btn-on);color:var(--btn-on-t);border-color:var(--btn-on)}
+aside{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h2{font:600 13px Inter;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.preset{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left}
+.preset i{display:flex;gap:2px}
+.preset i b{width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.15)}
+.brush{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sw{width:28px;height:28px;border-radius:6px;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.sw.sel{box-shadow:0 0 0 2px var(--ink)}
+input[type=color]{width:30px;height:28px;border:1px solid var(--line);border-radius:6px;padding:1px;background:var(--btn);cursor:pointer}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0}
+.row label{flex:1}
+.types .row{margin:5px 0}
+.hint{color:var(--muted);font-size:12.5px;margin:8px 0 0}
+input[type=range]{width:130px;accent-color:var(--accent)}
+.msg{font-size:12.5px;color:var(--accent);min-height:18px;margin-top:6px}
+.tabs{display:flex;gap:6px;margin-top:14px}
+/* v2.0: cabecera, vistas, caminos, etapas, glosario */
+header{padding:18px 28px 6px}
+.cab-top{display:flex;align-items:center;gap:10px}
+.cab-top h1{flex:1;min-width:0}
+@media (max-width:520px){.cab-top h1{font-size:25px}}
+.btn-redondo{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--btn);display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink);padding:0;text-decoration:none}
+.btn-redondo[hidden]{display:none}
+.btn-volver{display:inline-flex;align-items:center;gap:2px;min-height:44px;max-width:62%;padding:0 14px 0 6px;border-radius:22px;border:1px solid var(--line);background:var(--btn);color:var(--accent);text-decoration:none;font:500 calc(16px * var(--esc,1))/1.2 Inter,system-ui,sans-serif;flex:none;order:0}
+.btn-volver svg{flex:none}
+.btn-volver span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.btn-volver[hidden]{display:none}
+/* con botón de volver: el título pasa a su propia línea, debajo */
+.cab-top.con-volver{flex-wrap:wrap}
+.cab-top.con-volver h1{order:3;flex-basis:100%;margin-top:4px}
+.cab-top.con-volver .hueco{flex:1}
+.cab-top .btn-ajustes{position:static;font-size:inherit}
+#intro{margin:8px 0 0;color:var(--muted);max-width:820px}
+.vista{padding:10px 28px 28px;max-width:1100px}
+.vista[hidden]{display:none}
+.caminos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.camino{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-decoration:none;color:var(--ink);font:inherit;cursor:pointer;min-height:44px}
+.camino:hover{border-color:#bfb4a0}
+.camino.ancho{grid-column:1/-1}
+.camino h2{font:600 calc(23px * var(--esc))/1.15 "Cormorant Garamond",Georgia,serif;margin:0;color:var(--ink)}
+.camino p{margin:0;color:var(--muted)}
+.cam-n{font-weight:600;color:var(--accent);margin-top:auto}
+.cam-ic svg{width:64px;height:64px;display:block;border-radius:10px}
+.seguir{display:flex;align-items:center;gap:12px;background:var(--accent);color:var(--accent-t);border-radius:14px;padding:12px 14px;text-decoration:none;margin-bottom:14px;min-height:44px}
+.seguir[hidden]{display:none}
+.seguir svg{width:44px;height:44px;border-radius:8px;flex:none;background:#fff}
+.seguir small{display:block;opacity:.85}
+.seguir b{font-size:calc(17px * var(--esc))}
+.grupo-t{font:600 calc(13px * var(--esc)) Inter;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:20px 0 8px}
+.lista-c{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.lista-c a{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;text-decoration:none;color:var(--ink);min-height:56px}
+.lista-c a:hover{border-color:#bfb4a0}
+.lista-c svg{width:48px;height:48px;flex:none;border-radius:6px}
+.lista-c span{flex:1}
+.lista-c small{color:var(--muted);white-space:nowrap}
+.lista-c small.hecha{color:var(--accent);font-weight:600}
+#v-alicatados .galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin:0;padding:0;overflow:visible}
+#v-alicatados .galeria::after{display:none}
+#v-alicatados .pat{flex-direction:column;align-items:stretch;padding:8px;border-radius:14px;min-height:0}
+#v-alicatados .pat svg{width:100%;height:auto;aspect-ratio:1;border-radius:8px}
+#v-alicatados .pat span{padding:2px 4px 4px}
+.etapas button{display:flex;align-items:center;gap:6px}
+.etapas button span{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:12px;background:var(--line);color:var(--ink)}
+.etapas button.on span{background:var(--btn-on-t);color:var(--btn-on)}
+@media (max-width:560px){.etapas{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))}.etapas button{flex-direction:column;gap:2px;padding:4px 2px;font-size:calc(13px * var(--esc))}}
+.vista-imp{padding:12px 28px 28px;max-width:1100px}
+.linkbtn{border:0;background:none;color:var(--accent);padding:10px 0;font-weight:600;text-decoration:underline;min-height:44px}
+.glo{margin:8px 0}
+.glo dt{font-weight:600;margin-top:12px}
+.glo dd{margin:2px 0 0;color:var(--ink)}
+.glo dd small{display:block;color:var(--muted)}
+#glo-buscar{width:100%;min-height:44px;font:inherit;padding:6px 12px;border:1px solid var(--line);border-radius:10px;background:var(--btn);color:var(--ink)}
+/* v1.6.1: pestañas fijas arriba, acciones bajo el dibujo, chip del paso */
+.barra-tabs{position:sticky;top:0;z-index:20;background:var(--paper);padding:8px 28px 8px;padding-top:max(8px,env(safe-area-inset-top))}
+.barra-tabs .tabs{margin-top:0}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.acciones .msg{margin:0;min-height:0}
+.paso-chip{font-size:calc(12px * var(--esc));color:var(--muted);margin:0 0 8px;letter-spacing:.04em}
+.gal-n{margin:12px 0 0;color:var(--muted);font-size:calc(12.5px * var(--esc))}
+@media (pointer:coarse){.solo-teclado{display:none}}
+.tabs button{padding:8px 14px}
+.tab{display:none}.tab.show{display:grid}
+section.tab.show{display:block}
+.tz{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;padding:12px 28px 28px;align-items:start}
+@media (max-width:760px){.tz{grid-template-columns:1fr}}
+.tzside{display:flex;flex-direction:column;gap:12px}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots button{width:30px;height:30px;padding:0;border-radius:50%;font-size:12px}
+.stepn{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.card h3,.card h2.steph{font:600 calc(23px * var(--esc))/1.15 "Cormorant Garamond",Georgia,serif;margin:4px 0 8px;text-transform:none;letter-spacing:0;color:var(--ink)}
+h1 .sub{display:block;font:500 calc(15px * var(--esc))/1.3 Inter,system-ui,sans-serif;color:var(--muted);margin-top:4px;letter-spacing:0}
+#svg:focus-visible{outline:3px solid #e0a526;outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.card p{margin:0 0 8px}
+.tip{background:var(--tipbg);border-radius:7px;padding:8px 10px;font-size:calc(13px * var(--esc));color:var(--tipt)}
+.tip:empty{display:none}
+#tzsvg svg{display:block;max-height:calc(100vh - 250px);margin:auto}
+/* Modo práctica: el dibujo se atenúa y se repasa encima con el dedo o el lápiz */
+#tzsvg.practicando{touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none}
+#tzsvg.practicando svg>:not(.trazos){opacity:.38}
+#tzsvg.practicando .fade>svg>:not(.trazos){opacity:.38}
+.practica{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+button.peligro{border-color:#b5444b;color:#b5444b}
+/* Carta de acuarela (v1.6) */
+.carta-caja{max-height:250px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(30px,1fr));gap:4px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.carta-caja .sw{width:100%;height:30px;border-radius:5px}
+@media (pointer:coarse){.carta-caja{grid-template-columns:repeat(auto-fill,minmax(44px,1fr))}.carta-caja .sw{height:44px}}
+.brush .carta-caja{flex:1 1 100%}
+.card h3.sub-h{font:600 calc(12px * var(--esc)) Inter;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 8px}
+.pintura{display:block;color:var(--muted);font-size:calc(12px * var(--esc));line-height:1.3}
+#brush-nom{margin:8px 0 0;font-weight:600}
+.lista-pint{list-style:none;margin:0;padding:0}
+.lista-pint li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+.lista-pint li:first-child{border-top:0}
+.lista-pint i{flex:none;width:22px;height:22px;border-radius:5px;border:1px solid rgba(0,0,0,.2);margin-top:1px}
+.lista-pint small{display:block;color:var(--muted)}
+.draw line,.draw polygon,.draw path{stroke-dasharray:1;stroke-dashoffset:1;animation:dr .9s ease forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fd .8s ease forwards}
+@keyframes fd{to{opacity:1}}
+.dim{opacity:.4}
+.lc-vista{background:#e9e3d6;border-radius:10px;padding:10px;text-align:center}.lc-vista img{max-width:100%;max-height:58vh;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.metodo{margin-bottom:10px}.cmp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}.cmp-op{display:flex;flex-direction:column;gap:4px;padding:6px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;text-align:left;min-height:44px}.cmp-op svg{pointer-events:none;display:block;width:100%;height:auto;aspect-ratio:1;border-radius:8px}.cmp-op small{color:var(--muted)}.cmp-op.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}.tesela{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}.grupo-ts{font:600 calc(15px * var(--esc,1)) Inter,system-ui,sans-serif;margin:0 0 4px}.tsw{display:inline-block;width:20px;height:20px;border-radius:50%;vertical-align:middle}#tssvg.dibujando{touch-action:none;cursor:crosshair}#ts-forma[hidden]{display:none}.metodo[hidden]{display:none}.metodo button{flex:1}
+
+/* v2.4: portada con los monumentos */
+.btn-pill{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--btn);color:var(--ink);font:500 calc(15px * var(--esc,1)) Inter,system-ui,sans-serif;flex:none}
+.cab-top.en-inicio{justify-content:flex-end}.cab-top.en-inicio h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.portada{position:relative;border-radius:18px;overflow:hidden;margin-bottom:14px;background:#161616}
+.portada-img svg{display:block;width:100%;height:clamp(150px,30vw,260px)}
+.portada-txt{position:absolute;left:0;right:0;bottom:0;top:0;justify-content:flex-end;padding:28px 18px 14px;background:linear-gradient(rgba(10,10,10,0) 15%,rgba(10,10,10,.55) 50%,rgba(10,10,10,.9));color:#fff;display:flex;flex-direction:column}
+.portada-t{font:600 calc(42px * var(--esc,1))/1 "Cormorant Garamond",Georgia,serif;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.portada-s{font-size:calc(15px * var(--esc,1));opacity:.92;margin-top:4px}
+.monus{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:14px}
+.monu{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.monu:hover{border-color:#bfb4a0}
+.monu-img svg{display:block;width:100%;height:110px}
+.monu-txt{padding:12px 14px 14px;display:flex;flex-direction:column;gap:2px}
+.monu-txt h2{font:600 calc(24px * var(--esc,1))/1.1 "Cormorant Garamond",Georgia,serif;margin:0}
+.monu-txt small{color:var(--muted);font-size:calc(14px * var(--esc,1))}
+.accesos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acceso{display:flex;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.acceso b{display:block;font-weight:600}.acceso small{color:var(--muted)}
+.acc-ic svg{width:40px;height:40px;display:block;border-radius:8px;flex:none}
+@media (max-width:520px){.accesos{grid-template-columns:1fr}}
+.leyenda-paso{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 0;font-size:calc(13px * var(--esc,1));color:var(--muted)}.leyenda-paso[hidden]{display:none}
+.lp-prev,.lp-act{display:inline-block;width:28px;border-radius:2px}.lp-prev{height:2px;background:#a7a196}.lp-act{height:5px;background:#1d4ed8;margin-left:10px}
+.capas{display:grid}
+@media (max-width:760px){#tab-colorear>.stage{position:sticky;top:var(--alto-tabs,62px);z-index:5;box-shadow:0 6px 10px -8px rgba(0,0,0,.25)}#tab-colorear>.stage svg{max-height:32vh}#tab-teselar .stage{top:var(--alto-tabs,62px)}#tab-teselar .stage svg{max-height:34vh}}
+details.tesela>summary{list-style:none;cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px;font:600 calc(15px * var(--esc,1)) Inter,system-ui,sans-serif}
+details.tesela>summary::-webkit-details-marker{display:none}
+details.tesela>summary::after{content:"›";margin-left:auto;font-size:22px;transition:transform .2s;color:var(--muted)}
+details.tesela[open]>summary::after{transform:rotate(90deg)}
+details.tesela>summary small{font-weight:400;color:var(--muted)}.capas>*{grid-area:1/1;min-width:0}
+.row[hidden]{display:none}
+.galeria{display:flex;gap:8px;overflow-x:auto;margin:6px -76px 0 -28px;padding:2px 28px 6px;scroll-padding:0 28px;scrollbar-width:thin}
+.galeria::after{content:'';flex:none;width:20px}
+.pat{display:flex;align-items:center;gap:9px;flex:none;text-align:left;padding:6px 12px 6px 6px;border-radius:10px;min-height:60px}
+.pat svg{width:48px;height:48px;border-radius:6px;flex:none;background:#fff;display:block}
+.pat span{display:flex;flex-direction:column;line-height:1.2}
+.pat small{color:var(--muted);font-size:calc(12px * var(--esc))}
+.pat.on small{color:inherit;opacity:.8}
+footer{padding:0 28px 30px;color:var(--muted);font-size:12.5px;max-width:900px}
+
+/* ===== Tema oscuro (Automático sigue al móvil) ===== */
+:root[data-tema="oscuro"]{--paper:#15191a;--ink:#ece7dc;--muted:#a59e92;--line:#323a39;--card:#1d2324;--accent:#6cbdb4;--btn:#262d2e;--btn-on:#ece7dc;--btn-on-t:#15191a;--tipbg:#262d2e;--tipt:#d8d2c6;--accent-t:#0f1f1d;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-tema="claro"]){--paper:#15191a;--ink:#ece7dc;--muted:#a59e92;--line:#323a39;--card:#1d2324;--accent:#6cbdb4;--btn:#262d2e;--btn-on:#ece7dc;--btn-on-t:#15191a;--tipbg:#262d2e;--tipt:#d8d2c6;--accent-t:#0f1f1d;color-scheme:dark}}
+/* El dibujo siempre sobre papel claro, como en el cuaderno */
+#svg,#tzsvg{background:#fffdf8;border-radius:6px}
+/* ===== Tamaño de letra ===== */
+:root[data-letra="grande"]{--esc:1.14}:root[data-letra="muy-grande"]{--esc:1.3}
+/* v1.6.2 (guía de Apple): en pantallas táctiles el texto parte de unos 17 pt y sigue el tamaño de texto del sistema (lo ajusta el JS) */
+@media (pointer:coarse){:root{--esc:var(--esc-sis,1.2)}:root[data-letra="grande"]{--esc:calc(var(--esc-sis,1.2) * 1.15)}:root[data-letra="muy-grande"]{--esc:calc(var(--esc-sis,1.2) * 1.3)}}
+.card h2:not(.steph){font-size:calc(13px * var(--esc))}.hint,.msg,footer{font-size:calc(12.5px * var(--esc))}
+/* ===== Accesibilidad: foco visible, botones de 44 pt en pantallas táctiles, movimiento reducido ===== */
+button:focus-visible,input:focus-visible{outline:3px solid #e0a526;outline-offset:2px}
+@media (pointer:coarse){button{min-height:44px;min-width:44px}.dots button{width:44px;height:44px}.sw{width:44px;height:44px}input[type=color]{width:44px;height:44px}input[type=checkbox]{width:28px;height:28px}.row{min-height:44px;margin:2px 0}.row label{padding:10px 0}input[type=range]{height:44px;width:150px}}
+/* Móvil: el dibujo fijo arriba ocupa menos y las vistas caben en una línea */
+@media (max-width:760px){.stage svg{max-height:44vh;margin:auto}.viewbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.viewbar::-webkit-scrollbar{display:none}.viewbar button{flex:none}}
+@media (prefers-reduced-motion:reduce){.draw line,.draw polygon,.draw path,.fade{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}}
+/* ===== Cabecera con Ajustes ===== */
+header{position:relative}
+.pie-ajustes{display:inline-block;margin-top:10px}
+/* ===== Ventanas (Ajustes y novedades) ===== */
+.dlg{position:fixed;inset:0;z-index:50;background:rgba(10,15,15,.55);display:flex;align-items:flex-end;justify-content:center}
+.dlg[hidden]{display:none}
+.grupo[hidden],.ops button[hidden]{display:none}
+.ex-rep{display:flex;gap:18px;flex-wrap:wrap}
+.paso{display:flex;align-items:center;gap:6px;margin-top:4px}
+.paso button{width:44px;height:44px;padding:0;font-size:20px}
+.paso output{min-width:2ch;text-align:center;font-weight:600;font-size:calc(17px * var(--esc))}
+#ex-mm{width:90px;min-height:44px;font:inherit;padding:4px 8px;border:1px solid var(--line);border-radius:8px;background:var(--btn);color:var(--ink)}
+.ex-vista{border:1px solid var(--line);border-radius:10px;background:#fff;padding:6px;margin:10px 0 6px;display:flex;justify-content:center}
+.ex-vista svg{width:100%;height:auto;max-height:240px}
+button.prim{background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}
+button:disabled{opacity:.55}
+@media (min-width:640px){.dlg{align-items:center;padding:20px}}
+.hoja{position:relative;background:var(--card);color:var(--ink);width:100%;max-width:520px;max-height:90vh;overflow:auto;border-radius:18px 18px 0 0;padding:22px 20px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+@media (min-width:640px){.hoja{border-radius:18px}}
+@media (prefers-reduced-motion:no-preference){.hoja{animation:sube .22s ease-out}@keyframes sube{from{transform:translateY(30px);opacity:0}}}
+.hoja h2{font:600 calc(26px * var(--esc))/1.1 "Cormorant Garamond",Georgia,serif;margin:0 50px 6px 0}
+.hoja .x{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;padding:0;font-size:16px}
+.grupo{border-top:1px solid var(--line);padding:12px 0}
+.grupo h3{font:600 calc(12px * var(--esc)) Inter;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+.grupo p{margin:0 0 8px}
+.ops{display:flex;gap:6px;flex-wrap:wrap}
+.ops button{min-height:44px;padding:8px 14px}
+.acerca{display:flex;gap:12px;align-items:center}
+.acerca img{width:56px;height:56px;border-radius:13px;flex:none}
+.muted{color:var(--muted)}
+.listo{width:100%;min-height:48px;margin-top:6px;background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}
+#nov-lista h4{margin:12px 0 4px;color:var(--accent)}
+#nov-lista ul{margin:0;padding-left:20px}
+.barra-act{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);z-index:60;background:var(--accent);color:var(--accent-t);padding:10px 18px;border-radius:12px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.barra-act[hidden]{display:none}
+/* ===== Iconos de trazo (v2.7) ===== */
+svg.ic{width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:.4em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+svg.ic.solo{margin-right:0}
+button:has(>svg.ic:not(.solo)),summary:has(>svg.ic){display:inline-flex;align-items:center;justify-content:center;gap:.45em}
+button:has(>svg.ic:not(.solo))>svg.ic,summary>svg.ic{margin-right:0}
+summary:has(>svg.ic){display:flex;justify-content:flex-start}
+.stage{z-index:4}
+h2>svg.ic{width:1.05em;height:1.05em}
+/* ===== Portada de cada alicatado (v2.7) ===== */
+.ficha{display:grid;grid-template-columns:1fr;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card);margin:6px 0 14px}
+.ficha-img{background:#161616}.ficha-img svg{display:block;width:100%;height:clamp(96px,22vw,170px)}
+.ficha-datos{list-style:none;margin:0;padding:10px 14px 12px;display:grid;grid-template-columns:1fr;gap:6px;font-size:calc(14.5px * var(--esc,1));color:var(--ink)}
+.ficha-datos li{display:flex;gap:9px;align-items:flex-start;line-height:1.35}
+.ficha-datos svg.ic{margin:.1em 0 0;color:var(--muted);width:1.15em;height:1.15em}
+@media (min-width:700px){.ficha{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}.ficha-img svg{height:100%;min-height:150px}.ficha-datos{align-content:center;padding:14px 18px}}
+/* ===== Pantallas grandes (v2.7): iPad y ordenador, el dibujo a un lado y siempre entero ===== */
+.ficha[hidden]{display:none}
+@media (min-width:761px){
+  .stage{top:calc(var(--alto-tabs,62px) + 8px)}
+  .stage svg{max-height:calc(100vh - var(--alto-tabs,62px) - 96px);max-height:calc(100dvh - var(--alto-tabs,62px) - 96px);margin:auto;display:block}
+  #tab-colorear>.stage svg{max-height:calc(100vh - var(--alto-tabs,62px) - 150px);max-height:calc(100dvh - var(--alto-tabs,62px) - 150px)}
+  .tzside,.cz>aside{min-width:0}}
+@media (min-width:761px) and (max-width:1040px){
+  .tz{grid-template-columns:minmax(0,1fr) 290px;gap:16px;padding:10px 18px 24px}
+  .cz{grid-template-columns:minmax(0,1fr) 290px;gap:16px;padding:10px 18px 24px}}

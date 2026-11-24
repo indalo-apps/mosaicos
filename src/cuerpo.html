@@ -2,7 +2,7 @@
   <div class="cab-top">
     <a class="btn-volver" id="volver" href="#inicio" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span id="volver-txt">Inicio</span></a>
     <h1 id="titulo">Mosaicos<span class="sub">Lacería con regla y compás</span></h1>
-    <span class="hueco" aria-hidden="true"></span><button class="btn-pill" id="btn-glosario">Glosario</button>
+    <span class="hueco" aria-hidden="true"></span><a class="btn-redondo btn-casa" id="casa" href="#inicio" aria-label="Inicio" title="Inicio" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5L12 4l8.5 7.5"/><path d="M6 9.8V20h4.5v-5.5h3V20H18V9.8"/></svg></a><button class="btn-pill" id="btn-glosario">Glosario</button>
     <button class="btn-redondo btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
   </div>
   <div id="ficha" class="ficha" hidden></div>
@@ -63,7 +63,7 @@
     </div>
     <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
     <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
-    <div class="acciones"><button id="deshacer" disabled>↶ Deshacer</button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button></div>
+    <div class="acciones"><button id="deshacer" disabled>↶ Deshacer</button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button><button id="reiniciar">↺ Reiniciar</button></div>
   </section>
   <aside>
     <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div>
@@ -91,7 +91,6 @@
       <div class="row"><label for="wc">Simular acuarela</label><input type="checkbox" id="wc"></div>
       <div class="row" id="row-grid"><label for="grid">Cuadrícula</label><input type="checkbox" id="grid"></div>
       <div class="row" id="row-construct"><label for="construct">Trazado (5-7 y diagonales)</label><input type="checkbox" id="construct"></div>
-      <div class="row" style="margin-top:12px;justify-content:flex-end"><button id="reset">Restablecer</button></div>
       <div class="msg" id="msg"></div>
     </div>
   </aside>
@@ -108,34 +107,6 @@
       </div>
       <div class="ops" id="ts-forma" role="group" aria-label="Módulo" hidden style="margin-top:10px"><button data-forma="hex">⬡ Hexágono</button><button data-forma="tri">△ Triángulo (mínimo)</button></div>
       <div class="row"><label for="ts-marcar">Marcar los módulos</label><input type="checkbox" id="ts-marcar" checked></div>
-      <details class="tesela" id="ts-tesela">
-        <summary>✏️ Tu tesela <small>· dibuja y se repite</small></summary>
-        <p class="hint" style="margin:0 0 8px">Dibuja sobre el dibujo y tu trazo se repite en todos los módulos.</p>
-        <div class="ops"><button id="ts-dib" aria-pressed="false">✏️ Dibujar</button><button id="ts-undo">↶ Deshacer</button><button id="ts-borrar">Borrar</button></div>
-        <div id="ts-herr" class="ops" role="group" aria-label="Color y grosor del trazo" style="margin-top:8px">
-          <button data-tc="#1d4ed8" aria-label="Azul"><i class="tsw" style="background:#1d4ed8"></i></button><button data-tc="#161616" aria-label="Negro"><i class="tsw" style="background:#161616"></i></button><button data-tc="#1f5f5b" aria-label="Verde"><i class="tsw" style="background:#1f5f5b"></i></button><button data-tc="#c98b2b" aria-label="Melado"><i class="tsw" style="background:#c98b2b"></i></button><button data-tc="#b5444b" aria-label="Rojo"><i class="tsw" style="background:#b5444b"></i></button><button data-tc="#ffffff" aria-label="Blanco"><i class="tsw" style="background:#fff;border:1px solid #bbb"></i></button>
-          <button data-tg="0.006">Fino</button><button data-tg="0.012">Medio</button><button data-tg="0.025">Grueso</button>
-        </div>
-        <div class="row"><label for="ts-color">Con mis colores de Colorear</label><input type="checkbox" id="ts-color"></div>
-        <div class="ops"><button id="ts-fondo">📱 Fondo de pantalla</button></div>
-        <p class="msg" id="ts-msg" role="status" aria-live="polite"></p>
-      </details>
-      <details class="tesela" id="ts-papel">
-        <summary>📏 En papel <small>· medidas para dibujarlo a mano</small></summary>
-        <p class="hint" style="margin:0 0 8px">Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
-        <div class="ops" id="pp-papel" role="group" aria-label="Papel"><button data-pp="A5">A5</button><button data-pp="A4">A4</button><button data-pp="A3">A3</button><button data-pp="med">A medida</button></div>
-        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (cm) <input type="number" id="pp-w" min="5" max="300" step="0.1" inputmode="decimal"></label><label>Alto (cm) <input type="number" id="pp-h" min="5" max="300" step="0.1" inputmode="decimal"></label></div>
-        <div class="ops" id="pp-ori" role="group" aria-label="Orientación" style="margin-top:8px"><button data-ori="v">Vertical</button><button data-ori="h">Horizontal</button></div>
-        <div class="pp-campos"><label>Margen (cm) <input type="number" id="pp-m" min="0" max="20" step="0.1" inputmode="decimal"></label></div>
-        <div id="pp-vista" role="img" aria-label="El papel con el dibujo y sus márgenes"></div>
-        <dl id="pp-res" class="pp-res" aria-live="polite"></dl>
-        <h3 class="grupo-ts" style="margin-top:14px">Plantilla a tamaño real</h3>
-        <p class="hint" style="margin:0 0 6px">Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.</p>
-        <div class="row"><label for="pp-dib">Con el dibujo</label><input type="checkbox" id="pp-dib" checked></div>
-        <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
-        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
-        <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
-      </details>
 
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
       <div class="row" style="justify-content:flex-start;gap:8px;margin-top:10px"><button id="ts-ant">← Trazar</button><button id="ts-sig" class="on">Siguiente: colorear →</button></div>
@@ -151,6 +122,26 @@
       <button class="camino" data-imp="piezas"><h2>✂️ Corte láser</h2><p>Las piezas del mosaico o la celosía de la cinta, en líneas de corte.</p></button>
     </div>
     <p class="hint" id="imp-info"></p>
+      <section class="card papel" id="ts-papel" aria-labelledby="pp-tit">
+        <h2 id="pp-tit">📏 En papel <small>· medidas para dibujarlo a mano</small></h2>
+        <p class="hint" style="margin:0 0 8px">Elige los módulos y el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
+        <div class="ex-rep" style="margin-top:10px">
+          <div><span id="pp-cl">Columnas</span><div class="paso"><button data-pps="c" data-d="-1" aria-label="Una columna menos">−</button><output id="pp-c" aria-labelledby="pp-cl" aria-live="polite"></output><button data-pps="c" data-d="1" aria-label="Una columna más">+</button></div></div>
+          <div><span id="pp-rl">Filas</span><div class="paso"><button data-pps="r" data-d="-1" aria-label="Una fila menos">−</button><output id="pp-r" aria-labelledby="pp-rl" aria-live="polite"></output><button data-pps="r" data-d="1" aria-label="Una fila más">+</button></div></div>
+        </div>
+        <div class="ops" id="pp-papel" role="group" aria-label="Papel"><button data-pp="A5">A5</button><button data-pp="A4">A4</button><button data-pp="A3">A3</button><button data-pp="med">A medida</button></div>
+        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (cm) <input type="number" id="pp-w" min="5" max="300" step="0.1" inputmode="decimal"></label><label>Alto (cm) <input type="number" id="pp-h" min="5" max="300" step="0.1" inputmode="decimal"></label></div>
+        <div class="ops" id="pp-ori" role="group" aria-label="Orientación" style="margin-top:8px"><button data-ori="v">Vertical</button><button data-ori="h">Horizontal</button></div>
+        <div class="pp-campos"><label>Margen (cm) <input type="number" id="pp-m" min="0" max="20" step="0.1" inputmode="decimal"></label></div>
+        <div id="pp-vista" role="img" aria-label="El papel con el dibujo y sus márgenes"></div>
+        <dl id="pp-res" class="pp-res" aria-live="polite"></dl>
+        <h3 class="grupo-ts" style="margin-top:14px">Plantilla a tamaño real</h3>
+        <p class="hint" style="margin:0 0 6px">Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.</p>
+        <div class="row"><label for="pp-dib">Con el dibujo</label><input type="checkbox" id="pp-dib" checked></div>
+        <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
+        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
+        <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
+      </section>
     <div class="row" style="justify-content:flex-start;gap:8px"><button id="imp-ant">← Colorear</button></div>
   </div>
 </section>

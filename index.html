@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.11.1">
+<meta name="app-version" content="2.12">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -82,6 +82,8 @@ header{padding:18px 28px 6px}
 @media (max-width:520px){.cab-top h1{font-size:25px}}
 .btn-redondo{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--btn);display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink);padding:0;text-decoration:none}
 .btn-redondo[hidden]{display:none}
+.cab-top .btn-casa{color:var(--accent)}
+#ts-papel{margin:4px 0 16px;max-width:720px}#ts-papel h2{margin-top:0}#ts-papel h2 small{text-transform:none;letter-spacing:0;font:400 calc(14px * var(--esc,1)) Inter,system-ui,sans-serif;color:var(--muted)}
 .btn-volver{display:inline-flex;align-items:center;gap:2px;min-height:44px;max-width:62%;padding:0 14px 0 6px;border-radius:22px;border:1px solid var(--line);background:var(--btn);color:var(--accent);text-decoration:none;font:500 calc(16px * var(--esc,1))/1.2 Inter,system-ui,sans-serif;flex:none;order:0}
 .btn-volver svg{flex:none}
 .btn-volver span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -325,7 +327,6 @@ ul.libros{margin:6px 0 8px;padding-left:1.1em}ul.libros li{margin:4px 0}
 #pp-vista svg{display:block;max-height:340px;margin:auto}
 .pp-res{margin:6px 0 0;font-size:calc(14.5px * var(--esc,1))}
 .pp-res dt{color:var(--muted);margin-top:8px}.pp-res dd{margin:1px 0 0;font-variant-numeric:tabular-nums}
-#tab-teselar:has(#ts-papel[open]):not(:has(#ts-tesela[open])) .stage{position:static}
 .pp-res .pp-main{font-weight:600;color:var(--ink);font-size:1.08em}
 @media (prefers-color-scheme:dark){#pp-vista{background:#2a2722}}
 .pp-campos[hidden]{display:none}
@@ -581,7 +582,7 @@ const IK = (function(){
   <div class="cab-top">
     <a class="btn-volver" id="volver" href="#inicio" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span id="volver-txt">Inicio</span></a>
     <h1 id="titulo">Mosaicos<span class="sub">Lacería con regla y compás</span></h1>
-    <span class="hueco" aria-hidden="true"></span><button class="btn-pill" id="btn-glosario">Glosario</button>
+    <span class="hueco" aria-hidden="true"></span><a class="btn-redondo btn-casa" id="casa" href="#inicio" aria-label="Inicio" title="Inicio" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5L12 4l8.5 7.5"/><path d="M6 9.8V20h4.5v-5.5h3V20H18V9.8"/></svg></a><button class="btn-pill" id="btn-glosario">Glosario</button>
     <button class="btn-redondo btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
   </div>
   <div id="ficha" class="ficha" hidden></div>
@@ -642,7 +643,7 @@ const IK = (function(){
     </div>
     <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
     <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
-    <div class="acciones"><button id="deshacer" disabled>↶ Deshacer</button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button></div>
+    <div class="acciones"><button id="deshacer" disabled>↶ Deshacer</button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button><button id="reiniciar">↺ Reiniciar</button></div>
   </section>
   <aside>
     <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div>
@@ -670,7 +671,6 @@ const IK = (function(){
       <div class="row"><label for="wc">Simular acuarela</label><input type="checkbox" id="wc"></div>
       <div class="row" id="row-grid"><label for="grid">Cuadrícula</label><input type="checkbox" id="grid"></div>
       <div class="row" id="row-construct"><label for="construct">Trazado (5-7 y diagonales)</label><input type="checkbox" id="construct"></div>
-      <div class="row" style="margin-top:12px;justify-content:flex-end"><button id="reset">Restablecer</button></div>
       <div class="msg" id="msg"></div>
     </div>
   </aside>
@@ -687,34 +687,6 @@ const IK = (function(){
       </div>
       <div class="ops" id="ts-forma" role="group" aria-label="Módulo" hidden style="margin-top:10px"><button data-forma="hex">⬡ Hexágono</button><button data-forma="tri">△ Triángulo (mínimo)</button></div>
       <div class="row"><label for="ts-marcar">Marcar los módulos</label><input type="checkbox" id="ts-marcar" checked></div>
-      <details class="tesela" id="ts-tesela">
-        <summary>✏️ Tu tesela <small>· dibuja y se repite</small></summary>
-        <p class="hint" style="margin:0 0 8px">Dibuja sobre el dibujo y tu trazo se repite en todos los módulos.</p>
-        <div class="ops"><button id="ts-dib" aria-pressed="false">✏️ Dibujar</button><button id="ts-undo">↶ Deshacer</button><button id="ts-borrar">Borrar</button></div>
-        <div id="ts-herr" class="ops" role="group" aria-label="Color y grosor del trazo" style="margin-top:8px">
-          <button data-tc="#1d4ed8" aria-label="Azul"><i class="tsw" style="background:#1d4ed8"></i></button><button data-tc="#161616" aria-label="Negro"><i class="tsw" style="background:#161616"></i></button><button data-tc="#1f5f5b" aria-label="Verde"><i class="tsw" style="background:#1f5f5b"></i></button><button data-tc="#c98b2b" aria-label="Melado"><i class="tsw" style="background:#c98b2b"></i></button><button data-tc="#b5444b" aria-label="Rojo"><i class="tsw" style="background:#b5444b"></i></button><button data-tc="#ffffff" aria-label="Blanco"><i class="tsw" style="background:#fff;border:1px solid #bbb"></i></button>
-          <button data-tg="0.006">Fino</button><button data-tg="0.012">Medio</button><button data-tg="0.025">Grueso</button>
-        </div>
-        <div class="row"><label for="ts-color">Con mis colores de Colorear</label><input type="checkbox" id="ts-color"></div>
-        <div class="ops"><button id="ts-fondo">📱 Fondo de pantalla</button></div>
-        <p class="msg" id="ts-msg" role="status" aria-live="polite"></p>
-      </details>
-      <details class="tesela" id="ts-papel">
-        <summary>📏 En papel <small>· medidas para dibujarlo a mano</small></summary>
-        <p class="hint" style="margin:0 0 8px">Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
-        <div class="ops" id="pp-papel" role="group" aria-label="Papel"><button data-pp="A5">A5</button><button data-pp="A4">A4</button><button data-pp="A3">A3</button><button data-pp="med">A medida</button></div>
-        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (cm) <input type="number" id="pp-w" min="5" max="300" step="0.1" inputmode="decimal"></label><label>Alto (cm) <input type="number" id="pp-h" min="5" max="300" step="0.1" inputmode="decimal"></label></div>
-        <div class="ops" id="pp-ori" role="group" aria-label="Orientación" style="margin-top:8px"><button data-ori="v">Vertical</button><button data-ori="h">Horizontal</button></div>
-        <div class="pp-campos"><label>Margen (cm) <input type="number" id="pp-m" min="0" max="20" step="0.1" inputmode="decimal"></label></div>
-        <div id="pp-vista" role="img" aria-label="El papel con el dibujo y sus márgenes"></div>
-        <dl id="pp-res" class="pp-res" aria-live="polite"></dl>
-        <h3 class="grupo-ts" style="margin-top:14px">Plantilla a tamaño real</h3>
-        <p class="hint" style="margin:0 0 6px">Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.</p>
-        <div class="row"><label for="pp-dib">Con el dibujo</label><input type="checkbox" id="pp-dib" checked></div>
-        <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
-        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
-        <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
-      </details>
 
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
       <div class="row" style="justify-content:flex-start;gap:8px;margin-top:10px"><button id="ts-ant">← Trazar</button><button id="ts-sig" class="on">Siguiente: colorear →</button></div>
@@ -730,6 +702,26 @@ const IK = (function(){
       <button class="camino" data-imp="piezas"><h2>✂️ Corte láser</h2><p>Las piezas del mosaico o la celosía de la cinta, en líneas de corte.</p></button>
     </div>
     <p class="hint" id="imp-info"></p>
+      <section class="card papel" id="ts-papel" aria-labelledby="pp-tit">
+        <h2 id="pp-tit">📏 En papel <small>· medidas para dibujarlo a mano</small></h2>
+        <p class="hint" style="margin:0 0 8px">Elige los módulos y el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
+        <div class="ex-rep" style="margin-top:10px">
+          <div><span id="pp-cl">Columnas</span><div class="paso"><button data-pps="c" data-d="-1" aria-label="Una columna menos">−</button><output id="pp-c" aria-labelledby="pp-cl" aria-live="polite"></output><button data-pps="c" data-d="1" aria-label="Una columna más">+</button></div></div>
+          <div><span id="pp-rl">Filas</span><div class="paso"><button data-pps="r" data-d="-1" aria-label="Una fila menos">−</button><output id="pp-r" aria-labelledby="pp-rl" aria-live="polite"></output><button data-pps="r" data-d="1" aria-label="Una fila más">+</button></div></div>
+        </div>
+        <div class="ops" id="pp-papel" role="group" aria-label="Papel"><button data-pp="A5">A5</button><button data-pp="A4">A4</button><button data-pp="A3">A3</button><button data-pp="med">A medida</button></div>
+        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (cm) <input type="number" id="pp-w" min="5" max="300" step="0.1" inputmode="decimal"></label><label>Alto (cm) <input type="number" id="pp-h" min="5" max="300" step="0.1" inputmode="decimal"></label></div>
+        <div class="ops" id="pp-ori" role="group" aria-label="Orientación" style="margin-top:8px"><button data-ori="v">Vertical</button><button data-ori="h">Horizontal</button></div>
+        <div class="pp-campos"><label>Margen (cm) <input type="number" id="pp-m" min="0" max="20" step="0.1" inputmode="decimal"></label></div>
+        <div id="pp-vista" role="img" aria-label="El papel con el dibujo y sus márgenes"></div>
+        <dl id="pp-res" class="pp-res" aria-live="polite"></dl>
+        <h3 class="grupo-ts" style="margin-top:14px">Plantilla a tamaño real</h3>
+        <p class="hint" style="margin:0 0 6px">Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.</p>
+        <div class="row"><label for="pp-dib">Con el dibujo</label><input type="checkbox" id="pp-dib" checked></div>
+        <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
+        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
+        <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
+      </section>
     <div class="row" style="justify-content:flex-start;gap:8px"><button id="imp-ant">← Colorear</button></div>
   </div>
 </section>
@@ -850,6 +842,9 @@ const ES_EN={
  "Dibujo en gris claro, para repasarlo":"Drawing in light gray, to trace over",
  "📄 Plantilla en PDF":"📄 Template as PDF",
  "📏 En papel":"📏 On paper",
+ "Elige los módulos y el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.":"Choose the modules and the paper and you will see how big each module and the starting figure must be for the columns × rows drawing to fit with its margins.",
+ "↺ Reiniciar":"↺ Start over",
+ "Inicio":"Home",
  "· medidas para dibujarlo a mano":"· measurements to draw it by hand",
  "Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.":"Choose the paper and you will see how big each module and the starting figure are, so that the columns × rows drawing fits with its margins.",
  "A medida":"Custom",
@@ -1014,10 +1009,11 @@ const P={
   lugar:'<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
   pasos:'<path d="M10 6h10M10 12h10M10 18h10"/><circle cx="5" cy="6" r="1.3"/><circle cx="5" cy="12" r="1.3"/><circle cx="5" cy="18" r="1.3"/>',
   piezas:'<path d="M12 2.5l2.2 5.3 5.3 2.2-5.3 2.2L12 17.5l-2.2-5.3L4.5 10l5.3-2.2z" transform="translate(0 2)"/>',
-  repetir:'<path d="M19 12a7 7 0 1 1-2.1-5"/><path d="M19 4v4h-4"/>'};
+  repetir:'<path d="M19 12a7 7 0 1 1-2.1-5"/><path d="M19 4v4h-4"/>',
+  reiniciar:'<path d="M5 12a7 7 0 1 0 2.1-5"/><path d="M5 4v4h4"/>'};
 const M={'✏':'lapiz','🖼':'imagen','🎨':'paleta','📐':'compas','▦':'cuadricula','📄':'documento','⬇':'descargar','📲':'instalar',
   '📱':'movil','📖':'libro','↶':'deshacer','🛒':'carrito','✂':'tijeras','🔄':'actualizar','📋':'copiar','🖨':'imprimir','🔀':'mezclar',
-  '✓':'hecho','📏':'regla','✉':'correo','🔒':'candado','✕':'cerrar','↻':'repetir'};
+  '✓':'hecho','📏':'regla','✉':'correo','🔒':'candado','✕':'cerrar','↻':'repetir','↺':'reiniciar'};
 const RE=new RegExp('^(\\s*)('+Object.keys(M).join('|')+')\\uFE0F?\\s*','u');
 window.icono=(n,cl='ic')=>`<svg class="${cl}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${P[n]}</svg>`;
 const SEL='button,h2,summary,a.btn,label.btn';
@@ -2921,12 +2917,12 @@ document.addEventListener('input',()=>guardar());
 document.addEventListener('change',e=>{const t=e.target;editando=false;if(['interlace','wc','grid','construct','solo'].includes(t.id)){if(t.id!=='solo')snap();st[t.id]=t.checked;draw();}
   else if(CARTA&&t.type==='color'&&t.closest('#tab-colorear'))draw();});
 $('clearOver').onclick=()=>{snap();st.over={};draw();};
-// Restablecer pide un segundo toque (y se puede deshacer)
-let resetArmado=0;
-$('reset').onclick=()=>{const b=$('reset');
-  if(Date.now()-resetArmado>4000){resetArmado=Date.now();b.classList.add('peligro');b.textContent=tr('¿Volver a los colores iniciales? Toca otra vez','Back to the starting colors? Tap again');
-    setTimeout(()=>{if(Date.now()-resetArmado>=3900){b.classList.remove('peligro');b.textContent=tr('Restablecer','Reset');}},4000);return;}
-  resetArmado=0;b.classList.remove('peligro');b.textContent=tr('Restablecer','Reset');snap();st=fresh(PAT);draw();};
+// Reiniciar (v2.12): junto a Deshacer, Exportar y Otro color; vuelve todo el coloreado al principio. Pide un segundo toque y se puede deshacer
+let resetArmado=0;const txtReiniciar=()=>tr('↺ Reiniciar','↺ Start over');
+$('reiniciar').onclick=()=>{const b=$('reiniciar');
+  if(Date.now()-resetArmado>4000){resetArmado=Date.now();b.classList.add('peligro');b.textContent=tr('¿Empezar de cero? Toca otra vez','Start from scratch? Tap again');
+    setTimeout(()=>{if(Date.now()-resetArmado>=3900){b.classList.remove('peligro');b.textContent=txtReiniciar();}},4000);return;}
+  resetArmado=0;b.classList.remove('peligro');b.textContent=txtReiniciar();snap();st=fresh(PAT);draw();$('msg').textContent=tr('Todo el coloreado ha vuelto al principio. Puedes deshacerlo.','All the coloring is back to the start. You can undo it.');};
 // ---------- Exportar (v1.2): SVG en color, PNG, y láser (piezas o celosía) ----------
 // Cada patrón se repite cada W × H (un módulo). Se exporta un rectángulo de c × r módulos que encaja sin costuras.
 const fx=n=>+(+n).toFixed(3);
@@ -3304,7 +3300,7 @@ function medPaso(){const el=document.getElementById('stepm');if(!el)return;
   if(!L)L=step===0?P.med:P.med.slice(0,1);
   el.innerHTML=`<p class="mp-t">${icono('regla')}<b>${tr('En papel','On paper')}</b> <span>· ${P.desc}</span> <button type="button" class="enlace" id="mp-cambiar">${tr('Cambiar','Change')}</button></p><ul>`+L.map(([t,v])=>`<li>${t}: <b>${v}</b></li>`).join('')+'</ul>';
   el.hidden=false;
-  document.getElementById('mp-cambiar').onclick=()=>{location.hash='#a/'+PAT.id+'/teselar';setTimeout(()=>{const d=document.getElementById('ts-papel');if(d){d.open=true;d.scrollIntoView({block:'start',behavior:'smooth'});}},350);};}
+  document.getElementById('mp-cambiar').onclick=()=>{location.hash='#a/'+PAT.id+'/imprimir';setTimeout(()=>{const d=document.getElementById('ts-papel');if(d){d.scrollIntoView({block:'start',behavior:'smooth'});}},350);};}
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
@@ -3425,7 +3421,7 @@ const VOLVER={'#inicio':['Inicio','Home'],'#aprender':['Aprender a trazar','Lear
 function cab(t,sub,volver,intro){$('titulo').innerHTML=t+(sub?`<span class="sub">${sub}</span>`:'');
   if(volver){const n=lt(VOLVER[volver]||VOLVER['#inicio']);$('volver-txt').textContent=n;$('volver').setAttribute('aria-label',tr('Volver a ','Back to ')+n);}
   document.querySelector('.cab-top').classList.toggle('con-volver',!!volver);document.querySelector('.cab-top').classList.toggle('en-inicio',t==='Mosaicos'&&!volver);document.title=(t==='Mosaicos'?'':t.replace(/<[^>]+>/g,'')+' · ')+'Mosaicos';
-  $('volver').hidden=!volver;if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';$('ficha').hidden=true;}
+  $('volver').hidden=!volver;$('casa').hidden=t==='Mosaicos'&&!volver;if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';$('ficha').hidden=true;}
 // ---- Portada de cada alicatado (v2.7): el muro en color, el libro, el lugar, los pasos y las piezas
 function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const img=renderLazo(datos(p),{x0:p.W*0.25,y0:p.H*0.25,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');
@@ -3501,7 +3497,7 @@ function mis(){mostrar('mis');cab(tr('Mis dibujos','My drawings'),tr('Guardados 
     return `<li><a href="#a/${x.p.id}/${x.col?'colorear':'trazado'}">${sv}<span>${x.p.nombre}</span><small>${x.col?tr('Coloreado','Colored'):tr('Repasado a mano','Traced by hand')}</small></a></li>`;}).join('')+'</ul>'
     :`<p>${tr('Todavía no has coloreado ni repasado ningún dibujo. Empieza por un alicatado o por «Aprender a trazar».','You have not colored or traced anything yet. Start with a tile pattern or with “Learn to draw”.')}</p>`;}
 // ---- Teselar
-const TS={marcar:true,tc:'#1d4ed8',tg:'0.012',color:false,dibujar:false};
+const TS={marcar:true,color:false};
 // Construye el teselado: c × r módulos. Devuelve el SVG, el texto del chip, la caja y la red de traslación (para repetir el dibujo a mano)
 function tsConstruir(c,r,marcar,conColor,fondo){
   const mos=PAT.tipo==='mosaico',blanco=Array(PAT.nombres.length).fill('#ffffff'),k=PAT.W/24;
@@ -3543,19 +3539,6 @@ function tsConstruir(c,r,marcar,conColor,fondo){
     for(let i=1;i<c;i++)g+=`<line x1="${i*W}" y1="0" x2="${i*W}" y2="${h}"/>`;for(let j=1;j<r;j++)g+=`<line x1="0" y1="${j*H}" x2="${w}" y2="${j*H}"/>`;
     g+=`</g><rect x="0" y="0" width="${W}" height="${H}" fill="#e0a526" fill-opacity="0.12" stroke="#e0a526" stroke-width="${sw*2.2}"/>`;sv=sv.replace(/<\/svg>$/,g+'</svg>');}
   return {sv,vb:[0,0,c*PAT.W,r*PAT.H],red:{O:[0,0],A:[PAT.W,0],B:[0,PAT.H],tam:PAT.W},chip:tr(`${c} × ${r} módulos · el primero, resaltado`,`${c} × ${r} modules · the first one highlighted`)};}
-// ---- Tesela: lo que dibujas en el primer módulo se repite en todos
-const TES_KEY='laceria-tesela-v1';let TES={};try{TES=JSON.parse(localStorage.getItem(TES_KEY)||'{}')||{};}catch(e){TES={};}
-const tesK=()=>PAT.id+(PAT.modulo&&PAT.modulo.tipo==='hex'&&TS.forma==='tri'?'-tri':'');
-const tesTrazos=()=>TES[tesK()]||(TES[tesK()]=[]);
-const tesGuardar=()=>{try{localStorage.setItem(TES_KEY,JSON.stringify(TES))}catch(e){}};
-function tesCapa(red,vb){const T=tesTrazos();if(!T.length&&!TS.actual)return '';const {O,A,B,tam}=red;
-  const lista=TS.actual?T.concat([TS.actual]):T,camino=lista.map(t=>`<path d="M${t.p.map(q=>(q[0]*tam).toFixed(3)+' '+(q[1]*tam).toFixed(3)).join('L')}" stroke="${t.c}" stroke-width="${(t.w*tam).toFixed(3)}"/>`).join('');
-  // orígenes de la red que tocan la vista
-  const [x0,y0,w,h]=vb,det=A[0]*B[1]-A[1]*B[0],ij=(x,y)=>[((x-O[0])*B[1]-(y-O[1])*B[0])/det,(A[0]*(y-O[1])-A[1]*(x-O[0]))/det];
-  const esq=[[x0,y0],[x0+w,y0],[x0,y0+h],[x0+w,y0+h]].map(p=>ij(...p)),is=esq.map(e=>e[0]),js=esq.map(e=>e[1]);let g='';
-  for(let i=Math.floor(Math.min(...is))-2;i<=Math.ceil(Math.max(...is))+1;i++)for(let j=Math.floor(Math.min(...js))-2;j<=Math.ceil(Math.max(...js))+1;j++)
-    g+=`<g transform="translate(${(O[0]+i*A[0]+j*B[0]).toFixed(3)} ${(O[1]+i*A[1]+j*B[1]).toFixed(3)})">${camino}</g>`;
-  return `<g id="ts-capa" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none">${g}</g>`;}
 {const alto=()=>{const b=document.getElementById('barra-etapas');if(b&&!b.hidden)document.documentElement.style.setProperty('--alto-tabs',b.offsetHeight+'px');};addEventListener('resize',alto);addEventListener('hashchange',()=>setTimeout(alto,50));setTimeout(alto,300);}
 // ---- En papel (v2.8; v2.9 en cm, con la figura de partida, plantilla a tamaño real y medidas en Trazar)
 // Figura de partida de cada alicatado, en unidades del libro: [texto, texto en inglés, medida]. La primera es la principal.
@@ -3639,7 +3622,8 @@ function medidasPapel(G){const kl=PAT.k||1;return (BASE[PAT.id]||[]).map(([t,te,
 let PAC=null;
 window.papelActual=()=>{const key=JSON.stringify([PAT.id,EX.c,EX.r,TS.forma,PP]);if(PAC&&PAC.key===key)return PAC.v;const R=tsConstruir(EX.c,EX.r,false,false),G=calcPapel(R);PAC={key,v:null};return PAC.v=G.ok?{R,G,med:medidasPapel(G),desc:`${PP.p==='med'?tr('papel a medida','custom paper'):PP.p} ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}`}:null;};
 window.cmPapel=cm;
-function pintarPapel(R){const det=$('ts-papel');if(!det||!det.open)return;
+function pintarPapel(R){if(!$('tab-imprimir').classList.contains('show'))return;
+  $('pp-c').textContent=EX.c;$('pp-r').textContent=EX.r;
   document.querySelectorAll('#pp-papel [data-pp]').forEach(b=>{const on=b.dataset.pp===PP.p;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   $('pp-medidas').hidden=PP.p!=='med';
   if(PP.p==='med'){if(document.activeElement!==$('pp-w'))$('pp-w').value=num(PP.w/10).replace(',','.');if(document.activeElement!==$('pp-h'))$('pp-h').value=num(PP.h/10).replace(',','.');}
@@ -3660,8 +3644,8 @@ function pintarPapel(R){const det=$('ts-papel');if(!det||!det.open)return;
     `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${num(PW/10)} × ${cm(PH)}</dd>`;}
 window.svgPapelActual=(opc)=>{const R=tsConstruir(EX.c,EX.r,TS.marcar,false),G=calcPapel(R);return G.ok?{svg:svgPapel(R,G,opc),G}:null;};
 {const gp=()=>store.set(PPK,PP);
-  $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarTeselar();});
-  $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarTeselar();});
+  $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarImprimir();});
+  $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarImprimir();});
   $('pp-dib').checked=PP.dib!==false;$('pp-gris').checked=PP.gris!==false;PP.gris=PP.gris!==false;
   $('pp-dib').onchange=e=>{PP.dib=e.target.checked;gp();};$('pp-gris').onchange=e=>{PP.gris=e.target.checked;gp();};
   $('pp-pdf').onclick=async()=>{const b=$('pp-pdf');b.disabled=true;$('pp-msg').textContent=tr('Preparando la plantilla…','Preparing the template…');
@@ -3669,46 +3653,21 @@ window.svgPapelActual=(opc)=>{const R=tsConstruir(EX.c,EX.r,TS.marcar,false),G=c
     catch(e){console.error(e);$('pp-msg').textContent=tr('No se ha podido crear el PDF.','The PDF could not be created.');}
     b.disabled=false;};
   // los campos van en centímetros
-  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v*10;gp();window.pintarTeselar();});
-  $('ts-papel').addEventListener('toggle',()=>{if($('ts-papel').open)window.pintarTeselar();});}
+  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v*10;gp();window.pintarImprimir();});
+  $('ts-papel').querySelector('.ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-pps]');if(!b)return;const k=b.dataset.pps;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();window.pintarImprimir();});}
 window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent=EX.r;
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');
   if(M&&M.tipo==='hex')document.querySelectorAll('#ts-forma [data-forma]').forEach(b=>{const on=b.dataset.forma===(TS.forma||'hex');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   const R=tsConstruir(EX.c,EX.r,TS.marcar,TS.color);TS.red=R.red;TS.vb=R.vb;
-  $('tssvg').innerHTML=R.sv.replace(/<\/svg>\s*$/,tesCapa(R.red,R.vb)+'</svg>');$('ts-chip').textContent=R.chip;
-  $('tssvg').classList.toggle('dibujando',!!TS.dibujar);
-  document.querySelectorAll('#ts-herr [data-tc]').forEach(b=>{const on=b.dataset.tc===TS.tc;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  document.querySelectorAll('#ts-herr [data-tg]').forEach(b=>{const on=b.dataset.tg===String(TS.tg);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  $('ts-undo').disabled=!tesTrazos().length;pintarPapel(R);};
+  $('tssvg').innerHTML=R.sv;$('ts-chip').textContent=R.chip;};
 
 document.querySelector('#tab-teselar .ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const k=b.dataset.ts;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();pintarTeselar();});
 $('ts-marcar').addEventListener('change',e=>{TS.marcar=e.target.checked;pintarTeselar();});
-// Dibujar en la tesela
-{const tz=$('tssvg');let pid=null;
-  const punto=e=>{const sv=tz.querySelector('svg'),m=sv.getScreenCTM().inverse(),q=new DOMPoint(e.clientX,e.clientY).matrixTransform(m),{O,tam}=TS.red;return [+((q.x-O[0])/tam).toFixed(4),+((q.y-O[1])/tam).toFixed(4)];};
-  const capa=()=>{const g=tz.querySelector('#ts-capa'),h=tesCapa(TS.red,TS.vb);if(g)g.outerHTML=h||'<g id="ts-capa"></g>';else tz.querySelector('svg').insertAdjacentHTML('beforeend',h);};
-  tz.addEventListener('pointerdown',e=>{if(!TS.dibujar||pid!==null)return;pid=e.pointerId;tz.setPointerCapture(pid);TS.actual={c:TS.tc,w:+TS.tg,p:[punto(e)]};e.preventDefault();});
-  tz.addEventListener('pointermove',e=>{if(e.pointerId!==pid||!TS.actual)return;const q=punto(e),u=TS.actual.p[TS.actual.p.length-1];if(Math.hypot(q[0]-u[0],q[1]-u[1])<0.004)return;TS.actual.p.push(q);capa();});
-  const fin=e=>{if(e.pointerId!==pid)return;pid=null;if(TS.actual&&TS.actual.p.length>1){tesTrazos().push(TS.actual);tesGuardar();}TS.actual=null;pintarTeselar();};
-  tz.addEventListener('pointerup',fin);tz.addEventListener('pointercancel',fin);}
-$('ts-tesela').addEventListener('toggle',e=>{if(!e.target.open&&TS.dibujar)$('ts-dib').click();});
-$('ts-dib').onclick=()=>{TS.dibujar=!TS.dibujar;$('ts-dib').setAttribute('aria-pressed',TS.dibujar);$('ts-dib').classList.toggle('on',TS.dibujar);
-  $('ts-msg').textContent=TS.dibujar?tr('Dibuja con el dedo, el lápiz o el ratón sobre el dibujo.','Draw with your finger, a stylus or the mouse on the drawing.'):'';pintarTeselar();};
-$('ts-undo').onclick=()=>{tesTrazos().pop();tesGuardar();pintarTeselar();};
-$('ts-borrar').onclick=()=>{if(!tesTrazos().length)return;if(!confirm(tr('¿Borrar todo lo que has dibujado en esta tesela?','Clear everything you drew on this tile?')))return;TES[tesK()]=[];tesGuardar();pintarTeselar();};
-$('ts-herr').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.tc)TS.tc=b.dataset.tc;if(b.dataset.tg)TS.tg=b.dataset.tg;pintarTeselar();b.focus();});
-$('ts-color').addEventListener('change',e=>{TS.color=e.target.checked;pintarTeselar();});
-$('ts-fondo').onclick=async()=>{const Wp=1170,Hp=2532;let c=Math.min(EX.c,3),r=1,R;
-  for(;r<40;r++){R=tsConstruir(c,r,false,TS.color,true);if(R.vb[3]/R.vb[2]>=Hp/Wp)break;}
-  let sv=R.sv.replace(/<\/svg>\s*$/,tesCapa(R.red,R.vb)+'</svg>').replace(/width="100%"( height="100%")?/,`width="${Wp}" height="${Hp}"`).replace('xMidYMid meet','xMidYMid slice');
-  if(!/preserveAspectRatio/.test(sv.slice(0,400)))sv=sv.replace('<svg ','<svg preserveAspectRatio="xMidYMid slice" ');
-  try{const img=await cargarImg(sv),cv=document.createElement('canvas');cv.width=Wp;cv.height=Hp;const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,Wp,Hp);x.drawImage(img,0,0,Wp,Hp);
-    const blob=await new Promise(ok=>cv.toBlob(ok,'image/png'));$('ts-msg').textContent=await entregar(blob,`mosaicos-${PAT.id}-fondo.png`);}
-  catch(err){$('ts-msg').textContent=tr('No se ha podido crear la imagen.','Could not create the image.');}};
 $('ts-forma').addEventListener('click',e=>{const b=e.target.closest('[data-forma]');if(!b)return;TS.forma=b.dataset.forma;pintarTeselar();b.focus();});
 $('ts-ant').onclick=()=>window.tabEtapa('trazado');$('ts-sig').onclick=()=>window.tabEtapa('colorear');
 // ---- Imprimir
-window.pintarImprimir=function(){$('imp-info').textContent=tr(`Se imprime el dibujo de ${EX.c} × ${EX.r} módulos que elegiste en Teselar, con tus colores de Colorear. Podrás cambiarlo en la ventana siguiente.`,`It prints the ${EX.c} × ${EX.r} module drawing you chose in Tessellate, with your colors from Color. You can change it in the next window.`);};
+window.pintarImprimir=function(){$('imp-info').textContent=tr(`Se imprime el dibujo de ${EX.c} × ${EX.r} módulos que elegiste en Teselar, con tus colores de Colorear. Podrás cambiarlo en la ventana siguiente.`,`It prints the ${EX.c} × ${EX.r} module drawing you chose in Tessellate, with your colors from Color. You can change it in the next window.`);
+  pintarPapel(tsConstruir(EX.c,EX.r,TS.marcar,TS.color));};
 document.querySelector('#tab-imprimir .caminos').addEventListener('click',e=>{const b=e.target.closest('[data-imp]');if(!b)return;EX.modo=b.dataset.imp;exGuardar();exPintar();window.abrirDlg('dlg-exportar');});
 $('imp-ant').onclick=()=>window.tabEtapa('colorear');
 // ---- Glosario
@@ -3793,6 +3752,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.12",["🏠 A house button at the top of every page takes you back to the home screen","↺ Color › Start over: next to Undo, Export and Other colors, it puts all the coloring back to the start (tap twice; you can undo it)","📏 On paper is now in step 4, Print, with its own columns and rows","✂️ «Your tile» has been removed from Tessellate"]],
     ["2.11.1",["🎨 Hall of the Kings, wheels of twelve zafates (no. 29): the green and the blue now match the book’s color plate (p. 149), and the card shows its pages (pp. 146–149)"]],
     ["2.11",["🧩 New Alhambra pattern from the jambs of the Palace of the Lions (no. 31): a wheel of sixteen zafates ringed by eight wheels of eight, with the harp zafates of each side, its 13 steps from the book, colors and measurements in cm"]],
     ["2.10",["🧩 Two new Alhambra patterns from the Hall of the Kings: wheels of zafates with honey stars (no. 28, two alternating modules) and wheels of twelve zafates (no. 29, hexagonal module), with all the book’s steps, colors and measurements in cm"]],
@@ -3826,6 +3786,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.12",["🏠 Botón con una casa arriba en todas las páginas para volver a la portada","↺ Colorear › Reiniciar: junto a Deshacer, Exportar y Otro color, deja todo el coloreado como al principio (dos toques; se puede deshacer)","📏 «En papel» pasa a la etapa 4, Imprimir, con sus columnas y filas","✂️ Se quita «Tu tesela» de Teselar"]],
     ["2.11.1",["🎨 Ruedas de doce zafates de la Sala de los Reyes (n.º 29): el verde y el azul son ahora los de la lámina en color del libro (pág. 149), y la ficha dice sus páginas (págs. 146 a 149)"]],
     ["2.11",["🧩 Alicatado nuevo de las jambas del Palacio de los Leones (n.º 31): una rueda de dieciséis zafates rodeada de ocho ruedas de ocho, con los zafates arpados de cada lado, sus 13 pasos del libro, sus colores y sus medidas en cm"]],
     ["2.10",["🧩 Dos alicatados nuevos de la Sala de los Reyes de la Alhambra: ruedas de zafates con estrellas meladas (n.º 28, dos módulos alternos) y ruedas de doce zafates (n.º 29, módulo hexagonal), con todos los pasos del libro, sus colores y sus medidas en cm"]],

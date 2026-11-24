@@ -116,7 +116,7 @@ function tsConstruir(c,r,marcar,conColor,fondo){
     if(marcar){const sw=w/250;let q=`<g fill="none" stroke="#e0a526" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}">`;
       for(let i=1;i<c;i++)q+=`<line x1="${x0+i*m}" y1="${y0}" x2="${x0+i*m}" y2="${y0+h}"/>`;for(let j=1;j<r;j++)q+=`<line x1="${x0}" y1="${y0+j*m}" x2="${x0+w}" y2="${y0+j*m}"/>`;
       q+=`</g><rect x="${x0}" y="${y0}" width="${m}" height="${m}" fill="#e0a526" fill-opacity="0.12" stroke="#e0a526" stroke-width="${sw*2.2}"/>`;sv=sv.replace(/<\/svg>$/,q+'</svg>');}
-    return {sv,vb:[x0,y0,w,h],red:{O:[x0,y0],A:[m,0],B:[0,m],tam:m},chip:tr(`${c} × ${r} módulos · el primero, resaltado`,`${c} × ${r} modules · the first one highlighted`)+(M.giro?tr(' · derecho, como en el libro',' · upright, as in the book'):'')};}
+    return {sv,vb:[x0,y0,w,h],red:{O:[x0,y0],A:[m,0],B:[0,m],tam:m},chip:tr(`${c} × ${r} módulos · el primero, resaltado`,`${c} × ${r} modules · the first one highlighted`)+(M.nota?tr(...M.nota):M.giro?tr(' · derecho, como en el libro',' · upright, as in the book'):'')};}
   if(conColor)o.rw=st.rw;
   let sv=svgColor(c,r,'100%','100%',o).replace(/ width="100%" height="100%"/,' width="100%"');
   if(marcar){const W=PAT.W,H=PAT.H,w=c*W,h=r*H,sw=w/250;let g=`<g fill="none" stroke="#e0a526" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}">`;
@@ -137,6 +137,64 @@ function tesCapa(red,vb){const T=tesTrazos();if(!T.length&&!TS.actual)return '';
     g+=`<g transform="translate(${(O[0]+i*A[0]+j*B[0]).toFixed(3)} ${(O[1]+i*A[1]+j*B[1]).toFixed(3)})">${camino}</g>`;
   return `<g id="ts-capa" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none">${g}</g>`;}
 {const alto=()=>{const b=document.getElementById('barra-etapas');if(b&&!b.hidden)document.documentElement.style.setProperty('--alto-tabs',b.offsetHeight+'px');};addEventListener('resize',alto);addEventListener('hashchange',()=>setTimeout(alto,50));setTimeout(alto,300);}
+// ---- En papel (v2.8): medidas del módulo y de la figura de partida para dibujar el teselado a mano
+// Figura de partida de cada alicatado, en unidades del libro: [texto, texto en inglés, medida]. La primera es la principal.
+const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
+  zaguan:[['Lado de cada cuadro (el ancho de la cinta)','Side of each square (the strap width)',1]],
+  toledanos:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
+  cenador6:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
+  munecas17:[['Lado del cuadrado de 3 × 3','Side of the 3 × 3 square',3],['Lado de cada cuadro','Side of each square',1]],
+  cubos:[['Lado de cada cuadro','Side of each square',1]],
+  alargadas:[['Radio de las circunferencias (el lado de un cuadro)','Radius of the circles (the side of a square)',1]],
+  alfardones:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
+  octogonos:[['Lado de cada cuadro','Side of each square',1],['Radio de la circunferencia inscrita','Radius of the inscribed circle',0.5]],
+  zaguan2:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Lado de cada cuadro','Side of each square',1],['Radio de las circunferencias (2 cuadros)','Radius of the circles (2 squares)',2]],
+  felipe:[['Radio de la circunferencia inicial','Radius of the starting circle',Math.SQRT2],['Lado del cuadrado inscrito','Side of the inscribed square',2]],
+  barca:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Radio de la circunferencia (un cuadro)','Radius of the circle (one square)',1]],
+  arrayanes:[['Radio de la circunferencia inicial','Radius of the starting circle',1]],
+  taca:[['Lado del cuadrado inicial','Side of the starting square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]]};
+const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
+const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
+const mm=v=>(Math.round(v*10)/10).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:1})+' mm';
+function pintarPapel(R){const det=$('ts-papel');if(!det||!det.open)return;
+  document.querySelectorAll('#pp-papel [data-pp]').forEach(b=>{const on=b.dataset.pp===PP.p;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  $('pp-medidas').hidden=PP.p!=='med';if(PP.p==='med'){if(document.activeElement!==$('pp-w'))$('pp-w').value=PP.w;if(document.activeElement!==$('pp-h'))$('pp-h').value=PP.h;}
+  if(document.activeElement!==$('pp-m'))$('pp-m').value=PP.m;
+  const a=+PP.w||0,b=+PP.h||0; // medidas a mano (solo «A medida»)
+  const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0);
+  // orientación: la que elijas; si no, la que deja el dibujo más grande
+  const esc=(W,H)=>Math.min((W-2*m)/vw,(H-2*m)/vh);
+  let ori=PP.ori;if(!ori){const p0=PP.p==='med'?[a,b]:[Math.min(a,b),Math.max(a,b)];ori=esc(p0[1],p0[0])>esc(p0[0],p0[1])?'h':'v';}
+  let PW,PH;if(PP.p==='med'){PW=a;PH=b;if(ori==='h'&&PW<PH||ori==='v'&&PW>PH)[PW,PH]=[PH,PW];}else{const [x,y]=PAPEL[PP.p];[PW,PH]=ori==='h'?[y,x]:[x,y];}
+  document.querySelectorAll('#pp-ori [data-ori]').forEach(b=>{const on=b.dataset.ori===ori;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  const k=esc(PW,PH);
+  if(!(PW>0&&PH>0)||!(k>0)){$('pp-vista').innerHTML='';$('pp-res').innerHTML=`<dt>${tr('No cabe','It does not fit')}</dt><dd>${tr('Con ese margen no queda sitio para el dibujo. Prueba un margen menor o un papel más grande.','With that margin there is no room for the drawing. Try a smaller margin or a larger sheet.')}</dd>`;return;}
+  const dw=vw*k,dh=vh*k,x0=(PW-dw)/2,y0=(PH-dh)/2,M=PAT.modulo,kl=PAT.k||1;
+  // dibujo a escala dentro del papel
+  const fs=Math.max(PW,PH)/22,sw=Math.max(PW,PH)/400;
+  const dib=R.sv.replace(/<svg([^>]*?)\swidth="[^"]*"/,'<svg$1').replace('<svg ',`<svg x="${x0}" y="${y0}" width="${dw}" height="${dh}" preserveAspectRatio="xMidYMid meet" `);
+  const cota=(x1,y1,x2,y2,t,dx,dy)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d4ed8" stroke-width="${sw}" marker-start="url(#pp-fl)" marker-end="url(#pp-fl)"/><text x="${(x1+x2)/2+dx}" y="${(y1+y2)/2+dy}" font-size="${fs}" text-anchor="middle" fill="#1d4ed8" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}">${t}</text>`;
+  $('pp-vista').innerHTML=`<svg viewBox="${-fs} ${-fs} ${PW+2*fs} ${PH+2*fs}" width="100%" aria-hidden="true" focusable="false"><defs><marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker></defs>`+
+    `<rect x="0" y="0" width="${PW}" height="${PH}" fill="#fff" stroke="#8a8172" stroke-width="${sw*1.5}"/>`+
+    `<rect x="${m}" y="${m}" width="${PW-2*m}" height="${PH-2*m}" fill="none" stroke="#8a8172" stroke-width="${sw}" stroke-dasharray="${sw*6} ${sw*4}"/>`+dib+
+    `<rect x="${x0}" y="${y0}" width="${dw}" height="${dh}" fill="none" stroke="#1d4ed8" stroke-width="${sw}"/>`+
+    (y0>fs*1.6?cota(x0,y0-fs*0.6,x0+dw,y0-fs*0.6,mm(dw),0,-fs*0.35):'')+
+    (x0>fs*1.6?`<g transform="rotate(-90 ${x0-fs*0.6} ${y0+dh/2})">${cota(x0-fs*0.6-dh/2,y0+dh/2,x0-fs*0.6+dh/2,y0+dh/2,mm(dh),0,-fs*0.35)}</g>`:'')+
+    (y0+dh<PH-fs*1.6?cota(PW/2,y0+dh,PW/2,PH,mm(PH-y0-dh),fs*2.6,fs*0.35):'')+
+    `</svg>`;
+  $('pp-vista').setAttribute('aria-label',tr(`Papel de ${mm(PW)} × ${mm(PH)} con el dibujo de ${mm(dw)} × ${mm(dh)} en el centro`,`A ${mm(PW)} × ${mm(PH)} sheet with the ${mm(dw)} × ${mm(dh)} drawing in the middle`));
+  const hex=M&&M.tipo==='hex',tam=R.red.tam*k;
+  const base=(BASE[PAT.id]||[]).map(([t,te,v],i)=>`<dt${i?'':' class="pp-main"'}>${tr(t,te)}</dt><dd${i?'':' class="pp-main"'}>${mm(v*kl*k)}</dd>`).join('');
+  const modTxt=hex&&TS.forma!=='tri'?tr(`${mm(M.R*k)} de lado (hexágono)`,`${mm(M.R*k)} per side (hexagon)`):tr(`${mm(tam)} de lado`,`${mm(tam)} per side`);
+  $('pp-res').innerHTML=base+`<dt>${tr('Cada módulo','Each module')}</dt><dd>${modTxt}</dd>`+
+    `<dt>${tr('Dibujo entero','Whole drawing')}</dt><dd>${mm(dw).replace(' mm','')} × ${mm(dh)} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}</dd>`+
+    `<dt>${tr('Márgenes','Margins')}</dt><dd>${tr('izquierda y derecha','left and right')} ${mm(x0)} · ${tr('arriba y abajo','top and bottom')} ${mm(y0)}</dd>`+
+    `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${mm(PW).replace(' mm','')} × ${mm(PH)}</dd>`;}
+{const gp=()=>store.set(PPK,PP);
+  $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarTeselar();});
+  $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarTeselar();});
+  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v;gp();window.pintarTeselar();});
+  $('ts-papel').addEventListener('toggle',()=>{if($('ts-papel').open)window.pintarTeselar();});}
 window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent=EX.r;
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');
   if(M&&M.tipo==='hex')document.querySelectorAll('#ts-forma [data-forma]').forEach(b=>{const on=b.dataset.forma===(TS.forma||'hex');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
@@ -145,7 +203,7 @@ window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent
   $('tssvg').classList.toggle('dibujando',!!TS.dibujar);
   document.querySelectorAll('#ts-herr [data-tc]').forEach(b=>{const on=b.dataset.tc===TS.tc;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   document.querySelectorAll('#ts-herr [data-tg]').forEach(b=>{const on=b.dataset.tg===String(TS.tg);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  $('ts-undo').disabled=!tesTrazos().length;};
+  $('ts-undo').disabled=!tesTrazos().length;pintarPapel(R);};
 
 document.querySelector('#tab-teselar .ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const k=b.dataset.ts;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();pintarTeselar();});
 $('ts-marcar').addEventListener('change',e=>{TS.marcar=e.target.checked;pintarTeselar();});

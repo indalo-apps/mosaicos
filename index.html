@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.7">
+<meta name="app-version" content="2.8">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -31,10 +31,17 @@
 <meta property="og:image" content="https://indalo-apps.github.io/mosaicos/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/cormorant-garamond-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* ===== Tipos de letra dentro de la app (v2.8): sin depender de Google y desde el primer uso sin conexión. Licencia SIL OFL (fonts/OFL.txt) ===== */
+@font-face{font-family:"Inter";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/inter-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/inter-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/inter-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/cormorant-garamond-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/cormorant-garamond-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Cormorant Garamond";font-style:italic;font-weight:500;font-display:swap;src:url(fonts/cormorant-garamond-latin-500-italic.woff2) format("woff2")}
 :root{--paper:#f6f2ea;--ink:#22201c;--muted:#6f685d;--line:#ddd5c6;--card:#fffdf8;--accent:#1f5f5b;--btn:#fff;--btn-on:#22201c;--btn-on-t:#fff;--tipbg:#f1ebdf;--tipt:#4d463b;--accent-t:#fff;--esc:1;color-scheme:light}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:calc(14px * var(--esc))/1.45 Inter,system-ui,sans-serif;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
@@ -291,6 +298,38 @@ h2>svg.ic{width:1.05em;height:1.05em}
 @media (min-width:761px) and (max-width:1040px){
   .tz{grid-template-columns:minmax(0,1fr) 290px;gap:16px;padding:10px 18px 24px}
   .cz{grid-template-columns:minmax(0,1fr) 290px;gap:16px;padding:10px 18px 24px}}
+ul.libros{margin:6px 0 8px;padding-left:1.1em}ul.libros li{margin:4px 0}
+/* ===== Galería con datos (v2.8) ===== */
+#v-alicatados .pat b{font:600 calc(20px * var(--esc,1))/1.15 "Cormorant Garamond",Georgia,serif}
+.pat-datos{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:calc(12.5px * var(--esc,1));color:var(--muted)}
+.pat-datos>span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.pat .pat-datos svg.ic,#v-alicatados .pat .pat-datos svg.ic{width:1.1em;height:1.1em;margin:0;aspect-ratio:auto;border-radius:0;background:none;flex:none}
+.pat-datos .dif{letter-spacing:1px;color:var(--ink);font-size:.8em}
+/* ===== Transición entre etapas y pantallas (v2.8): un fundido corto; nada si el móvil pide menos movimiento ===== */
+@media (prefers-reduced-motion:no-preference){
+  .tab.show,#v-inicio:not([hidden]),#v-aprender:not([hidden]),#v-alicatados:not([hidden]),#v-mis:not([hidden]){animation:entra .24s ease-out}
+  @keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}}
+/* ===== Zoom (v2.8) ===== */
+#tzsvg,#svg{overflow:hidden;touch-action:pan-y}
+#tzsvg.ampliado,#svg.ampliado{touch-action:none;cursor:grab}
+.zoom-ui{display:flex;justify-content:flex-end;gap:6px;margin:-48px 6px 8px 0;position:relative;z-index:3;pointer-events:none;height:40px}
+.zoom-ui button{pointer-events:auto;min-width:40px;height:40px;padding:0 12px;border-radius:20px;font:600 calc(15px * var(--esc,1)) Inter,system-ui,sans-serif;background:var(--card);border:1px solid var(--line);box-shadow:0 2px 6px rgba(0,0,0,.15);color:var(--ink)}
+.zoom-ui button[data-z=mas],.zoom-ui button[data-z=menos]{font-size:20px;padding:0;width:40px}
+@media (pointer:coarse){.zoom-ui{height:44px;margin-top:-52px}.zoom-ui button{min-width:44px;height:44px;border-radius:22px}.zoom-ui button[data-z=mas],.zoom-ui button[data-z=menos]{width:44px}}
+.pat.on .pat-datos,.pat.on .pat-datos .dif{color:inherit}
+/* ===== En papel (v2.8) ===== */
+.pp-campos{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:8px}
+.pp-campos label{display:flex;align-items:center;gap:8px;font-size:calc(14px * var(--esc,1))}
+.pp-campos input{width:6.5em;min-height:40px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--card);color:var(--ink)}
+#pp-vista{margin:12px 0 6px;background:#efe9dc;border-radius:10px;padding:8px}
+#pp-vista svg{display:block;max-height:340px;margin:auto}
+.pp-res{margin:6px 0 0;font-size:calc(14.5px * var(--esc,1))}
+.pp-res dt{color:var(--muted);margin-top:8px}.pp-res dd{margin:1px 0 0;font-variant-numeric:tabular-nums}
+#tab-teselar:has(#ts-papel[open]):not(:has(#ts-tesela[open])) .stage{position:static}
+.pp-res .pp-main{font-weight:600;color:var(--ink);font-size:1.08em}
+@media (prefers-color-scheme:dark){#pp-vista{background:#2a2722}}
+.pp-campos[hidden]{display:none}
+.pat .pat-datos{flex-direction:row;line-height:1.3}.pat .pat-datos>span{flex-direction:row;padding:0}
 </style>
 <style>:root{--ik-accent:#1f5f5b}</style>
 <style>
@@ -637,6 +676,16 @@ const IK = (function(){
         <div class="ops"><button id="ts-fondo">📱 Fondo de pantalla</button></div>
         <p class="msg" id="ts-msg" role="status" aria-live="polite"></p>
       </details>
+      <details class="tesela" id="ts-papel">
+        <summary>📏 En papel <small>· medidas para dibujarlo a mano</small></summary>
+        <p class="hint" style="margin:0 0 8px">Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
+        <div class="ops" id="pp-papel" role="group" aria-label="Papel"><button data-pp="A5">A5</button><button data-pp="A4">A4</button><button data-pp="A3">A3</button><button data-pp="med">A medida</button></div>
+        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (mm) <input type="number" id="pp-w" min="50" max="3000" step="1" inputmode="decimal"></label><label>Alto (mm) <input type="number" id="pp-h" min="50" max="3000" step="1" inputmode="decimal"></label></div>
+        <div class="ops" id="pp-ori" role="group" aria-label="Orientación" style="margin-top:8px"><button data-ori="v">Vertical</button><button data-ori="h">Horizontal</button></div>
+        <div class="pp-campos"><label>Margen (mm) <input type="number" id="pp-m" min="0" max="200" step="1" inputmode="decimal"></label></div>
+        <div id="pp-vista" role="img" aria-label="El papel con el dibujo y sus márgenes"></div>
+        <dl id="pp-res" class="pp-res" aria-live="polite"></dl>
+      </details>
 
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
       <div class="row" style="justify-content:flex-start;gap:8px;margin-top:10px"><button id="ts-ant">← Trazar</button><button id="ts-sig" class="on">Siguiente: colorear →</button></div>
@@ -671,7 +720,9 @@ const IK = (function(){
   <div class="grupo"><h3>Acerca de</h3>
    <div class="acerca"><img src="icon-192.png" alt=""><div><b>Mosaicos</b><br><span class="muted">Lacería con regla y compás</span><br><span class="muted">Versión <span id="aj-ver"></span></span></div></div>
    <p style="margin-top:10px">Creada por <b>Carlos Moreno Otto</b>.</p>
-   <p class="muted">© 2026 Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p></div>
+   <p class="muted">© 2026 Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p>
+   <div class="ops" style="margin-top:10px"><button id="aj-contacto">✉️ Contacto y sugerencias</button><button id="aj-privacidad">🔒 Privacidad</button></div></div>
+  <div class="grupo"><h3 id="aj-fuentes-t">Los libros</h3><div id="aj-fuentes"></div></div>
   <div class="grupo"><h3>Aviso</h3>
    <p>Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable son los libros <i>El Real Alcázar de Sevilla con regla y compás</i> y <i>La Alhambra con regla y compás</i>.</p></div>
   <div class="grupo"><h3>Versión</h3>
@@ -679,6 +730,14 @@ const IK = (function(){
    <div class="ops"><button id="aj-buscar">🔄 Buscar actualizaciones</button><button id="aj-novedades">Ver novedades</button></div>
    <p class="muted" id="aj-upd-msg" role="status" aria-live="polite" style="margin-top:8px"></p></div>
   <button class="listo" id="aj-cerrar">Listo</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-privacidad" hidden role="dialog" aria-modal="true" aria-labelledby="priv-tit">
+ <div class="hoja">
+  <button class="x" id="priv-x" aria-label="Cerrar">✕</button>
+  <h2 id="priv-tit">Privacidad</h2>
+  <div id="priv-texto"></div>
+  <button class="listo" id="priv-cerrar">Volver a Ajustes</button>
  </div>
 </div>
 <div class="dlg" id="dlg-novedades" hidden role="dialog" aria-modal="true" aria-labelledby="nov-titulo">
@@ -753,6 +812,22 @@ const IK = (function(){
 <script>
 // ---------- Inglés (v1.5): textos fijos de la página ----------
 const ES_EN={
+ "📏 En papel":"📏 On paper",
+ "· medidas para dibujarlo a mano":"· measurements to draw it by hand",
+ "Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.":"Choose the paper and you will see how big each module and the starting figure are, so that the columns × rows drawing fits with its margins.",
+ "A medida":"Custom",
+ "Ancho (mm)":"Width (mm)",
+ "Alto (mm)":"Height (mm)",
+ "Margen (mm)":"Margin (mm)",
+ "Vertical":"Portrait",
+ "Horizontal":"Landscape",
+ "Papel":"Paper",
+ "Orientación":"Orientation",
+ "El papel con el dibujo y sus márgenes":"The sheet with the drawing and its margins",
+ "✉️ Contacto y sugerencias":"✉️ Contact and suggestions",
+ "🔒 Privacidad":"🔒 Privacy",
+ "Privacidad":"Privacy",
+ "Volver a Ajustes":"Back to Settings",
  "✏️ Tu tesela":"✏️ Your tile",
  "· dibuja y se repite":"· draw and it repeats",
  "🎨 Otro color":"🎨 Other colors",
@@ -896,13 +971,16 @@ const P={
   mezclar:'<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4"/><path d="M18 4l3 3-3 3M18 14l3 3-3 3"/>',
   hecho:'<path d="M5 12.5l4.5 4.5L19 7"/>',
   cerrar:'<path d="M6 6l12 12M18 6L6 18"/>',
+  correo:'<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/>',
+  candado:'<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  regla:'<path d="M3 15.5L15.5 3l5.5 5.5L8.5 21z"/><path d="M7 11.5l2 2M9.5 9l1.5 1.5M12 6.5l2 2M14.5 4l1.5 1.5"/>',
   lugar:'<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
   pasos:'<path d="M10 6h10M10 12h10M10 18h10"/><circle cx="5" cy="6" r="1.3"/><circle cx="5" cy="12" r="1.3"/><circle cx="5" cy="18" r="1.3"/>',
   piezas:'<path d="M12 2.5l2.2 5.3 5.3 2.2-5.3 2.2L12 17.5l-2.2-5.3L4.5 10l5.3-2.2z" transform="translate(0 2)"/>',
   repetir:'<path d="M19 12a7 7 0 1 1-2.1-5"/><path d="M19 4v4h-4"/>'};
 const M={'✏':'lapiz','🖼':'imagen','🎨':'paleta','📐':'compas','▦':'cuadricula','📄':'documento','⬇':'descargar','📲':'instalar',
   '📱':'movil','📖':'libro','↶':'deshacer','🛒':'carrito','✂':'tijeras','🔄':'actualizar','📋':'copiar','🖨':'imprimir','🔀':'mezclar',
-  '✓':'hecho','✕':'cerrar','↻':'repetir'};
+  '✓':'hecho','📏':'regla','✉':'correo','🔒':'candado','✕':'cerrar','↻':'repetir'};
 const RE=new RegExp('^(\\s*)('+Object.keys(M).join('|')+')\\uFE0F?\\s*','u');
 window.icono=(n,cl='ic')=>`<svg class="${cl}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${P[n]}</svg>`;
 const SEL='button,h2,summary,a.btn,label.btn';
@@ -1736,6 +1814,38 @@ P.arrayanes=escalar({id:'arrayanes',coleccion:'alhambra',num:7,nombre:'Estrellas
 Object.assign(P.arrayanes,{modBase:modulo,hexV:HEX,rw:0.55,ow:0.06,modulo:{tipo:'hex',R:P.arrayanes.k,cx:2*s3*P.arrayanes.k,cy:3*P.arrayanes.k}});
 })();
 
+// ===== LA ALHAMBRA · Tacas de la Torre de Comares (alicatado n.º 15) =====
+// Cuadrado de lado 2 con su circunferencia inscrita (radio 1). Por los cortes con las diagonales, paralelas a los lados (a 1/√2);
+// uniendo los puntos medios de los lados, el cuadrado girado 45°. Su octógono central, unido de tres en tres, da un octógono estrellado
+// con otro octógono en el centro; el octógono estrellado de este, prolongado, da rectas a d3 = (1−1/√2)·tan 22,5° del centro.
+// El módulo básico (paso 5) es el cuadrado: cuatro partes iguales giradas 90°. Se replica por simetría con dos lados como ejes (paso 6)
+// y la baldosa de 2 × 2 se repite por traslación (paso 7). Periodo de 4 × 4 (dos cuadrados por lado).
+(function(){const a1=Math.SQRT1_2,d2=1-a1,d3=d2*Math.tan(Math.PI/8),c=d3*Math.SQRT2;
+const A=[[0,-1],[-d3,-(1-d3)],[-d3,d3-c],[-a1,a1-c],[-a1,a1+c],[c-1,1]];   // desde el punto medio del lado de arriba
+const B=[[-1,0],[a1-1,-a1],[a1+c,-a1],[1,c-1]];                            // desde el punto medio del lado izquierdo
+const rot=([u,v],k)=>{for(let i=0;i<k;i++)[u,v]=[-v,u];return[u,v];};
+function modulo(){const L=[];for(let k=0;k<4;k++)for(const P of [A,B]){const Q=P.map(q=>rot(q,k));for(let i=0;i+1<Q.length;i++)L.push([...Q[i],...Q[i+1]]);}return L;}
+const area=Q=>{let S=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];S+=p[0]*q[1]-q[0]*p[1];}return Math.abs(S)/2;};
+P.taca=escalar({id:'taca',coleccion:'alhambra',num:15,nombre:'Estrellas de ocho y zafates',lugar:'Tacas de la Torre de Comares · Patio de los Arrayanes',tipo:'mosaico',
+  W:4,H:4,
+  lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const sx=i%2?-1:1,sy=j%2?-1:1,cx=1+2*i,cy=1+2*j; // simetría por los lados del cuadrado
+    for(const t of modulo())L.push([cx+sx*t[0],cy+sy*t[1],cx+sx*t[2],cy+sy*t[3]]);}return L;},
+  clase(Q,[x,y]){const n=Q.length,Ar=area(Q)/this.k/this.k,par=(Math.floor(x/2)+Math.floor(y/2))%2===0;
+    if(n===16)return Ar>0.34?0:1;          // sinos: estrella de ocho grande y pequeña
+    if(n===6)return par?2:3;                // zafates en grupos de cuatro: un grupo melado, el siguiente verde
+    if(n===8)return Ar>0.2?4:5;             // zafate negro / estrella de cuatro blanca
+    return 6;},
+  nombres:['Sino grande (estrella de ocho)','Sino pequeño (estrella de ocho)','Zafate (grupos melados)','Zafate (grupos verdes)','Zafate negro','Estrella de cuatro','Pieza pequeña'],
+  paletas:{
+    'Alhambra':{cols:['#2f4fa3','#2f4fa3','#c98b2b','#1f5f5b','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Azul y oro':{cols:['#2f4fa3','#1f3a7a','#e0b04a','#e0b04a','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Terracota':{cols:['#8a4b36','#8a4b36','#d98e6e','#e8b49a','#5a3022','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
+    'Para colorear':{cols:Array(7).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,
+  modulo:{m:2*Math.SQRT2*P.taca.k,cx:P.taca.k,cy:P.taca.k,giro:45,nota:[' · el dibujo va girado 45° para ver el módulo derecho; en el muro, la baldosa del paso 6 va recta',' · the drawing is turned 45° to show the module upright; on the wall, the tile from step 6 is straight']}}); // módulo mínimo: la baldosa de 2 × 2 tiene un periodo en diagonal (2, 2)
+})();
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -1975,6 +2085,33 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
     {h:'Las cintas',t:'Da ancho a las líneas con dos paralelas y alterna los cruces por encima y por debajo. En el zaguán es yesería: todo es del color del yeso y el dibujo se lee por el relieve.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:[C[0]-2.6*k,C[1]-2.2*k,5.2*k,4.4*k]}]});
 })();
 
+(function(){const p=P.taca,{a1,d2,d3,c}=p.Gt,k=p.k,C=[k,k],X=v=>C[0]+v*k,Y=v=>C[1]+v*k;
+  const ln=(L,col,w,d)=>guia(L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]),col,w,d),an=(L,col,w)=>animar(L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]),col,w);
+  // recta a distancia d del centro, con normal en el ángulo t (grados), recortada al cuadrado [-1,1]²
+  const recta8=(t,d)=>{const n=[Math.cos(rad(t)),Math.sin(rad(t))],u=[-n[1],n[0]],P0=[n[0]*d,n[1]*d];let t0=-9,t1=9;
+    for(const [pp,dd] of [[P0[0],u[0]],[P0[1],u[1]]]){if(Math.abs(dd)<1e-12)continue;let a=(-1-pp)/dd,b=(1-pp)/dd;if(a>b)[a,b]=[b,a];t0=Math.max(t0,a);t1=Math.min(t1,b);}
+    return [P0[0]+u[0]*t0,P0[1]+u[1]*t0,P0[0]+u[0]*t1,P0[1]+u[1]*t1];};
+  const ocho=(R)=>Array.from({length:8},(_,i)=>[R*Math.cos(rad(22.5+45*i)),R*Math.sin(rad(22.5+45*i))]);
+  const estrella=(R)=>{const V=ocho(R);return V.map((v,i)=>[...v,...V[(i+3)%8]]);}; // vértices unidos de tres en tres
+  const vt=[-0.04*k,-0.04*k,2.08*k,2.08*k],vtB=[-0.5,-0.5,4*k+1,4*k+1],vtG=[-0.5,-0.5,8*k+1,8*k+1];
+  Object.assign(p,{vt,
+  resumen:'Estrellas azules de ocho puntas rodeadas de zafates verdes, melados y negros, sobre un fondo de piezas blancas. Reviste las paredes de las tacas, las pequeñas hornacinas del arco de entrada a la Torre de Comares.',
+  pie:'Todo sale de un cuadrado con su circunferencia inscrita: dos cuadrados girados 45° dan un octógono, y dos octógonos estrellados, cada vez más pequeños, dan las líneas del módulo. El módulo se replica por simetría y la baldosa resultante, por traslación.',
+  pasos:[
+    {h:'Cuadrado, ejes y circunferencia',t:'Inicia el dibujo a partir de un cuadrado al que habrás trazado sus diagonales y ejes. Tomando como centro el del cuadrado, dibuja la circunferencia inscrita.',c:'Es la circunferencia inscrita de «Aprender a trazar».',anim:'fade',
+     guia(){return ln([[-1,-1,1,1],[-1,1,1,-1],[-1,0,1,0],[0,-1,0,1]],RO,0.05,'0.3 0.2')+circulos([C],k,RO,0.07);}},
+    {h:'Dos cuadrados y un octógono',t:'Traza rectas paralelas a los lados por los puntos donde la circunferencia corta a las diagonales. A continuación, une los puntos medios de los lados del cuadrado. Obtienes dos cuadrados girados 45° y, en el centro, un octógono convexo.',c:'Las paralelas quedan a 0,71 del centro, con el radio de la circunferencia como unidad.',anim:'draw',
+     guia(){return an([[-1,-a1,1,-a1],[-1,a1,1,a1],[-a1,-1,-a1,1],[a1,-1,a1,1]],RO,0.07)+an([[0,-1,1,0],[1,0,0,1],[0,1,-1,0],[-1,0,0,-1]],RO,0.07);}},
+    {h:'Octógono estrellado',t:'Uniendo los vértices del octógono central de modo no consecutivo, de tres en tres, dibuja un octógono estrellado. Observa que en su centro aparece un nuevo octógono convexo.',c:'Sus lados son paralelos a los ejes y a las diagonales.',anim:'draw',
+     guia(){return an(estrella(a1/Math.cos(rad(22.5))),RO,0.08);}},
+    {h:'Otro octógono estrellado',t:'Dibuja otro octógono estrellado, más pequeño todavía, tomando como vértices los del nuevo octógono central. Prolonga sus lados hasta su intersección con los del cuadrado.',c:'Son ocho rectas muy cerca del centro: dos paralelas a cada eje y a cada diagonal.',anim:'draw',
+     guia(){const L=[];for(let i=0;i<8;i++)L.push(recta8(45*i,d3));return ln(estrella(d2/Math.cos(rad(22.5))),'#2b4f73',0.05)+an(L,RO,0.08);}},
+    {h:'El módulo básico',t:'De las líneas obtenidas en los pasos anteriores, remarca los trazos adecuados para obtener el módulo básico.',c:'Si divides el cuadrado por sus ejes, las cuatro partes son iguales, aunque giradas 90° alrededor del centro: es la unidad básica mínima.',tipo:'remarcar'},
+    {h:'Simetría',t:'Una vez obtenido el módulo, replícalo por simetría tomando como ejes dos de sus lados perpendiculares.',c:'Sale una baldosa de 2 × 2 módulos.',tipo:'piezas',vt:vtB},
+    {h:'Repetir la baldosa',t:'Repite por traslación, en sentido vertical y horizontal, la baldosa obtenida en el paso anterior.',c:'En Teselar verás que basta un cuadrado más pequeño, girado 45°, para cubrir el plano.',tipo:'piezas',vt:vtG},
+    {h:'Color',t:'En el alicatado, los sinos son azules; los zafates, verdes, melados y negros, y el resto de las piezas, blancas. En el panel los bordes se rematan y se corona con un friso de almenillas blancas y negras, que aquí no se dibujan.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:vtG}]});
+})();
+
 // Dibuja un paso del trazado de un patrón nuevo
 function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt||p.vt,[x0,y0,w,h]=vt,pad=w*0.03;
   // p.giro: el alicatado está girado en el muro; los pasos lo enseñan derecho, como en el libro (salvo s.sinGiro)
@@ -2148,6 +2285,19 @@ const PAT_EN={
    {h:'The twelve-pointed star',t:'Inking the right strokes you get the twelve-pointed star inscribed in the hexagon. This is the module to repeat by translation to cover the plane.',c:'Each side of the two six-pointed stars is inked from where it crosses another side of the same star to the side of the hexagon.'},
    {h:'Repeat the module',t:'The module repeats by translation until it covers the plane. This works because the regular hexagon is one of the polygons that tile the plane.',c:'If you join the centers of the stars, a network of equilateral triangles appears.'},
    {h:'The straps',t:'Give the lines their width with two parallels and alternate the crossings over and under. In the hall it is plasterwork: everything is plaster-colored and the design reads through the relief.',c:'Try other combinations in the Color tab.'}]},
+ taca:{nombre:'Eight-pointed stars and zafates',lugar:'Niches of the Comares Tower · Court of the Myrtles',
+  nombres:['Large sino (eight-pointed star)','Small sino (eight-pointed star)','Zafate (honey groups)','Zafate (green groups)','Black zafate','Four-pointed star','Small piece'],
+  resumen:'Blue eight-pointed stars surrounded by green, honey and black zafates on a background of white pieces. It lines the walls of the tacas, the small niches in the entrance arch of the Comares Tower.',
+  pie:'It all comes from a square with its inscribed circle: two squares turned 45° give an octagon, and two ever smaller star octagons give the lines of the module. The module is mirrored and the resulting tile is repeated by translation.',
+  pasos:[
+   {h:'Square, axes and circle',t:'Start from a square with its diagonals and axes drawn. Centered on the center of the square, draw the inscribed circle.',c:'It is the inscribed circle from “Learn to draw”.'},
+   {h:'Two squares and an octagon',t:'Draw lines parallel to the sides through the points where the circle cuts the diagonals. Then join the midpoints of the sides of the square. You get two squares turned 45° and, in the center, a convex octagon.',c:'The parallels are 0.71 from the center, taking the radius of the circle as the unit.'},
+   {h:'Star octagon',t:'Joining the vertices of the central octagon non-consecutively, every third one, draw a star octagon. Notice that a new convex octagon appears in its center.',c:'Its sides are parallel to the axes and to the diagonals.'},
+   {h:'Another star octagon',t:'Draw another star octagon, smaller still, using the vertices of the new central octagon. Extend its sides until they meet those of the square.',c:'They are eight lines very close to the center: two parallel to each axis and to each diagonal.'},
+   {h:'The basic module',t:'From the lines obtained in the previous steps, ink the right strokes to get the basic module.',c:'If you divide the square by its axes, the four parts are equal but turned 90° around the center: it is the smallest basic unit.'},
+   {h:'Symmetry',t:'Once you have the module, mirror it using two of its perpendicular sides as axes.',c:'You get a tile of 2 × 2 modules.'},
+   {h:'Repeat the tile',t:'Repeat the tile from the previous step by translation, vertically and horizontally.',c:'In Tessellate you will see that a smaller square, turned 45°, is enough to cover the plane.'},
+   {h:'Color',t:'In the tilework the sinos are blue; the zafates, green, honey and black, and the rest of the pieces, white. On the panel the edges are finished off and it is crowned with a frieze of white and black merlons, not drawn here.',c:'Try other combinations in the Color tab.'}]},
  barca:{nombre:'Eight-pointed stars and Y pieces',lugar:'Hall of the Boat · Comares Palace',
   nombres:['Blue sino','Honey sino','Black sino','Alfardón (long four-pointed star)','Y piece','Square piece'],
   resumen:'White straps interlace into overlapping octagons, with blue, black and honey eight-pointed stars at their centers, green alfardones and black Y-shaped pieces.',
@@ -2617,7 +2767,15 @@ $('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(f
 function miniatura(p){const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
   return renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');}
 function contarGaleria(){}
-function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small></span></button>`).join('');}
+// Galería (v2.8): en el orden del libro, y cada tarjeta con su página o número, los pasos, las piezas y la dificultad (con texto, no solo con color)
+function nPasos(p){return p.pasos?p.pasos.length:(window.LAZO_PASOS||6);}
+function dificultad(p){const n=nPasos(p)+p.nombres.length/2;return n<=7?0:n<=11?1:2;}
+function datosPat(p){const d=dificultad(p),DIF=[tr('Fácil','Easy'),tr('Media','Medium'),tr('Difícil','Hard')];
+  const ref=p.coleccion==='alhambra'?tr(`n.º ${p.num}`,`no. ${p.num}`):tr(`págs. ${String(p.pags).replace(/ a /,'–')}`,`pp. ${String(p.pags).replace(/ (a|y) /,'–')}`);
+  const pt=`<span class="dif" aria-hidden="true">${'●'.repeat(d+1)}${'○'.repeat(2-d)}</span>`;
+  return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(p.nombres.length+' piezas',p.nombres.length+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
+const ordenLibro=p=>p.coleccion==='alhambra'?p.num:parseInt(p.pags)||0;
+function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}</span></button>`).join('');}
 function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${monu(PAT)}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
 function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);HIST=[];$('deshacer').disabled=true;SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
@@ -2687,6 +2845,7 @@ const STEPS=[
  {h:'Entrelazar',t:'En cada cruce, una cinta pasa por encima y la otra por debajo. Recorre cada cinta alternando: encima, debajo, encima… y borra los trozos de la que queda debajo.',c:'Si alternas bien en una cinta, las demás encajan solas.'},
  {h:'Colorear',t:'Ya puedes pintar. Las estrellas y los alfardones en negro y las piezas en V en verde reproducen el zócalo del patio.',c:'Prueba antes las combinaciones en la pestaña Colorear.'}
 ];
+window.LAZO_PASOS=STEPS.length;
 if(EN&&PAT_EN.lazo8)STEPS.forEach((q,i)=>Object.assign(q,PAT_EN.lazo8.pasos[i]||{}));
 let step=1;
 // v2.0: el mismo reproductor sirve para las construcciones básicas (window.MODO.c) y empieza por el objetivo (paso 0)
@@ -2774,7 +2933,7 @@ function prFin(e){if(!actual||e.pointerId!==actual.id)return;const t=trazos();t.
 tz.addEventListener('pointerup',prFin);tz.addEventListener('pointercancel',prFin);
 // Deslizar el dibujo a izquierda o derecha cambia de paso (no mientras se repasa)
 let tx=null;
-tz.addEventListener('touchstart',e=>{tx=(!practicando&&e.touches.length===1)?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
+tz.addEventListener('touchstart',e=>{tx=(!practicando&&!tz.dataset.zoom&&e.touches.length===1)?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
 tz.addEventListener('touchend',e=>{if(!tx)return;const t=e.changedTouches[0],dx=t.clientX-tx[0],dy=t.clientY-tx[1];tx=null;
   if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*0.6)return;
   if(dx<0&&step<pasos().length){step++;show();}else if(dx>0&&step>0){step--;show();}},{passive:true});
@@ -2931,7 +3090,7 @@ function tsConstruir(c,r,marcar,conColor,fondo){
     if(marcar){const sw=w/250;let q=`<g fill="none" stroke="#e0a526" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}">`;
       for(let i=1;i<c;i++)q+=`<line x1="${x0+i*m}" y1="${y0}" x2="${x0+i*m}" y2="${y0+h}"/>`;for(let j=1;j<r;j++)q+=`<line x1="${x0}" y1="${y0+j*m}" x2="${x0+w}" y2="${y0+j*m}"/>`;
       q+=`</g><rect x="${x0}" y="${y0}" width="${m}" height="${m}" fill="#e0a526" fill-opacity="0.12" stroke="#e0a526" stroke-width="${sw*2.2}"/>`;sv=sv.replace(/<\/svg>$/,q+'</svg>');}
-    return {sv,vb:[x0,y0,w,h],red:{O:[x0,y0],A:[m,0],B:[0,m],tam:m},chip:tr(`${c} × ${r} módulos · el primero, resaltado`,`${c} × ${r} modules · the first one highlighted`)+(M.giro?tr(' · derecho, como en el libro',' · upright, as in the book'):'')};}
+    return {sv,vb:[x0,y0,w,h],red:{O:[x0,y0],A:[m,0],B:[0,m],tam:m},chip:tr(`${c} × ${r} módulos · el primero, resaltado`,`${c} × ${r} modules · the first one highlighted`)+(M.nota?tr(...M.nota):M.giro?tr(' · derecho, como en el libro',' · upright, as in the book'):'')};}
   if(conColor)o.rw=st.rw;
   let sv=svgColor(c,r,'100%','100%',o).replace(/ width="100%" height="100%"/,' width="100%"');
   if(marcar){const W=PAT.W,H=PAT.H,w=c*W,h=r*H,sw=w/250;let g=`<g fill="none" stroke="#e0a526" stroke-width="${sw}" stroke-dasharray="${sw*4} ${sw*3}">`;
@@ -2952,6 +3111,64 @@ function tesCapa(red,vb){const T=tesTrazos();if(!T.length&&!TS.actual)return '';
     g+=`<g transform="translate(${(O[0]+i*A[0]+j*B[0]).toFixed(3)} ${(O[1]+i*A[1]+j*B[1]).toFixed(3)})">${camino}</g>`;
   return `<g id="ts-capa" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none">${g}</g>`;}
 {const alto=()=>{const b=document.getElementById('barra-etapas');if(b&&!b.hidden)document.documentElement.style.setProperty('--alto-tabs',b.offsetHeight+'px');};addEventListener('resize',alto);addEventListener('hashchange',()=>setTimeout(alto,50));setTimeout(alto,300);}
+// ---- En papel (v2.8): medidas del módulo y de la figura de partida para dibujar el teselado a mano
+// Figura de partida de cada alicatado, en unidades del libro: [texto, texto en inglés, medida]. La primera es la principal.
+const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
+  zaguan:[['Lado de cada cuadro (el ancho de la cinta)','Side of each square (the strap width)',1]],
+  toledanos:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
+  cenador6:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
+  munecas17:[['Lado del cuadrado de 3 × 3','Side of the 3 × 3 square',3],['Lado de cada cuadro','Side of each square',1]],
+  cubos:[['Lado de cada cuadro','Side of each square',1]],
+  alargadas:[['Radio de las circunferencias (el lado de un cuadro)','Radius of the circles (the side of a square)',1]],
+  alfardones:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
+  octogonos:[['Lado de cada cuadro','Side of each square',1],['Radio de la circunferencia inscrita','Radius of the inscribed circle',0.5]],
+  zaguan2:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Lado de cada cuadro','Side of each square',1],['Radio de las circunferencias (2 cuadros)','Radius of the circles (2 squares)',2]],
+  felipe:[['Radio de la circunferencia inicial','Radius of the starting circle',Math.SQRT2],['Lado del cuadrado inscrito','Side of the inscribed square',2]],
+  barca:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Radio de la circunferencia (un cuadro)','Radius of the circle (one square)',1]],
+  arrayanes:[['Radio de la circunferencia inicial','Radius of the starting circle',1]],
+  taca:[['Lado del cuadrado inicial','Side of the starting square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]]};
+const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
+const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
+const mm=v=>(Math.round(v*10)/10).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:1})+' mm';
+function pintarPapel(R){const det=$('ts-papel');if(!det||!det.open)return;
+  document.querySelectorAll('#pp-papel [data-pp]').forEach(b=>{const on=b.dataset.pp===PP.p;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  $('pp-medidas').hidden=PP.p!=='med';if(PP.p==='med'){if(document.activeElement!==$('pp-w'))$('pp-w').value=PP.w;if(document.activeElement!==$('pp-h'))$('pp-h').value=PP.h;}
+  if(document.activeElement!==$('pp-m'))$('pp-m').value=PP.m;
+  const a=+PP.w||0,b=+PP.h||0; // medidas a mano (solo «A medida»)
+  const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0);
+  // orientación: la que elijas; si no, la que deja el dibujo más grande
+  const esc=(W,H)=>Math.min((W-2*m)/vw,(H-2*m)/vh);
+  let ori=PP.ori;if(!ori){const p0=PP.p==='med'?[a,b]:[Math.min(a,b),Math.max(a,b)];ori=esc(p0[1],p0[0])>esc(p0[0],p0[1])?'h':'v';}
+  let PW,PH;if(PP.p==='med'){PW=a;PH=b;if(ori==='h'&&PW<PH||ori==='v'&&PW>PH)[PW,PH]=[PH,PW];}else{const [x,y]=PAPEL[PP.p];[PW,PH]=ori==='h'?[y,x]:[x,y];}
+  document.querySelectorAll('#pp-ori [data-ori]').forEach(b=>{const on=b.dataset.ori===ori;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  const k=esc(PW,PH);
+  if(!(PW>0&&PH>0)||!(k>0)){$('pp-vista').innerHTML='';$('pp-res').innerHTML=`<dt>${tr('No cabe','It does not fit')}</dt><dd>${tr('Con ese margen no queda sitio para el dibujo. Prueba un margen menor o un papel más grande.','With that margin there is no room for the drawing. Try a smaller margin or a larger sheet.')}</dd>`;return;}
+  const dw=vw*k,dh=vh*k,x0=(PW-dw)/2,y0=(PH-dh)/2,M=PAT.modulo,kl=PAT.k||1;
+  // dibujo a escala dentro del papel
+  const fs=Math.max(PW,PH)/22,sw=Math.max(PW,PH)/400;
+  const dib=R.sv.replace(/<svg([^>]*?)\swidth="[^"]*"/,'<svg$1').replace('<svg ',`<svg x="${x0}" y="${y0}" width="${dw}" height="${dh}" preserveAspectRatio="xMidYMid meet" `);
+  const cota=(x1,y1,x2,y2,t,dx,dy)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d4ed8" stroke-width="${sw}" marker-start="url(#pp-fl)" marker-end="url(#pp-fl)"/><text x="${(x1+x2)/2+dx}" y="${(y1+y2)/2+dy}" font-size="${fs}" text-anchor="middle" fill="#1d4ed8" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}">${t}</text>`;
+  $('pp-vista').innerHTML=`<svg viewBox="${-fs} ${-fs} ${PW+2*fs} ${PH+2*fs}" width="100%" aria-hidden="true" focusable="false"><defs><marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker></defs>`+
+    `<rect x="0" y="0" width="${PW}" height="${PH}" fill="#fff" stroke="#8a8172" stroke-width="${sw*1.5}"/>`+
+    `<rect x="${m}" y="${m}" width="${PW-2*m}" height="${PH-2*m}" fill="none" stroke="#8a8172" stroke-width="${sw}" stroke-dasharray="${sw*6} ${sw*4}"/>`+dib+
+    `<rect x="${x0}" y="${y0}" width="${dw}" height="${dh}" fill="none" stroke="#1d4ed8" stroke-width="${sw}"/>`+
+    (y0>fs*1.6?cota(x0,y0-fs*0.6,x0+dw,y0-fs*0.6,mm(dw),0,-fs*0.35):'')+
+    (x0>fs*1.6?`<g transform="rotate(-90 ${x0-fs*0.6} ${y0+dh/2})">${cota(x0-fs*0.6-dh/2,y0+dh/2,x0-fs*0.6+dh/2,y0+dh/2,mm(dh),0,-fs*0.35)}</g>`:'')+
+    (y0+dh<PH-fs*1.6?cota(PW/2,y0+dh,PW/2,PH,mm(PH-y0-dh),fs*2.6,fs*0.35):'')+
+    `</svg>`;
+  $('pp-vista').setAttribute('aria-label',tr(`Papel de ${mm(PW)} × ${mm(PH)} con el dibujo de ${mm(dw)} × ${mm(dh)} en el centro`,`A ${mm(PW)} × ${mm(PH)} sheet with the ${mm(dw)} × ${mm(dh)} drawing in the middle`));
+  const hex=M&&M.tipo==='hex',tam=R.red.tam*k;
+  const base=(BASE[PAT.id]||[]).map(([t,te,v],i)=>`<dt${i?'':' class="pp-main"'}>${tr(t,te)}</dt><dd${i?'':' class="pp-main"'}>${mm(v*kl*k)}</dd>`).join('');
+  const modTxt=hex&&TS.forma!=='tri'?tr(`${mm(M.R*k)} de lado (hexágono)`,`${mm(M.R*k)} per side (hexagon)`):tr(`${mm(tam)} de lado`,`${mm(tam)} per side`);
+  $('pp-res').innerHTML=base+`<dt>${tr('Cada módulo','Each module')}</dt><dd>${modTxt}</dd>`+
+    `<dt>${tr('Dibujo entero','Whole drawing')}</dt><dd>${mm(dw).replace(' mm','')} × ${mm(dh)} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}</dd>`+
+    `<dt>${tr('Márgenes','Margins')}</dt><dd>${tr('izquierda y derecha','left and right')} ${mm(x0)} · ${tr('arriba y abajo','top and bottom')} ${mm(y0)}</dd>`+
+    `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${mm(PW).replace(' mm','')} × ${mm(PH)}</dd>`;}
+{const gp=()=>store.set(PPK,PP);
+  $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarTeselar();});
+  $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarTeselar();});
+  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v;gp();window.pintarTeselar();});
+  $('ts-papel').addEventListener('toggle',()=>{if($('ts-papel').open)window.pintarTeselar();});}
 window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent=EX.r;
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');
   if(M&&M.tipo==='hex')document.querySelectorAll('#ts-forma [data-forma]').forEach(b=>{const on=b.dataset.forma===(TS.forma||'hex');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
@@ -2960,7 +3177,7 @@ window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent
   $('tssvg').classList.toggle('dibujando',!!TS.dibujar);
   document.querySelectorAll('#ts-herr [data-tc]').forEach(b=>{const on=b.dataset.tc===TS.tc;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   document.querySelectorAll('#ts-herr [data-tg]').forEach(b=>{const on=b.dataset.tg===String(TS.tg);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  $('ts-undo').disabled=!tesTrazos().length;};
+  $('ts-undo').disabled=!tesTrazos().length;pintarPapel(R);};
 
 document.querySelector('#tab-teselar .ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const k=b.dataset.ts;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();pintarTeselar();});
 $('ts-marcar').addEventListener('change',e=>{TS.marcar=e.target.checked;pintarTeselar();});
@@ -3012,6 +3229,59 @@ function ruta(){let h=decodeURIComponent(location.hash.slice(1));
 addEventListener('hashchange',()=>{document.querySelectorAll('.dlg:not([hidden])').forEach(d=>window.cerrarDlg&&window.cerrarDlg(d.id));ruta();scrollTo(0,0);});
 ruta();
 })();
+// ---------- Zoom (v2.8): ampliar el dibujo de Trazar y Colorear con dos dedos, la rueda (Ctrl o pellizco en el panel táctil) o los botones ----------
+// Dos dedos amplían y mueven; ya ampliado, un dedo mueve el dibujo (y deslizar no cambia de paso). Un toque sigue pintando.
+// Mientras se repasa a mano no hay zoom: el dedo dibuja. «Tamaño normal» lo devuelve todo a su sitio.
+(function(){
+const MAX=5;
+function zoomable(el,{activo=()=>true}={}){
+  let s=1,tx=0,ty=0;const P=new Map();let ini=null,movido=false,ultimo=0;
+  const caja=()=>el.getBoundingClientRect();
+  const hijos=()=>[...el.children].filter(c=>!c.classList.contains('zoom-ui'));
+  function aplicar(){const r=caja(),w=r.width,h=r.height;
+    s=Math.min(MAX,Math.max(1,s));tx=Math.min(0,Math.max(w-w*s,tx));ty=Math.min(0,Math.max(h-h*s,ty));
+    if(s<1.01){s=1;tx=0;ty=0;}
+    for(const c of hijos()){c.style.transformOrigin='0 0';c.style.transform=s===1?'':`translate(${tx}px,${ty}px) scale(${s})`;}
+    el.dataset.zoom=s>1?s.toFixed(2):'';el.classList.toggle('ampliado',s>1);
+    ui.normal.hidden=s===1;ui.menos.hidden=s===1;}
+  function zoomEn(f,cx,cy){const r=caja(),x=cx-r.left,y=cy-r.top,s1=Math.min(MAX,Math.max(1,s*f)),k=s1/s;tx=x-(x-tx)*k;ty=y-(y-ty)*k;s=s1;aplicar();}
+  function reset(){s=1;tx=0;ty=0;aplicar();}
+  // botones visibles: el gesto no es la única forma de ampliar
+  const ui={};const barra=document.createElement('div');barra.className='zoom-ui';
+  barra.innerHTML=`<button type="button" data-z="mas" aria-label="${tr('Ampliar el dibujo','Zoom in')}">+</button><button type="button" data-z="menos" aria-label="${tr('Reducir el dibujo','Zoom out')}" hidden>−</button><button type="button" data-z="normal" hidden>${tr('Tamaño normal','Normal size')}</button>`;
+  el.insertAdjacentElement('afterend',barra);
+  ui.mas=barra.querySelector('[data-z=mas]');ui.menos=barra.querySelector('[data-z=menos]');ui.normal=barra.querySelector('[data-z=normal]');
+  barra.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=caja(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+    if(b.dataset.z==='mas')zoomEn(1.6,cx,cy);else if(b.dataset.z==='menos')zoomEn(1/1.6,cx,cy);else{reset();ui.mas.focus();}});
+  // gestos
+  el.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||!activo())return;P.set(e.pointerId,[e.clientX,e.clientY]);movido=false;
+    if(P.size===2){const [a,b]=[...P.values()];ini={d:Math.hypot(a[0]-b[0],a[1]-b[1]),m:[(a[0]+b[0])/2,(a[1]+b[1])/2],s,tx,ty};}
+    else if(P.size===1)ini={p:[e.clientX,e.clientY],tx,ty};});
+  el.addEventListener('pointermove',e=>{if(!P.has(e.pointerId)||!ini)return;P.set(e.pointerId,[e.clientX,e.clientY]);
+    if(P.size>=2&&ini.d){const [a,b]=[...P.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]),m=[(a[0]+b[0])/2,(a[1]+b[1])/2],r=caja();
+      const s1=Math.min(MAX,Math.max(1,ini.s*d/ini.d)),k=s1/ini.s,x=ini.m[0]-r.left,y=ini.m[1]-r.top;
+      s=s1;tx=x-(x-ini.tx)*k+(m[0]-ini.m[0]);ty=y-(y-ini.ty)*k+(m[1]-ini.m[1]);movido=true;aplicar();e.preventDefault();}
+    else if(P.size===1&&s>1&&ini.p){const dx=e.clientX-ini.p[0],dy=e.clientY-ini.p[1];if(Math.hypot(dx,dy)>6)movido=true;
+      if(movido){tx=ini.tx+dx;ty=ini.ty+dy;aplicar();e.preventDefault();}}});
+  const fin=e=>{if(!P.has(e.pointerId))return;P.delete(e.pointerId);if(movido)ultimo=Date.now();
+    if(P.size===1){const p=[...P.values()][0];ini={p,tx,ty};}else if(!P.size)ini=null;};
+  ['pointerup','pointercancel','pointerleave'].forEach(t=>el.addEventListener(t,fin));
+  // después de mover o pellizcar, el dedo al soltarse no pinta
+  el.addEventListener('click',e=>{if(Date.now()-ultimo<350){e.stopPropagation();e.preventDefault();}},true);
+  // ordenador: Ctrl + rueda, o pellizco en el panel táctil
+  el.addEventListener('wheel',e=>{if(!e.ctrlKey||!activo())return;e.preventDefault();zoomEn(Math.exp(-e.deltaY*0.01),e.clientX,e.clientY);},{passive:false});
+  // el dibujo se rehace a menudo (cada paso, cada pieza pintada): se le vuelve a aplicar el zoom
+  new MutationObserver(()=>{if(s>1)aplicar();}).observe(el,{childList:true});
+  addEventListener('resize',()=>aplicar());
+  return {reset};}
+const Z=[];
+const tz=document.getElementById('tzsvg'),cz=document.getElementById('svg');
+if(tz)Z.push(zoomable(tz,{activo:()=>!tz.classList.contains('practicando')}));
+if(cz)Z.push(zoomable(cz));
+// al cambiar de alicatado o de pantalla, el dibujo vuelve a su tamaño
+addEventListener('hashchange',()=>Z.forEach(z=>z.reset()));
+document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data-met]'))Z.forEach(z=>z.reset());});
+})();
 </script>
 
 <script>
@@ -3021,6 +3291,7 @@ ruta();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.8",["🧩 New Alhambra tile pattern: eight-pointed stars and zafates from the niches of the Comares Tower (no. 15), with its 8 steps from the book","📏 Tessellate › On paper: choose A5, A4, A3 or a custom size and see how big each module and the starting circle or square must be, with the margins drawn to scale","🔍 Zoom in on the drawing with two fingers, Ctrl + wheel or the + button; “Normal size” puts it back","🖼️ Gallery in book order, with page or number, steps, pieces and difficulty","📚 Settings: the two books by Manuel Martínez Vela, contact and privacy","🔤 The fonts come with the app: titles always look right, even offline","✨ A short fade when changing stage or screen"]],
     ["2.7",["🏷️ Each tile pattern opens with its own cover: the wall in color, the book and page, the place, the steps and the pieces","✏️ Drawn icons instead of emojis on buttons: they look the same on every phone","🖥️ On iPad and computer the drawing sits beside the steps and colors, and always fits on screen","🧪 Behind the scenes: an automatic test checks every pattern against the book's measurements"]],
     ["2.6.1",["👆 In Tessellate, Color and Print the drawing is higher up: the long introduction only appears in Draw","📌 Color on the phone: the drawing stays at the top while you scroll through the options","✏️ “Your tile” folds away until you open it","🔧 Small fixes: Alhambra colors in the goal step, “Mark the modules” next to columns and rows"]],
     ["2.6",["✏️ Your tile: in Tessellate, draw on the design and your stroke repeats in every module. Choose color and width, use your colors and save it as a phone wallpaper","🎨 Same design, other colors: in Color, see the pattern colored in several ways and discover how stars and rosettes appear"]],
@@ -3047,6 +3318,7 @@ ruta();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.8",["🧩 Alicatado nuevo de la Alhambra: estrellas de ocho y zafates de las tacas de la Torre de Comares (n.º 15), con sus 8 pasos del libro","📏 Teselar › En papel: elige A5, A4, A3 o un papel a medida y verás cuánto miden el módulo y la circunferencia o el cuadrado de partida, con los márgenes a escala","🔍 Amplía el dibujo con dos dedos, Ctrl + rueda o el botón +; «Tamaño normal» lo deja como estaba","🖼️ Galería en el orden del libro, con página o número, pasos, piezas y dificultad","📚 Ajustes: los dos libros de Manuel Martínez Vela, contacto y privacidad","🔤 Los tipos de letra van dentro de la app: los títulos se ven siempre bien, también sin conexión","✨ Un fundido corto al cambiar de etapa o de pantalla"]],
     ["2.7",["🏷️ Cada alicatado empieza con su portada: el muro en color, el libro y la página, el lugar, los pasos y las piezas","✏️ Iconos dibujados en vez de emojis en los botones: se ven igual en todos los móviles","🖥️ En el iPad y el ordenador el dibujo va al lado de los pasos y los colores, y cabe siempre entero","🧪 Por dentro: una prueba automática comprueba cada alicatado con las medidas del libro"]],
     ["2.6.1",["👆 En Teselar, Colorear e Imprimir el dibujo queda más arriba: la presentación larga solo sale en Trazar","📌 Colorear en el móvil: el dibujo se queda arriba mientras bajas por las opciones","✏️ «Tu tesela» va plegada hasta que la abras","🔧 Arreglos: colores de la Alhambra en el objetivo, «Marcar los módulos» junto a columnas y filas"]],
     ["2.6",["✏️ Tu tesela: en Teselar, dibuja sobre el dibujo y tu trazo se repite en todos los módulos. Elige color y grosor, usa tus colores y guárdalo como fondo de pantalla del móvil","🎨 Mismo dibujo, otro color: en Colorear, mira la trama coloreada de varias maneras y descubre cómo aparecen estrellas y rosetas"]],
@@ -3106,6 +3378,19 @@ ruta();
   q('#aj-instalar').onclick=()=>IK.abrirInstalar();
   q('#aj-buscar').onclick=()=>IK.buscar(q('#aj-buscar'),q('#aj-upd-msg'));
   q('#aj-novedades').onclick=()=>{cerrar('dlg-ajustes');verNovedades(null)};
+  // ---- Los libros, contacto y privacidad (v2.8) ----
+  const LIBROS=[['El Real Alcázar de Sevilla con regla y compás','El trazado paso a paso de los alicatados','Editorial Almizate','2019','The Royal Alcázar of Seville with ruler and compass'],
+    ['La Alhambra con regla y compás','El trazado paso a paso de alicatados y yeserías','Editorial Almizate y Patronato de la Alhambra y Generalife','2017','The Alhambra with ruler and compass']];
+  q('#aj-fuentes-t').textContent=tr('Los libros','The books');
+  q('#aj-fuentes').innerHTML=`<p>${tr('Los pasos, las medidas y los colores siguen estos dos libros de <b>Manuel Martínez Vela</b>:','The steps, measurements and colors follow these two books by <b>Manuel Martínez Vela</b>:')}</p><ul class="libros">`+
+    LIBROS.map(l=>`<li><i>${l[0]}</i>${EN?` (“${l[4]}”)`:''}. ${l[1]}. ${l[2]}, ${l[3]}${tr(' (1.ª edición).',' (1st edition).')}</li>`).join('')+'</ul>'+
+    `<p class="muted">${tr('Los dibujos y los textos de la app están rehechos a partir de las construcciones de los libros. Para conocer cada alicatado a fondo, con su historia y sus fotografías, consulta los libros.','The app’s drawings and texts are redrawn from the books’ constructions. To learn about each tile pattern in depth, with its history and photographs, see the books.')}</p>`;
+  q('#aj-contacto').onclick=()=>{try{window.open('https://github.com/indalo-apps/mosaicos/issues','_blank','noopener')}catch(e){}};
+  q('#priv-texto').innerHTML=tr(
+    '<p>Mosaicos <b>no recoge ningún dato personal</b>. No hay cuentas, ni anuncios, ni compras, ni estadísticas de uso, ni rastreo.</p><p>Lo que coloreas y repasas, el paso del trazado y tus ajustes se guardan <b>solo en este dispositivo</b> (en el almacenamiento del navegador) y no se envían a nadie. Si borras los datos del navegador o desinstalas la app, se borran también.</p><p class="muted">La app, con sus tipos de letra, se descarga de GitHub Pages (GitHub, Inc.), que como cualquier servidor web recibe la dirección IP al abrirla. Después funciona sin conexión.</p>',
+    '<p>Mosaicos <b>does not collect any personal data</b>. There are no accounts, ads, purchases, usage statistics or tracking.</p><p>What you color and trace, your drawing step and your settings are saved <b>only on this device</b> (in the browser’s storage) and are not sent to anyone. If you clear the browser’s data or uninstall the app, they are deleted too.</p><p class="muted">The app, fonts included, is downloaded from GitHub Pages (GitHub, Inc.), which like any web server receives your IP address when you open it. After that it works offline.</p>');
+  q('#aj-privacidad').onclick=()=>{cerrar('dlg-ajustes');abrir('dlg-privacidad')};
+  ['priv-x','priv-cerrar'].forEach(id=>q('#'+id).onclick=()=>{cerrar('dlg-privacidad');abrir('dlg-ajustes')});
   document.querySelectorAll('.dlg').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)cerrar(d.id)}));
   document.addEventListener('keydown',e=>{
     const d=[...document.querySelectorAll('.dlg')].find(x=>!x.hidden);if(!d)return;

@@ -71,6 +71,20 @@ const LIBRO={
       ok(cerca(p.modulo.R,p.k),'Arrayanes: el módulo es el hexágono de radio 1 del libro');},
     // la estrella de doce tiene simetría de 12 dentro del hexágono; el muro entero, de 6
     simetria:{centro:()=>[0,0],estrella:12,giros:[[12,p=>0.8*p.k],[6,p=>p.W*0.9]]}},
+  taca:{pasos:8,
+    extra(p){const {a1,d2,d3,c}=p.Gt,L=p.modBase(),ok8=[d3,a1];
+      ok(cerca(d2,1-a1)&&cerca(d3,d2*Math.tan(Math.PI/8)),'Taca: el segundo octógono estrellado sale del octógono central del primero');
+      // paso 5: todas las líneas del módulo son paralelas a los ejes o a las diagonales, a d3 (paso 4) o a 1/√2 (paso 2) del centro
+      for(const [x1,y1,x2,y2] of L){const dx=x2-x1,dy=y2-y1,d=Math.abs(x1*dy-y1*dx)/Math.hypot(dx,dy),ang=(Math.atan2(dy,dx)*180/Math.PI+360)%45;
+        ok(cerca(ang,0,1e-6)||cerca(ang,45,1e-6),'Taca: cada trazo es paralelo a un eje o a una diagonal');
+        ok(ok8.some(v=>cerca(d,v,1e-9)),'Taca: cada trazo está en una recta del paso 2 o del paso 4');
+        ok(Math.max(Math.abs(x1),Math.abs(y1),Math.abs(x2),Math.abs(y2))<=1+1e-9,'Taca: el módulo no se sale del cuadrado');}
+      // las cuatro partes son iguales, giradas 90° alrededor del centro
+      const clave=t=>{const a=[t[0],t[1]].map(v=>v.toFixed(6)).join(','),b=[t[2],t[3]].map(v=>v.toFixed(6)).join(',');return a<b?a+'|'+b:b+'|'+a;};
+      const S=new Set(L.map(clave));ok(L.every(t=>S.has(clave([-t[1],t[0],-t[3],t[2]]))),'Taca: el módulo es igual girado 90°');
+      ok(!L.every(t=>S.has(clave([-t[0],t[1],-t[2],t[3]]))),'Taca: el módulo no es simétrico por sí solo (la simetría se aplica en el paso 6)');
+      ok(cerca(p.modulo.m,2*Math.SQRT2*p.k),'Taca: el módulo mínimo para teselar es el cuadrado girado 45° de lado 2√2');},
+    simetria:{centro:p=>[p.k,p.k],giros:[[4,p=>0.95*p.k]]}},
   zaguan2:{pasos:7,modulo:8},
   zaguan:{pasos:4},toledanos:{pasos:4},cenador6:{pasos:4},munecas17:{pasos:5},
   cubos:{pasos:4},alargadas:{pasos:5},alfardones:{pasos:5},octogonos:{pasos:4},

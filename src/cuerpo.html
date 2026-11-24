@@ -119,6 +119,16 @@
         <div class="ops"><button id="ts-fondo">📱 Fondo de pantalla</button></div>
         <p class="msg" id="ts-msg" role="status" aria-live="polite"></p>
       </details>
+      <details class="tesela" id="ts-papel">
+        <summary>📏 En papel <small>· medidas para dibujarlo a mano</small></summary>
+        <p class="hint" style="margin:0 0 8px">Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
+        <div class="ops" id="pp-papel" role="group" aria-label="Papel"><button data-pp="A5">A5</button><button data-pp="A4">A4</button><button data-pp="A3">A3</button><button data-pp="med">A medida</button></div>
+        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (mm) <input type="number" id="pp-w" min="50" max="3000" step="1" inputmode="decimal"></label><label>Alto (mm) <input type="number" id="pp-h" min="50" max="3000" step="1" inputmode="decimal"></label></div>
+        <div class="ops" id="pp-ori" role="group" aria-label="Orientación" style="margin-top:8px"><button data-ori="v">Vertical</button><button data-ori="h">Horizontal</button></div>
+        <div class="pp-campos"><label>Margen (mm) <input type="number" id="pp-m" min="0" max="200" step="1" inputmode="decimal"></label></div>
+        <div id="pp-vista" role="img" aria-label="El papel con el dibujo y sus márgenes"></div>
+        <dl id="pp-res" class="pp-res" aria-live="polite"></dl>
+      </details>
 
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
       <div class="row" style="justify-content:flex-start;gap:8px;margin-top:10px"><button id="ts-ant">← Trazar</button><button id="ts-sig" class="on">Siguiente: colorear →</button></div>
@@ -153,7 +163,9 @@
   <div class="grupo"><h3>Acerca de</h3>
    <div class="acerca"><img src="icon-192.png" alt=""><div><b>Mosaicos</b><br><span class="muted">Lacería con regla y compás</span><br><span class="muted">Versión <span id="aj-ver"></span></span></div></div>
    <p style="margin-top:10px">Creada por <b>Carlos Moreno Otto</b>.</p>
-   <p class="muted">© 2026 Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p></div>
+   <p class="muted">© 2026 Carlos Moreno Otto. Todos los derechos reservados. Uso personal y educativo gratuito.</p>
+   <div class="ops" style="margin-top:10px"><button id="aj-contacto">✉️ Contacto y sugerencias</button><button id="aj-privacidad">🔒 Privacidad</button></div></div>
+  <div class="grupo"><h3 id="aj-fuentes-t">Los libros</h3><div id="aj-fuentes"></div></div>
   <div class="grupo"><h3>Aviso</h3>
    <p>Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable son los libros <i>El Real Alcázar de Sevilla con regla y compás</i> y <i>La Alhambra con regla y compás</i>.</p></div>
   <div class="grupo"><h3>Versión</h3>
@@ -161,6 +173,14 @@
    <div class="ops"><button id="aj-buscar">🔄 Buscar actualizaciones</button><button id="aj-novedades">Ver novedades</button></div>
    <p class="muted" id="aj-upd-msg" role="status" aria-live="polite" style="margin-top:8px"></p></div>
   <button class="listo" id="aj-cerrar">Listo</button>
+ </div>
+</div>
+<div class="dlg" id="dlg-privacidad" hidden role="dialog" aria-modal="true" aria-labelledby="priv-tit">
+ <div class="hoja">
+  <button class="x" id="priv-x" aria-label="Cerrar">✕</button>
+  <h2 id="priv-tit">Privacidad</h2>
+  <div id="priv-texto"></div>
+  <button class="listo" id="priv-cerrar">Volver a Ajustes</button>
  </div>
 </div>
 <div class="dlg" id="dlg-novedades" hidden role="dialog" aria-modal="true" aria-labelledby="nov-titulo">

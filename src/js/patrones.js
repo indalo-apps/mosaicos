@@ -285,6 +285,38 @@ P.arrayanes=escalar({id:'arrayanes',coleccion:'alhambra',num:7,nombre:'Estrellas
 Object.assign(P.arrayanes,{modBase:modulo,hexV:HEX,rw:0.55,ow:0.06,modulo:{tipo:'hex',R:P.arrayanes.k,cx:2*s3*P.arrayanes.k,cy:3*P.arrayanes.k}});
 })();
 
+// ===== LA ALHAMBRA · Tacas de la Torre de Comares (alicatado n.º 15) =====
+// Cuadrado de lado 2 con su circunferencia inscrita (radio 1). Por los cortes con las diagonales, paralelas a los lados (a 1/√2);
+// uniendo los puntos medios de los lados, el cuadrado girado 45°. Su octógono central, unido de tres en tres, da un octógono estrellado
+// con otro octógono en el centro; el octógono estrellado de este, prolongado, da rectas a d3 = (1−1/√2)·tan 22,5° del centro.
+// El módulo básico (paso 5) es el cuadrado: cuatro partes iguales giradas 90°. Se replica por simetría con dos lados como ejes (paso 6)
+// y la baldosa de 2 × 2 se repite por traslación (paso 7). Periodo de 4 × 4 (dos cuadrados por lado).
+(function(){const a1=Math.SQRT1_2,d2=1-a1,d3=d2*Math.tan(Math.PI/8),c=d3*Math.SQRT2;
+const A=[[0,-1],[-d3,-(1-d3)],[-d3,d3-c],[-a1,a1-c],[-a1,a1+c],[c-1,1]];   // desde el punto medio del lado de arriba
+const B=[[-1,0],[a1-1,-a1],[a1+c,-a1],[1,c-1]];                            // desde el punto medio del lado izquierdo
+const rot=([u,v],k)=>{for(let i=0;i<k;i++)[u,v]=[-v,u];return[u,v];};
+function modulo(){const L=[];for(let k=0;k<4;k++)for(const P of [A,B]){const Q=P.map(q=>rot(q,k));for(let i=0;i+1<Q.length;i++)L.push([...Q[i],...Q[i+1]]);}return L;}
+const area=Q=>{let S=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];S+=p[0]*q[1]-q[0]*p[1];}return Math.abs(S)/2;};
+P.taca=escalar({id:'taca',coleccion:'alhambra',num:15,nombre:'Estrellas de ocho y zafates',lugar:'Tacas de la Torre de Comares · Patio de los Arrayanes',tipo:'mosaico',
+  W:4,H:4,
+  lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const sx=i%2?-1:1,sy=j%2?-1:1,cx=1+2*i,cy=1+2*j; // simetría por los lados del cuadrado
+    for(const t of modulo())L.push([cx+sx*t[0],cy+sy*t[1],cx+sx*t[2],cy+sy*t[3]]);}return L;},
+  clase(Q,[x,y]){const n=Q.length,Ar=area(Q)/this.k/this.k,par=(Math.floor(x/2)+Math.floor(y/2))%2===0;
+    if(n===16)return Ar>0.34?0:1;          // sinos: estrella de ocho grande y pequeña
+    if(n===6)return par?2:3;                // zafates en grupos de cuatro: un grupo melado, el siguiente verde
+    if(n===8)return Ar>0.2?4:5;             // zafate negro / estrella de cuatro blanca
+    return 6;},
+  nombres:['Sino grande (estrella de ocho)','Sino pequeño (estrella de ocho)','Zafate (grupos melados)','Zafate (grupos verdes)','Zafate negro','Estrella de cuatro','Pieza pequeña'],
+  paletas:{
+    'Alhambra':{cols:['#2f4fa3','#2f4fa3','#c98b2b','#1f5f5b','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Azul y oro':{cols:['#2f4fa3','#1f3a7a','#e0b04a','#e0b04a','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Terracota':{cols:['#8a4b36','#8a4b36','#d98e6e','#e8b49a','#5a3022','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
+    'Para colorear':{cols:Array(7).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,
+  modulo:{m:2*Math.SQRT2*P.taca.k,cx:P.taca.k,cy:P.taca.k,giro:45,nota:[' · el dibujo va girado 45° para ver el módulo derecho; en el muro, la baldosa del paso 6 va recta',' · the drawing is turned 45° to show the module upright; on the wall, the tile from step 6 is straight']}}); // módulo mínimo: la baldosa de 2 × 2 tiene un periodo en diagonal (2, 2)
+})();
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -522,6 +554,33 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
      guia(){return animar(p.modBase().map(t=>[X(t[0]),Y(t[1]),X(t[2]),Y(t[3])]),'#1b1b1b',0.16)+cerrado(hexV,'#1b1b1b',0.12,true);}},
     {h:'Repetir el módulo',t:'El módulo se repite por traslación hasta cubrir el plano. Es posible porque el hexágono regular es uno de los polígonos que teselan el plano.',c:'Si unes los centros de las estrellas aparece una red de triángulos equiláteros.',tipo:'piezas',vt:[C[0]-2.6*k,C[1]-2.2*k,5.2*k,4.4*k]},
     {h:'Las cintas',t:'Da ancho a las líneas con dos paralelas y alterna los cruces por encima y por debajo. En el zaguán es yesería: todo es del color del yeso y el dibujo se lee por el relieve.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:[C[0]-2.6*k,C[1]-2.2*k,5.2*k,4.4*k]}]});
+})();
+
+(function(){const p=P.taca,{a1,d2,d3,c}=p.Gt,k=p.k,C=[k,k],X=v=>C[0]+v*k,Y=v=>C[1]+v*k;
+  const ln=(L,col,w,d)=>guia(L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]),col,w,d),an=(L,col,w)=>animar(L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]),col,w);
+  // recta a distancia d del centro, con normal en el ángulo t (grados), recortada al cuadrado [-1,1]²
+  const recta8=(t,d)=>{const n=[Math.cos(rad(t)),Math.sin(rad(t))],u=[-n[1],n[0]],P0=[n[0]*d,n[1]*d];let t0=-9,t1=9;
+    for(const [pp,dd] of [[P0[0],u[0]],[P0[1],u[1]]]){if(Math.abs(dd)<1e-12)continue;let a=(-1-pp)/dd,b=(1-pp)/dd;if(a>b)[a,b]=[b,a];t0=Math.max(t0,a);t1=Math.min(t1,b);}
+    return [P0[0]+u[0]*t0,P0[1]+u[1]*t0,P0[0]+u[0]*t1,P0[1]+u[1]*t1];};
+  const ocho=(R)=>Array.from({length:8},(_,i)=>[R*Math.cos(rad(22.5+45*i)),R*Math.sin(rad(22.5+45*i))]);
+  const estrella=(R)=>{const V=ocho(R);return V.map((v,i)=>[...v,...V[(i+3)%8]]);}; // vértices unidos de tres en tres
+  const vt=[-0.04*k,-0.04*k,2.08*k,2.08*k],vtB=[-0.5,-0.5,4*k+1,4*k+1],vtG=[-0.5,-0.5,8*k+1,8*k+1];
+  Object.assign(p,{vt,
+  resumen:'Estrellas azules de ocho puntas rodeadas de zafates verdes, melados y negros, sobre un fondo de piezas blancas. Reviste las paredes de las tacas, las pequeñas hornacinas del arco de entrada a la Torre de Comares.',
+  pie:'Todo sale de un cuadrado con su circunferencia inscrita: dos cuadrados girados 45° dan un octógono, y dos octógonos estrellados, cada vez más pequeños, dan las líneas del módulo. El módulo se replica por simetría y la baldosa resultante, por traslación.',
+  pasos:[
+    {h:'Cuadrado, ejes y circunferencia',t:'Inicia el dibujo a partir de un cuadrado al que habrás trazado sus diagonales y ejes. Tomando como centro el del cuadrado, dibuja la circunferencia inscrita.',c:'Es la circunferencia inscrita de «Aprender a trazar».',anim:'fade',
+     guia(){return ln([[-1,-1,1,1],[-1,1,1,-1],[-1,0,1,0],[0,-1,0,1]],RO,0.05,'0.3 0.2')+circulos([C],k,RO,0.07);}},
+    {h:'Dos cuadrados y un octógono',t:'Traza rectas paralelas a los lados por los puntos donde la circunferencia corta a las diagonales. A continuación, une los puntos medios de los lados del cuadrado. Obtienes dos cuadrados girados 45° y, en el centro, un octógono convexo.',c:'Las paralelas quedan a 0,71 del centro, con el radio de la circunferencia como unidad.',anim:'draw',
+     guia(){return an([[-1,-a1,1,-a1],[-1,a1,1,a1],[-a1,-1,-a1,1],[a1,-1,a1,1]],RO,0.07)+an([[0,-1,1,0],[1,0,0,1],[0,1,-1,0],[-1,0,0,-1]],RO,0.07);}},
+    {h:'Octógono estrellado',t:'Uniendo los vértices del octógono central de modo no consecutivo, de tres en tres, dibuja un octógono estrellado. Observa que en su centro aparece un nuevo octógono convexo.',c:'Sus lados son paralelos a los ejes y a las diagonales.',anim:'draw',
+     guia(){return an(estrella(a1/Math.cos(rad(22.5))),RO,0.08);}},
+    {h:'Otro octógono estrellado',t:'Dibuja otro octógono estrellado, más pequeño todavía, tomando como vértices los del nuevo octógono central. Prolonga sus lados hasta su intersección con los del cuadrado.',c:'Son ocho rectas muy cerca del centro: dos paralelas a cada eje y a cada diagonal.',anim:'draw',
+     guia(){const L=[];for(let i=0;i<8;i++)L.push(recta8(45*i,d3));return ln(estrella(d2/Math.cos(rad(22.5))),'#2b4f73',0.05)+an(L,RO,0.08);}},
+    {h:'El módulo básico',t:'De las líneas obtenidas en los pasos anteriores, remarca los trazos adecuados para obtener el módulo básico.',c:'Si divides el cuadrado por sus ejes, las cuatro partes son iguales, aunque giradas 90° alrededor del centro: es la unidad básica mínima.',tipo:'remarcar'},
+    {h:'Simetría',t:'Una vez obtenido el módulo, replícalo por simetría tomando como ejes dos de sus lados perpendiculares.',c:'Sale una baldosa de 2 × 2 módulos.',tipo:'piezas',vt:vtB},
+    {h:'Repetir la baldosa',t:'Repite por traslación, en sentido vertical y horizontal, la baldosa obtenida en el paso anterior.',c:'En Teselar verás que basta un cuadrado más pequeño, girado 45°, para cubrir el plano.',tipo:'piezas',vt:vtG},
+    {h:'Color',t:'En el alicatado, los sinos son azules; los zafates, verdes, melados y negros, y el resto de las piezas, blancas. En el panel los bordes se rematan y se corona con un friso de almenillas blancas y negras, que aquí no se dibujan.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:vtG}]});
 })();
 
 // Dibuja un paso del trazado de un patrón nuevo

@@ -406,7 +406,15 @@ $('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(f
 function miniatura(p){const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
   return renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');}
 function contarGaleria(){}
-function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small></span></button>`).join('');}
+// Galería (v2.8): en el orden del libro, y cada tarjeta con su página o número, los pasos, las piezas y la dificultad (con texto, no solo con color)
+function nPasos(p){return p.pasos?p.pasos.length:(window.LAZO_PASOS||6);}
+function dificultad(p){const n=nPasos(p)+p.nombres.length/2;return n<=7?0:n<=11?1:2;}
+function datosPat(p){const d=dificultad(p),DIF=[tr('Fácil','Easy'),tr('Media','Medium'),tr('Difícil','Hard')];
+  const ref=p.coleccion==='alhambra'?tr(`n.º ${p.num}`,`no. ${p.num}`):tr(`págs. ${String(p.pags).replace(/ a /,'–')}`,`pp. ${String(p.pags).replace(/ (a|y) /,'–')}`);
+  const pt=`<span class="dif" aria-hidden="true">${'●'.repeat(d+1)}${'○'.repeat(2-d)}</span>`;
+  return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(p.nombres.length+' piezas',p.nombres.length+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
+const ordenLibro=p=>p.coleccion==='alhambra'?p.num:parseInt(p.pags)||0;
+function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}</span></button>`).join('');}
 function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${monu(PAT)}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
 function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);HIST=[];$('deshacer').disabled=true;SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
@@ -476,6 +484,7 @@ const STEPS=[
  {h:'Entrelazar',t:'En cada cruce, una cinta pasa por encima y la otra por debajo. Recorre cada cinta alternando: encima, debajo, encima… y borra los trozos de la que queda debajo.',c:'Si alternas bien en una cinta, las demás encajan solas.'},
  {h:'Colorear',t:'Ya puedes pintar. Las estrellas y los alfardones en negro y las piezas en V en verde reproducen el zócalo del patio.',c:'Prueba antes las combinaciones en la pestaña Colorear.'}
 ];
+window.LAZO_PASOS=STEPS.length;
 if(EN&&PAT_EN.lazo8)STEPS.forEach((q,i)=>Object.assign(q,PAT_EN.lazo8.pasos[i]||{}));
 let step=1;
 // v2.0: el mismo reproductor sirve para las construcciones básicas (window.MODO.c) y empieza por el objetivo (paso 0)
@@ -563,7 +572,7 @@ function prFin(e){if(!actual||e.pointerId!==actual.id)return;const t=trazos();t.
 tz.addEventListener('pointerup',prFin);tz.addEventListener('pointercancel',prFin);
 // Deslizar el dibujo a izquierda o derecha cambia de paso (no mientras se repasa)
 let tx=null;
-tz.addEventListener('touchstart',e=>{tx=(!practicando&&e.touches.length===1)?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
+tz.addEventListener('touchstart',e=>{tx=(!practicando&&!tz.dataset.zoom&&e.touches.length===1)?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
 tz.addEventListener('touchend',e=>{if(!tx)return;const t=e.changedTouches[0],dx=t.clientX-tx[0],dy=t.clientY-tx[1];tx=null;
   if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*0.6)return;
   if(dx<0&&step<pasos().length){step++;show();}else if(dx>0&&step>0){step--;show();}},{passive:true});

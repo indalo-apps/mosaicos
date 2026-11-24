@@ -80,3 +80,14 @@ node pruebas/con-servidor.js pruebas/navegador.js   # todas las pantallas, acces
 ```
 
 `npm test` hace las tres cosas y además avisa si `index.html` no está al día con `src/`.
+
+## Fuentes
+
+Los pasos, las medidas y los colores siguen los libros de **Manuel Martínez Vela**:
+
+- *El Real Alcázar de Sevilla con regla y compás. El trazado paso a paso de los alicatados.* Editorial Almizate, 2019.
+- *La Alhambra con regla y compás. El trazado paso a paso de alicatados y yeserías.* Editorial Almizate y Patronato de la Alhambra y Generalife, 2017.
+
+Los dibujos y los textos de la app están rehechos a partir de las construcciones de los libros.
+
+Tipos de letra: Inter y Cormorant Garamond, incluidos en `fonts/` con licencia SIL Open Font License (`fonts/OFL.txt`).

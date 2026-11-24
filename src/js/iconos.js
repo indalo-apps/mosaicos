@@ -22,13 +22,16 @@ const P={
   mezclar:'<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4"/><path d="M18 4l3 3-3 3M18 14l3 3-3 3"/>',
   hecho:'<path d="M5 12.5l4.5 4.5L19 7"/>',
   cerrar:'<path d="M6 6l12 12M18 6L6 18"/>',
+  correo:'<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/>',
+  candado:'<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  regla:'<path d="M3 15.5L15.5 3l5.5 5.5L8.5 21z"/><path d="M7 11.5l2 2M9.5 9l1.5 1.5M12 6.5l2 2M14.5 4l1.5 1.5"/>',
   lugar:'<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
   pasos:'<path d="M10 6h10M10 12h10M10 18h10"/><circle cx="5" cy="6" r="1.3"/><circle cx="5" cy="12" r="1.3"/><circle cx="5" cy="18" r="1.3"/>',
   piezas:'<path d="M12 2.5l2.2 5.3 5.3 2.2-5.3 2.2L12 17.5l-2.2-5.3L4.5 10l5.3-2.2z" transform="translate(0 2)"/>',
   repetir:'<path d="M19 12a7 7 0 1 1-2.1-5"/><path d="M19 4v4h-4"/>'};
 const M={'✏':'lapiz','🖼':'imagen','🎨':'paleta','📐':'compas','▦':'cuadricula','📄':'documento','⬇':'descargar','📲':'instalar',
   '📱':'movil','📖':'libro','↶':'deshacer','🛒':'carrito','✂':'tijeras','🔄':'actualizar','📋':'copiar','🖨':'imprimir','🔀':'mezclar',
-  '✓':'hecho','✕':'cerrar','↻':'repetir'};
+  '✓':'hecho','📏':'regla','✉':'correo','🔒':'candado','✕':'cerrar','↻':'repetir'};
 const RE=new RegExp('^(\\s*)('+Object.keys(M).join('|')+')\\uFE0F?\\s*','u');
 window.icono=(n,cl='ic')=>`<svg class="${cl}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${P[n]}</svg>`;
 const SEL='button,h2,summary,a.btn,label.btn';

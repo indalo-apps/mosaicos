@@ -194,12 +194,12 @@ document.addEventListener('input',()=>guardar());
 document.addEventListener('change',e=>{const t=e.target;editando=false;if(['interlace','wc','grid','construct','solo'].includes(t.id)){if(t.id!=='solo')snap();st[t.id]=t.checked;draw();}
   else if(CARTA&&t.type==='color'&&t.closest('#tab-colorear'))draw();});
 $('clearOver').onclick=()=>{snap();st.over={};draw();};
-// Restablecer pide un segundo toque (y se puede deshacer)
-let resetArmado=0;
-$('reset').onclick=()=>{const b=$('reset');
-  if(Date.now()-resetArmado>4000){resetArmado=Date.now();b.classList.add('peligro');b.textContent=tr('¿Volver a los colores iniciales? Toca otra vez','Back to the starting colors? Tap again');
-    setTimeout(()=>{if(Date.now()-resetArmado>=3900){b.classList.remove('peligro');b.textContent=tr('Restablecer','Reset');}},4000);return;}
-  resetArmado=0;b.classList.remove('peligro');b.textContent=tr('Restablecer','Reset');snap();st=fresh(PAT);draw();};
+// Reiniciar (v2.12): junto a Deshacer, Exportar y Otro color; vuelve todo el coloreado al principio. Pide un segundo toque y se puede deshacer
+let resetArmado=0;const txtReiniciar=()=>tr('↺ Reiniciar','↺ Start over');
+$('reiniciar').onclick=()=>{const b=$('reiniciar');
+  if(Date.now()-resetArmado>4000){resetArmado=Date.now();b.classList.add('peligro');b.textContent=tr('¿Empezar de cero? Toca otra vez','Start from scratch? Tap again');
+    setTimeout(()=>{if(Date.now()-resetArmado>=3900){b.classList.remove('peligro');b.textContent=txtReiniciar();}},4000);return;}
+  resetArmado=0;b.classList.remove('peligro');b.textContent=txtReiniciar();snap();st=fresh(PAT);draw();$('msg').textContent=tr('Todo el coloreado ha vuelto al principio. Puedes deshacerlo.','All the coloring is back to the start. You can undo it.');};
 // ---------- Exportar (v1.2): SVG en color, PNG, y láser (piezas o celosía) ----------
 // Cada patrón se repite cada W × H (un módulo). Se exporta un rectángulo de c × r módulos que encaja sin costuras.
 const fx=n=>+(+n).toFixed(3);
@@ -577,7 +577,7 @@ function medPaso(){const el=document.getElementById('stepm');if(!el)return;
   if(!L)L=step===0?P.med:P.med.slice(0,1);
   el.innerHTML=`<p class="mp-t">${icono('regla')}<b>${tr('En papel','On paper')}</b> <span>· ${P.desc}</span> <button type="button" class="enlace" id="mp-cambiar">${tr('Cambiar','Change')}</button></p><ul>`+L.map(([t,v])=>`<li>${t}: <b>${v}</b></li>`).join('')+'</ul>';
   el.hidden=false;
-  document.getElementById('mp-cambiar').onclick=()=>{location.hash='#a/'+PAT.id+'/teselar';setTimeout(()=>{const d=document.getElementById('ts-papel');if(d){d.open=true;d.scrollIntoView({block:'start',behavior:'smooth'});}},350);};}
+  document.getElementById('mp-cambiar').onclick=()=>{location.hash='#a/'+PAT.id+'/imprimir';setTimeout(()=>{const d=document.getElementById('ts-papel');if(d){d.scrollIntoView({block:'start',behavior:'smooth'});}},350);};}
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}

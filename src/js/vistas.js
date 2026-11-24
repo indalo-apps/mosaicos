@@ -9,7 +9,7 @@ const VOLVER={'#inicio':['Inicio','Home'],'#aprender':['Aprender a trazar','Lear
 function cab(t,sub,volver,intro){$('titulo').innerHTML=t+(sub?`<span class="sub">${sub}</span>`:'');
   if(volver){const n=lt(VOLVER[volver]||VOLVER['#inicio']);$('volver-txt').textContent=n;$('volver').setAttribute('aria-label',tr('Volver a ','Back to ')+n);}
   document.querySelector('.cab-top').classList.toggle('con-volver',!!volver);document.querySelector('.cab-top').classList.toggle('en-inicio',t==='Mosaicos'&&!volver);document.title=(t==='Mosaicos'?'':t.replace(/<[^>]+>/g,'')+' · ')+'Mosaicos';
-  $('volver').hidden=!volver;if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';$('ficha').hidden=true;}
+  $('volver').hidden=!volver;$('casa').hidden=t==='Mosaicos'&&!volver;if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';$('ficha').hidden=true;}
 // ---- Portada de cada alicatado (v2.7): el muro en color, el libro, el lugar, los pasos y las piezas
 function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const img=renderLazo(datos(p),{x0:p.W*0.25,y0:p.H*0.25,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');
@@ -85,7 +85,7 @@ function mis(){mostrar('mis');cab(tr('Mis dibujos','My drawings'),tr('Guardados 
     return `<li><a href="#a/${x.p.id}/${x.col?'colorear':'trazado'}">${sv}<span>${x.p.nombre}</span><small>${x.col?tr('Coloreado','Colored'):tr('Repasado a mano','Traced by hand')}</small></a></li>`;}).join('')+'</ul>'
     :`<p>${tr('Todavía no has coloreado ni repasado ningún dibujo. Empieza por un alicatado o por «Aprender a trazar».','You have not colored or traced anything yet. Start with a tile pattern or with “Learn to draw”.')}</p>`;}
 // ---- Teselar
-const TS={marcar:true,tc:'#1d4ed8',tg:'0.012',color:false,dibujar:false};
+const TS={marcar:true,color:false};
 // Construye el teselado: c × r módulos. Devuelve el SVG, el texto del chip, la caja y la red de traslación (para repetir el dibujo a mano)
 function tsConstruir(c,r,marcar,conColor,fondo){
   const mos=PAT.tipo==='mosaico',blanco=Array(PAT.nombres.length).fill('#ffffff'),k=PAT.W/24;
@@ -127,19 +127,6 @@ function tsConstruir(c,r,marcar,conColor,fondo){
     for(let i=1;i<c;i++)g+=`<line x1="${i*W}" y1="0" x2="${i*W}" y2="${h}"/>`;for(let j=1;j<r;j++)g+=`<line x1="0" y1="${j*H}" x2="${w}" y2="${j*H}"/>`;
     g+=`</g><rect x="0" y="0" width="${W}" height="${H}" fill="#e0a526" fill-opacity="0.12" stroke="#e0a526" stroke-width="${sw*2.2}"/>`;sv=sv.replace(/<\/svg>$/,g+'</svg>');}
   return {sv,vb:[0,0,c*PAT.W,r*PAT.H],red:{O:[0,0],A:[PAT.W,0],B:[0,PAT.H],tam:PAT.W},chip:tr(`${c} × ${r} módulos · el primero, resaltado`,`${c} × ${r} modules · the first one highlighted`)};}
-// ---- Tesela: lo que dibujas en el primer módulo se repite en todos
-const TES_KEY='laceria-tesela-v1';let TES={};try{TES=JSON.parse(localStorage.getItem(TES_KEY)||'{}')||{};}catch(e){TES={};}
-const tesK=()=>PAT.id+(PAT.modulo&&PAT.modulo.tipo==='hex'&&TS.forma==='tri'?'-tri':'');
-const tesTrazos=()=>TES[tesK()]||(TES[tesK()]=[]);
-const tesGuardar=()=>{try{localStorage.setItem(TES_KEY,JSON.stringify(TES))}catch(e){}};
-function tesCapa(red,vb){const T=tesTrazos();if(!T.length&&!TS.actual)return '';const {O,A,B,tam}=red;
-  const lista=TS.actual?T.concat([TS.actual]):T,camino=lista.map(t=>`<path d="M${t.p.map(q=>(q[0]*tam).toFixed(3)+' '+(q[1]*tam).toFixed(3)).join('L')}" stroke="${t.c}" stroke-width="${(t.w*tam).toFixed(3)}"/>`).join('');
-  // orígenes de la red que tocan la vista
-  const [x0,y0,w,h]=vb,det=A[0]*B[1]-A[1]*B[0],ij=(x,y)=>[((x-O[0])*B[1]-(y-O[1])*B[0])/det,(A[0]*(y-O[1])-A[1]*(x-O[0]))/det];
-  const esq=[[x0,y0],[x0+w,y0],[x0,y0+h],[x0+w,y0+h]].map(p=>ij(...p)),is=esq.map(e=>e[0]),js=esq.map(e=>e[1]);let g='';
-  for(let i=Math.floor(Math.min(...is))-2;i<=Math.ceil(Math.max(...is))+1;i++)for(let j=Math.floor(Math.min(...js))-2;j<=Math.ceil(Math.max(...js))+1;j++)
-    g+=`<g transform="translate(${(O[0]+i*A[0]+j*B[0]).toFixed(3)} ${(O[1]+i*A[1]+j*B[1]).toFixed(3)})">${camino}</g>`;
-  return `<g id="ts-capa" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none">${g}</g>`;}
 {const alto=()=>{const b=document.getElementById('barra-etapas');if(b&&!b.hidden)document.documentElement.style.setProperty('--alto-tabs',b.offsetHeight+'px');};addEventListener('resize',alto);addEventListener('hashchange',()=>setTimeout(alto,50));setTimeout(alto,300);}
 // ---- En papel (v2.8; v2.9 en cm, con la figura de partida, plantilla a tamaño real y medidas en Trazar)
 // Figura de partida de cada alicatado, en unidades del libro: [texto, texto en inglés, medida]. La primera es la principal.
@@ -223,7 +210,8 @@ function medidasPapel(G){const kl=PAT.k||1;return (BASE[PAT.id]||[]).map(([t,te,
 let PAC=null;
 window.papelActual=()=>{const key=JSON.stringify([PAT.id,EX.c,EX.r,TS.forma,PP]);if(PAC&&PAC.key===key)return PAC.v;const R=tsConstruir(EX.c,EX.r,false,false),G=calcPapel(R);PAC={key,v:null};return PAC.v=G.ok?{R,G,med:medidasPapel(G),desc:`${PP.p==='med'?tr('papel a medida','custom paper'):PP.p} ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}`}:null;};
 window.cmPapel=cm;
-function pintarPapel(R){const det=$('ts-papel');if(!det||!det.open)return;
+function pintarPapel(R){if(!$('tab-imprimir').classList.contains('show'))return;
+  $('pp-c').textContent=EX.c;$('pp-r').textContent=EX.r;
   document.querySelectorAll('#pp-papel [data-pp]').forEach(b=>{const on=b.dataset.pp===PP.p;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   $('pp-medidas').hidden=PP.p!=='med';
   if(PP.p==='med'){if(document.activeElement!==$('pp-w'))$('pp-w').value=num(PP.w/10).replace(',','.');if(document.activeElement!==$('pp-h'))$('pp-h').value=num(PP.h/10).replace(',','.');}
@@ -244,8 +232,8 @@ function pintarPapel(R){const det=$('ts-papel');if(!det||!det.open)return;
     `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${num(PW/10)} × ${cm(PH)}</dd>`;}
 window.svgPapelActual=(opc)=>{const R=tsConstruir(EX.c,EX.r,TS.marcar,false),G=calcPapel(R);return G.ok?{svg:svgPapel(R,G,opc),G}:null;};
 {const gp=()=>store.set(PPK,PP);
-  $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarTeselar();});
-  $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarTeselar();});
+  $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarImprimir();});
+  $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarImprimir();});
   $('pp-dib').checked=PP.dib!==false;$('pp-gris').checked=PP.gris!==false;PP.gris=PP.gris!==false;
   $('pp-dib').onchange=e=>{PP.dib=e.target.checked;gp();};$('pp-gris').onchange=e=>{PP.gris=e.target.checked;gp();};
   $('pp-pdf').onclick=async()=>{const b=$('pp-pdf');b.disabled=true;$('pp-msg').textContent=tr('Preparando la plantilla…','Preparing the template…');
@@ -253,46 +241,21 @@ window.svgPapelActual=(opc)=>{const R=tsConstruir(EX.c,EX.r,TS.marcar,false),G=c
     catch(e){console.error(e);$('pp-msg').textContent=tr('No se ha podido crear el PDF.','The PDF could not be created.');}
     b.disabled=false;};
   // los campos van en centímetros
-  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v*10;gp();window.pintarTeselar();});
-  $('ts-papel').addEventListener('toggle',()=>{if($('ts-papel').open)window.pintarTeselar();});}
+  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v*10;gp();window.pintarImprimir();});
+  $('ts-papel').querySelector('.ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-pps]');if(!b)return;const k=b.dataset.pps;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();window.pintarImprimir();});}
 window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent=EX.r;
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');
   if(M&&M.tipo==='hex')document.querySelectorAll('#ts-forma [data-forma]').forEach(b=>{const on=b.dataset.forma===(TS.forma||'hex');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   const R=tsConstruir(EX.c,EX.r,TS.marcar,TS.color);TS.red=R.red;TS.vb=R.vb;
-  $('tssvg').innerHTML=R.sv.replace(/<\/svg>\s*$/,tesCapa(R.red,R.vb)+'</svg>');$('ts-chip').textContent=R.chip;
-  $('tssvg').classList.toggle('dibujando',!!TS.dibujar);
-  document.querySelectorAll('#ts-herr [data-tc]').forEach(b=>{const on=b.dataset.tc===TS.tc;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  document.querySelectorAll('#ts-herr [data-tg]').forEach(b=>{const on=b.dataset.tg===String(TS.tg);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  $('ts-undo').disabled=!tesTrazos().length;pintarPapel(R);};
+  $('tssvg').innerHTML=R.sv;$('ts-chip').textContent=R.chip;};
 
 document.querySelector('#tab-teselar .ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const k=b.dataset.ts;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();pintarTeselar();});
 $('ts-marcar').addEventListener('change',e=>{TS.marcar=e.target.checked;pintarTeselar();});
-// Dibujar en la tesela
-{const tz=$('tssvg');let pid=null;
-  const punto=e=>{const sv=tz.querySelector('svg'),m=sv.getScreenCTM().inverse(),q=new DOMPoint(e.clientX,e.clientY).matrixTransform(m),{O,tam}=TS.red;return [+((q.x-O[0])/tam).toFixed(4),+((q.y-O[1])/tam).toFixed(4)];};
-  const capa=()=>{const g=tz.querySelector('#ts-capa'),h=tesCapa(TS.red,TS.vb);if(g)g.outerHTML=h||'<g id="ts-capa"></g>';else tz.querySelector('svg').insertAdjacentHTML('beforeend',h);};
-  tz.addEventListener('pointerdown',e=>{if(!TS.dibujar||pid!==null)return;pid=e.pointerId;tz.setPointerCapture(pid);TS.actual={c:TS.tc,w:+TS.tg,p:[punto(e)]};e.preventDefault();});
-  tz.addEventListener('pointermove',e=>{if(e.pointerId!==pid||!TS.actual)return;const q=punto(e),u=TS.actual.p[TS.actual.p.length-1];if(Math.hypot(q[0]-u[0],q[1]-u[1])<0.004)return;TS.actual.p.push(q);capa();});
-  const fin=e=>{if(e.pointerId!==pid)return;pid=null;if(TS.actual&&TS.actual.p.length>1){tesTrazos().push(TS.actual);tesGuardar();}TS.actual=null;pintarTeselar();};
-  tz.addEventListener('pointerup',fin);tz.addEventListener('pointercancel',fin);}
-$('ts-tesela').addEventListener('toggle',e=>{if(!e.target.open&&TS.dibujar)$('ts-dib').click();});
-$('ts-dib').onclick=()=>{TS.dibujar=!TS.dibujar;$('ts-dib').setAttribute('aria-pressed',TS.dibujar);$('ts-dib').classList.toggle('on',TS.dibujar);
-  $('ts-msg').textContent=TS.dibujar?tr('Dibuja con el dedo, el lápiz o el ratón sobre el dibujo.','Draw with your finger, a stylus or the mouse on the drawing.'):'';pintarTeselar();};
-$('ts-undo').onclick=()=>{tesTrazos().pop();tesGuardar();pintarTeselar();};
-$('ts-borrar').onclick=()=>{if(!tesTrazos().length)return;if(!confirm(tr('¿Borrar todo lo que has dibujado en esta tesela?','Clear everything you drew on this tile?')))return;TES[tesK()]=[];tesGuardar();pintarTeselar();};
-$('ts-herr').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.tc)TS.tc=b.dataset.tc;if(b.dataset.tg)TS.tg=b.dataset.tg;pintarTeselar();b.focus();});
-$('ts-color').addEventListener('change',e=>{TS.color=e.target.checked;pintarTeselar();});
-$('ts-fondo').onclick=async()=>{const Wp=1170,Hp=2532;let c=Math.min(EX.c,3),r=1,R;
-  for(;r<40;r++){R=tsConstruir(c,r,false,TS.color,true);if(R.vb[3]/R.vb[2]>=Hp/Wp)break;}
-  let sv=R.sv.replace(/<\/svg>\s*$/,tesCapa(R.red,R.vb)+'</svg>').replace(/width="100%"( height="100%")?/,`width="${Wp}" height="${Hp}"`).replace('xMidYMid meet','xMidYMid slice');
-  if(!/preserveAspectRatio/.test(sv.slice(0,400)))sv=sv.replace('<svg ','<svg preserveAspectRatio="xMidYMid slice" ');
-  try{const img=await cargarImg(sv),cv=document.createElement('canvas');cv.width=Wp;cv.height=Hp;const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,Wp,Hp);x.drawImage(img,0,0,Wp,Hp);
-    const blob=await new Promise(ok=>cv.toBlob(ok,'image/png'));$('ts-msg').textContent=await entregar(blob,`mosaicos-${PAT.id}-fondo.png`);}
-  catch(err){$('ts-msg').textContent=tr('No se ha podido crear la imagen.','Could not create the image.');}};
 $('ts-forma').addEventListener('click',e=>{const b=e.target.closest('[data-forma]');if(!b)return;TS.forma=b.dataset.forma;pintarTeselar();b.focus();});
 $('ts-ant').onclick=()=>window.tabEtapa('trazado');$('ts-sig').onclick=()=>window.tabEtapa('colorear');
 // ---- Imprimir
-window.pintarImprimir=function(){$('imp-info').textContent=tr(`Se imprime el dibujo de ${EX.c} × ${EX.r} módulos que elegiste en Teselar, con tus colores de Colorear. Podrás cambiarlo en la ventana siguiente.`,`It prints the ${EX.c} × ${EX.r} module drawing you chose in Tessellate, with your colors from Color. You can change it in the next window.`);};
+window.pintarImprimir=function(){$('imp-info').textContent=tr(`Se imprime el dibujo de ${EX.c} × ${EX.r} módulos que elegiste en Teselar, con tus colores de Colorear. Podrás cambiarlo en la ventana siguiente.`,`It prints the ${EX.c} × ${EX.r} module drawing you chose in Tessellate, with your colors from Color. You can change it in the next window.`);
+  pintarPapel(tsConstruir(EX.c,EX.r,TS.marcar,TS.color));};
 document.querySelector('#tab-imprimir .caminos').addEventListener('click',e=>{const b=e.target.closest('[data-imp]');if(!b)return;EX.modo=b.dataset.imp;exGuardar();exPintar();window.abrirDlg('dlg-exportar');});
 $('imp-ant').onclick=()=>window.tabEtapa('colorear');
 // ---- Glosario

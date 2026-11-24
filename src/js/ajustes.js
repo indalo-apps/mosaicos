@@ -4,6 +4,7 @@
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.12",["🏠 A house button at the top of every page takes you back to the home screen","↺ Color › Start over: next to Undo, Export and Other colors, it puts all the coloring back to the start (tap twice; you can undo it)","📏 On paper is now in step 4, Print, with its own columns and rows","✂️ «Your tile» has been removed from Tessellate"]],
     ["2.11.1",["🎨 Hall of the Kings, wheels of twelve zafates (no. 29): the green and the blue now match the book’s color plate (p. 149), and the card shows its pages (pp. 146–149)"]],
     ["2.11",["🧩 New Alhambra pattern from the jambs of the Palace of the Lions (no. 31): a wheel of sixteen zafates ringed by eight wheels of eight, with the harp zafates of each side, its 13 steps from the book, colors and measurements in cm"]],
     ["2.10",["🧩 Two new Alhambra patterns from the Hall of the Kings: wheels of zafates with honey stars (no. 28, two alternating modules) and wheels of twelve zafates (no. 29, hexagonal module), with all the book’s steps, colors and measurements in cm"]],
@@ -37,6 +38,7 @@
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.12",["🏠 Botón con una casa arriba en todas las páginas para volver a la portada","↺ Colorear › Reiniciar: junto a Deshacer, Exportar y Otro color, deja todo el coloreado como al principio (dos toques; se puede deshacer)","📏 «En papel» pasa a la etapa 4, Imprimir, con sus columnas y filas","✂️ Se quita «Tu tesela» de Teselar"]],
     ["2.11.1",["🎨 Ruedas de doce zafates de la Sala de los Reyes (n.º 29): el verde y el azul son ahora los de la lámina en color del libro (pág. 149), y la ficha dice sus páginas (págs. 146 a 149)"]],
     ["2.11",["🧩 Alicatado nuevo de las jambas del Palacio de los Leones (n.º 31): una rueda de dieciséis zafates rodeada de ocho ruedas de ocho, con los zafates arpados de cada lado, sus 13 pasos del libro, sus colores y sus medidas en cm"]],
     ["2.10",["🧩 Dos alicatados nuevos de la Sala de los Reyes de la Alhambra: ruedas de zafates con estrellas meladas (n.º 28, dos módulos alternos) y ruedas de doce zafates (n.º 29, módulo hexagonal), con todos los pasos del libro, sus colores y sus medidas en cm"]],

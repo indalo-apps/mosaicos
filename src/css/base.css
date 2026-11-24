@@ -46,6 +46,8 @@ header{padding:18px 28px 6px}
 @media (max-width:520px){.cab-top h1{font-size:25px}}
 .btn-redondo{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--btn);display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink);padding:0;text-decoration:none}
 .btn-redondo[hidden]{display:none}
+.cab-top .btn-casa{color:var(--accent)}
+#ts-papel{margin:4px 0 16px;max-width:720px}#ts-papel h2{margin-top:0}#ts-papel h2 small{text-transform:none;letter-spacing:0;font:400 calc(14px * var(--esc,1)) Inter,system-ui,sans-serif;color:var(--muted)}
 .btn-volver{display:inline-flex;align-items:center;gap:2px;min-height:44px;max-width:62%;padding:0 14px 0 6px;border-radius:22px;border:1px solid var(--line);background:var(--btn);color:var(--accent);text-decoration:none;font:500 calc(16px * var(--esc,1))/1.2 Inter,system-ui,sans-serif;flex:none;order:0}
 .btn-volver svg{flex:none}
 .btn-volver span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -289,7 +291,6 @@ ul.libros{margin:6px 0 8px;padding-left:1.1em}ul.libros li{margin:4px 0}
 #pp-vista svg{display:block;max-height:340px;margin:auto}
 .pp-res{margin:6px 0 0;font-size:calc(14.5px * var(--esc,1))}
 .pp-res dt{color:var(--muted);margin-top:8px}.pp-res dd{margin:1px 0 0;font-variant-numeric:tabular-nums}
-#tab-teselar:has(#ts-papel[open]):not(:has(#ts-tesela[open])) .stage{position:static}
 .pp-res .pp-main{font-weight:600;color:var(--ink);font-size:1.08em}
 @media (prefers-color-scheme:dark){#pp-vista{background:#2a2722}}
 .pp-campos[hidden]{display:none}

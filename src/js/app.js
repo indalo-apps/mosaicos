@@ -530,6 +530,11 @@ function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')|
 // ---------- Medidas en papel en cada paso (v2.9): en cm, según el papel y los módulos elegidos en Teselar › En papel ----------
 // [texto, texto en inglés, medida en unidades del libro]; 'rw' = ancho de la cinta
 const MEDPASO={
+  jambas31:{1:[['Lado del cuadrado','Side of the square',2],['Radio de la circunferencia','Radius of the circle',1]],
+    3:[['Distancia de las rectas al centro','Distance of the lines from the center',1-Math.SQRT1_2]],
+    5:[['Radio AB','Radius AB',Math.hypot(0.5,Math.SQRT1_2-0.5)],['Radio CD','Radius CD',Math.SQRT1_2-Math.hypot(0.5,Math.SQRT1_2-0.5)],['Radio EF','Radius EF',Math.hypot(0.5,Math.SQRT1_2-0.5)-(1-Math.SQRT1_2)]],
+    6:[['Centros de las ruedas, desde el centro','Centers of the wheels, from the center',Math.hypot(Math.SQRT1_2,1-Math.SQRT1_2)]],
+    12:[['Lado de los cuadrados de la estrella (ancho del zafate)','Side of the squares of the star (zafate width)',2*(Math.SQRT1_2-Math.hypot(0.5,Math.SQRT1_2-0.5))*Math.cos(3*Math.PI/8)]]},
   reyes29:{1:[['Radio de la circunferencia','Radius of the circle',1]],
     2:[['Lado del hexágono','Side of the hexagon',1]],
     4:[['Lados de los triángulos, desde el centro','Sides of the triangles, from the center',Math.sqrt(3)/4]],

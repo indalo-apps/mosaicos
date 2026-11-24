@@ -4,6 +4,7 @@
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.11",["🧩 New Alhambra pattern from the jambs of the Palace of the Lions (no. 31): a wheel of sixteen zafates ringed by eight wheels of eight, with the harp zafates of each side, its 13 steps from the book, colors and measurements in cm"]],
     ["2.10",["🧩 Two new Alhambra patterns from the Hall of the Kings: wheels of zafates with honey stars (no. 28, two alternating modules) and wheels of twelve zafates (no. 29, hexagonal module), with all the book’s steps, colors and measurements in cm"]],
     ["2.9.2",["🔧 Zaguán, second room: the large black piece is no longer called “octagon” (it has a notch, as in the book)","🧪 Behind the scenes: a new test checks that every piece is what its name says and has the book’s color"]],
     ["2.9.1",["🎨 More palettes in every tile pattern: Blue & white, Green & gold, Garnet & gold, Earth, Night, Pastel and Grays (by lightness)","🔧 Niches of the Comares Tower: the X crosses are white, as in the book, and “Module” shows the square from step 5, upright","📏 Measurements in cm with one decimal"]],
@@ -35,6 +36,7 @@
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.11",["🧩 Alicatado nuevo de las jambas del Palacio de los Leones (n.º 31): una rueda de dieciséis zafates rodeada de ocho ruedas de ocho, con los zafates arpados de cada lado, sus 13 pasos del libro, sus colores y sus medidas en cm"]],
     ["2.10",["🧩 Dos alicatados nuevos de la Sala de los Reyes de la Alhambra: ruedas de zafates con estrellas meladas (n.º 28, dos módulos alternos) y ruedas de doce zafates (n.º 29, módulo hexagonal), con todos los pasos del libro, sus colores y sus medidas en cm"]],
     ["2.9.2",["🔧 Zaguán, segunda sala: la pieza negra grande ya no se llama «octógono» (tiene una muesca, como en el libro)","🧪 Por dentro: una prueba nueva comprueba que cada pieza es lo que dice su nombre y tiene el color del libro"]],
     ["2.9.1",["🎨 Más paletas en todos los alicatados: Azul y blanco, Verde y oro, Granate y oro, Tierra, Noche, Pastel y Grises (por claridad)","🔧 Tacas de la Torre de Comares: las cruces en X son blancas, como en el libro, y «Módulo» enseña el cuadrado del paso 5, derecho","📏 Medidas en cm con un decimal"]],

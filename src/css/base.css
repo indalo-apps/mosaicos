@@ -314,3 +314,5 @@ button.enlace{background:none;border:0;padding:0 2px;min-height:0;color:var(--ac
 .mini-hueco{display:block;width:48px;height:48px;border-radius:6px;background:linear-gradient(110deg,var(--line) 30%,var(--paper) 50%,var(--line) 70%);background-size:200% 100%;flex:none}
 #v-alicatados .pat .mini-hueco{width:100%;height:auto;aspect-ratio:1;border-radius:8px}
 @media (prefers-reduced-motion:no-preference){.mini-hueco{animation:brillo 1.2s linear infinite}@keyframes brillo{to{background-position:-200% 0}}}
+/* letras de los puntos de un paso (n.º 31, paso 5): solo en su paso, no en los siguientes */
+.previo .solo-paso{display:none}

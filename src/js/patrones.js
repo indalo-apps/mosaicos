@@ -403,6 +403,54 @@ P.reyes29=escalar({id:'reyes29',coleccion:'alhambra',num:29,nombre:'Ruedas de do
 Object.assign(P.reyes29,{Gz:{h,r0,tE,tV,tR,tP},modBase:modulo,modulo:{tipo:'hex',R:P.reyes29.k,cx:s3/2*P.reyes29.k,cy:1.5*P.reyes29.k}}); // el módulo es el hexágono del paso 2
 })();
 
+// ===== LA ALHAMBRA · Jambas del Palacio de los Leones (alicatado n.º 31) =====
+// Cuadrado de lado 2 con su circunferencia inscrita de radio 1 (la unidad). Paso 1: dos cuadrados (vértices en los ejes y en las
+// diagonales) que se cortan en 8 puntos a r1 del centro: los centros de las 8 ruedas de ocho. Paso 5: A = (−½, ½), punto medio de un
+// lado del cuadrado de pico; B = (0, √2/2); la circunferencia de centro A y radio AB es tangente a la de centro C (el centro) y radio CD
+// y a la de centro E (centro de rueda) y radio EF. Con CD salen los sinos (estrella {16/6} en el centro, {8/3} en las ruedas) y con EF,
+// el octógono de cada rueda (pasos 6 y 7). Sus lados prolongados (pasos 8 y 9) son las rectas de todo el dibujo.
+// Las ruedas de dieciséis están en (i, j) con i + j par: las líneas se repiten al mover (1, 1); el color, cada 2.
+// TR: los trazos que se destacan en el paso 10, en el triángulo (0,0), (1,0), (½,½), con las coordenadas de sus cruces; el resto sale por
+// simetría (ejes, diagonales y la recta x + y = 1, que lleva el centro a la esquina). En el centro de cada lado está la estrella del paso 12.
+(function(){const s2=Math.SQRT2,A=[-0.5,0.5],B=[0,1/s2],r1=Math.hypot(1/s2,1-1/s2),
+  AB=Math.hypot(B[0]-A[0],B[1]-A[1]),CD=Math.hypot(A[0],A[1])-AB,EF=AB-Math.hypot(A[0]+1/s2,A[1]-(1-1/s2)),
+  w=2*CD*Math.cos(3*Math.PI/8);     // ancho de los zafates: dos rectas de la estrella {16/6}, a CD·cos 67,5° del centro
+const TR=[[0.47770483126,0.47770483126,0.47770483126,0.319192163479],[0.47770483126,0.266594274148,0.47770483126,0.129149365689],[0.095021398895,0.063491268887,0.490765038732,0.063491268887],[0.543362928063,0.063491268887,0.680807836521,0.063491268887],[0.733405725852,0.063491268887,0.883910841783,0.063491268887],[0.707106781187,0.224170764584,0.526298944665,0.149277706513],[0.47770483126,0.129149365689,0.292893218813,0.05259788933],[0.290062121707,0.051425210512,0.175576651179,0.004003775925],[0.172745554072,0.002831097107,0.16591068104,0.0],[0.526298944665,0.436508731113,0.429110717854,0.339320504303],[0.391918393633,0.302128180081,0.153281482438,0.063491268887],[0.149277706513,0.059487492962,0.112085382292,0.02229516874],[0.850722293487,0.112085382292,0.802128180081,0.063491268887],[0.638384326957,0.292893218813,0.563491268887,0.112085382292],[0.543362928063,0.063491268887,0.517063983397,0.0],[0.526298944665,0.436508731113,0.589790213552,0.410209786448],[0.244299105408,0.169914456965,0.241468008301,0.168741778147],[0.429110717854,0.246465933324,0.52229516874,0.153281482438],[0.563491268887,0.112085382292,0.675576651179,-0.0],[0.658512667781,0.341487332219,0.47770483126,0.266594274148],[0.429110717854,0.246465933324,0.244299105408,0.169914456965],[0.241468008301,0.168741778147,0.126982537773,0.12132034356],[0.124151440666,0.120147664742,0.117316567635,0.117316567635],[0.365619448968,0.365619448968,0.391918393633,0.302128180081],[0.490765038732,0.063491268887,0.517063983397,-0.0],[0.589790213552,0.410209786448,0.638384326957,0.292893218813],[0.658512667781,0.244299105408,0.733405725852,0.063491268887],[0.126982537773,0.12132034356,0.124151440666,0.120147664742],[0.365619448968,0.365619448968,0.429110717854,0.339320504303],[0.47770483126,0.319192163479,0.658512667781,0.244299105408],[0.707106781187,0.224170764584,0.824423348821,0.175576651179],[0.153281482438,0.063491268887,0.149277706513,0.059487492962],[0.755700894592,0.244299105408,0.680807836521,0.063491268887],[0.47770483126,0.47770483126,0.52229516874,0.47770483126],[0.936508731113,0.063491268887,0.936508731113,0.026298944665],[0.824423348821,0.175576651179,0.827254445928,0.168741778147],[0.828427124746,0.16591068104,0.850722293487,0.112085382292],[0.52229516874,0.153281482438,0.526298944665,0.149277706513],[0.117316567635,0.117316567635,0.095021398895,0.063491268887],[0.112085382292,0.02229516874,0.16591068104,-0.0],[0.827254445928,0.168741778147,0.828427124746,0.16591068104],[0.936508731113,0.026298944665,0.910209786448,0.0],[0.292893218813,0.05259788933,0.290062121707,0.051425210512],[0.175576651179,0.004003775925,0.172745554072,0.002831097107],[0.675576651179,0.0,0.707106781187,0.031530130008],[0.707106781187,0.031530130008,0.738636911195,0.0],[0.759704670517,0.0,0.786003615182,0.063491268887],[0.883910841783,0.063491268887,0.883910841783,0.026298944665],[0.883910841783,0.026298944665,0.910209786448,0.0]];
+// las ocho simetrías del cuadrado y la red de las ruedas de dieciséis
+const D4=[[1,0,0,1],[0,-1,1,0],[-1,0,0,-1],[0,1,-1,0],[1,0,0,-1],[-1,0,0,1],[0,1,1,0],[0,-1,-1,0]];
+function trazos(){const L=[];
+  for(const [a,b,c,d] of D4)for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++){if((i+j)%2)continue;
+    for(const [x1,y1,x2,y2] of TR){const X1=a*x1+b*y1+i,Y1=c*x1+d*y1+j,X2=a*x2+b*y2+i,Y2=c*x2+d*y2+j;
+      if(Math.max(Math.abs(X1+X2),Math.abs(Y1+Y2))/2<1.35)L.push([X1+1,Y1+1,X2+1,Y2+1]);}}   // la tesela va de (0,0) a (2,2)
+  return L;}
+const area=Q=>{let S=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];S+=p[0]*q[1]-q[0]*p[1];}return Math.abs(S)/2;};
+// centro de rueda de ocho más cercano (las ruedas, módulo 2) y su color: meladas a 22,5° + 90°·m del centro de la tesela, verdes las otras
+const RU=Array.from({length:8},(_,k)=>{const g=(22.5+45*k)*Math.PI/180;return[r1*Math.cos(g),r1*Math.sin(g),k%2];});
+function rueda(x,y){const u=((x-1)%2+3)%2-1,v=-(((y-1)%2+3)%2-1);   // v hacia arriba, como en el libro
+  let m=null,d=9;
+  for(const [cx,cy,k] of RU)for(const ox of [-2,0,2])for(const oy of [-2,0,2]){const e=Math.hypot(u-cx-ox,v-cy-oy);if(e<d){d=e;m=k;}}return [d,m];}
+P.jambas31=escalar({id:'jambas31',coleccion:'alhambra',num:31,nombre:'Ruedas de dieciséis y de ocho',lugar:'Jambas · Palacio de los Leones',tipo:'mosaico',
+  W:2,H:2,
+  lineas(){return trazos();},
+  clase(Q,[x,y]){const a=area(Q)/this.k/this.k,es=v=>Math.abs(a-v)<0.003*v;
+    if(es(0.059184))return 0;                // sino de la rueda de dieciséis (estrella {16/6})
+    if(es(0.033189))return 1;                // zafate de la rueda de dieciséis
+    if(es(0.014794))return 2;                // zafate arpado: los cuatro que rodean la estrella del centro de cada lado
+    if(es(0.018891))return 3;                // sino de la rueda de ocho y estrella del paso 12 (son iguales)
+    if(es(0.014427)){const [d,k]=rueda(x,y);return d<0.23?(k?4:5):6;}   // zafate: de una rueda (verde o melado) o intermedio (violáceo)
+    if(es(0.001988))return 7;                // cuadradito (también el que hay entre el zafate arpado y el violáceo)
+    if(es(0.017572))return 8;if(es(0.017735))return 9;if(es(0.015995))return 10;if(es(0.008711))return 11;
+    if(es(0.006835))return 12;return 13;},   // almendrillas de las ruedas de dieciséis y de ocho
+  nombres:['Estrella de dieciséis (sino)','Zafate negro de la rueda de dieciséis','Zafate arpado negro','Sino (estrella de ocho)','Zafate verde','Zafate melado','Zafate violáceo','Cuadradito negro','Candilejo grande','Candilejo del lado','Candilejo junto a la estrella','Candilejo entre ruedas','Almendrilla de la rueda de dieciséis','Almendrilla de la rueda de ocho'],
+  paletas:{
+    'Alhambra':{cols:['#5b79ad','#161616','#161616','#5b79ad','#2f5e45','#c08a25','#4a4150','#161616','#ffffff','#ffffff','#ffffff','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Azul y oro':{cols:['#e0b04a','#1d2a55','#1d2a55','#e0b04a','#3d63a8','#9ab6dc','#2f4fa3','#1d2a55','#ffffff','#ffffff','#ffffff','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Terracota':{cols:['#d98e6e','#5a3022','#5a3022','#d98e6e','#8a4b36','#b8694d','#7a3b26','#5a3022','#fbf4ec','#fbf4ec','#fbf4ec','#fbf4ec','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
+    'Para colorear':{cols:Array(14).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+Object.assign(P.jambas31,{Gj:{r1,AB,CD,EF,w,A,B},TR,modulo:{m:2*P.jambas31.k,cx:P.jambas31.k,cy:P.jambas31.k,giro:0}});
+})();
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -744,6 +792,56 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
     {h:'El módulo hexagonal',t:'Finalmente destacamos los trazos adecuados para obtener el módulo hexagonal. Con este método de trazado se da que AB = BC y DE = EF.',c:'AB y BC son lados de la muesca de un zafate escotado; DE y EF, de la punta de un zafate redondo.',tipo:'remarcar'},
     {h:'Repetir el módulo',t:'La repetición del módulo se efectúa por traslación, hasta conseguir rellenar la superficie con los hexágonos.',c:'Podemos dividir el hexágono en seis triángulos iguales. Estos pueden dividirse, a su vez, en dos triángulos rectángulos, que son simétricos. Uno de estos triángulos es la unidad básica mínima.',tipo:'piezas',vt:vtT},
     {h:'Color',t:'Los aliceres que componen el alicatado son de color blanco, negro, verde, melado y azul.',c:'El sino es negro. Los zafates escotados van de tres en tres alrededor de un hexágono blanco, melados o verdes por filas; los redondos son azules si están tumbados y negros si no.',tipo:'color',vt:vtG}]});
+})();
+
+(function(){const p=P.jambas31,{r1,AB,CD,EF,w,A,B}=p.Gj,k=p.k,s2=Math.SQRT2,C=[k,k],X=v=>C[0]+v*k,Y=v=>C[1]-v*k; // y hacia arriba, como en el libro
+  const T=L=>L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]);
+  const ln=(L,col,wd,d)=>guia(T(L),col,wd,d),an=(L,col,wd)=>animar(T(L),col,wd);
+  const pol=(c,n,r,a0)=>Array.from({length:n},(_,i)=>{const g=rad(a0+360*i/n);return[c[0]+r*Math.cos(g),c[1]+r*Math.sin(g)];});
+  const une=(V,paso)=>V.map((v,i)=>[...v,...V[(i+paso)%V.length]]);
+  // recta (prolongación de un lado) recortada al cuadrado inicial [−1, 1]²
+  const corta=([x1,y1,x2,y2])=>{const s=recta([x1,y1],[x2-x1,y2-y1],[-1,-1,1,1]);return s;};
+  const prolonga=L=>L.map(corta).filter(Boolean);
+  const W8=Array.from({length:8},(_,i)=>{const g=rad(22.5+45*i);return[r1*Math.cos(g),r1*Math.sin(g)];});   // centros de las ruedas de ocho
+  const circ=(L,r,col,wd)=>circulos(L.map(([x,y])=>[X(x),Y(y)]),r*k,col,wd);
+  const sqA=une(pol([0,0],4,1,0),1),sqB=une(pol([0,0],4,1,45),1);
+  const R2=1/Math.cos(rad(22.5)),rad8=Array.from({length:8},(_,i)=>{const g=rad(22.5+45*i);return[0,0,R2*Math.cos(g),R2*Math.sin(g)];}).map(([a,b,c,d])=>corta([a,b,c,d]));
+  const sqC=une(pol([0,0],4,R2,22.5),1),sqD=une(pol([0,0],4,R2,67.5),1);
+  const lin=(d,a0)=>Array.from({length:8},(_,i)=>{const g=rad(a0+45*i),n=[Math.cos(g),Math.sin(g)];return corta([n[0]*d,n[1]*d,n[0]*d-n[1],n[1]*d+n[0]]);}).filter(Boolean);
+  const est16=c=>une(pol(c,16,CD,0),6),est8=c=>une(pol(c,8,CD,0),3),oct=c=>une(pol(c,8,EF,22.5),1);
+  const ruedas16=[[0,0],[1,1],[-1,1],[1,-1],[-1,-1]];
+  const est12=c=>[...une(pol(c,4,w/2*s2,45),1),...une(pol(c,4,w/2*s2,0),1)]; // estrella del paso 12: dos cuadrados de lado w
+  const MID=[[0,1],[1,0],[0,-1],[-1,0]];
+  const vt=[-0.04*k,-0.04*k,2.08*k,2.08*k],vtM=[X(-0.34),Y(1.18),0.68*k,0.62*k],vtG=[-0.5,-0.5,4*k+1,4*k+1];
+  Object.assign(p,{vt,
+  resumen:'Una gran rueda de dieciséis zafates negros alrededor de un sino azul, rodeada de ocho ruedas de ocho con zafates verdes o melados. Reviste las jambas de los arcos que separan las estancias laterales de la sala central; el dibujo seguía en el suelo.',
+  pie:'Todo cabe en un cuadrado: en su centro, la rueda de dieciséis puntas, y a su alrededor ocho ruedas de ocho, con los centros en las rectas que unen los puntos medios de los lados. En las esquinas hay cuartos de rueda de dieciséis como la central.',
+  pasos:[
+    {h:'Dos cuadrados',t:'Dibuja la circunferencia inscrita en un cuadrado. Une los puntos donde corta a los ejes y a las diagonales: salen dos cuadrados concéntricos, girados 45° uno respecto del otro.',c:'Sus lados se cortan en ocho puntos: serán los centros de las ruedas de ocho.',anim:'draw',
+     guia(){return ln([[-1,-1,1,-1],[1,-1,1,1],[1,1,-1,1],[-1,1,-1,-1]],'#2b2b2b',0.06)+ln([[-1,-1,1,1],[-1,1,1,-1],[-1,0,1,0],[0,-1,0,1]],RO,0.04,'0.3 0.2')+circ([[0,0]],1,RO,0.06)+an([...sqA,...sqB],RO,0.08);}},
+    {h:'Rectas por el centro',t:'Traza rectas que pasen por el centro y por los ocho puntos de corte, y prolóngalas hasta los lados del cuadrado inicial. Uniendo sus extremos de dos en dos salen otros dos cuadrados.',c:'Los dos cuadrados nuevos están girados 22,5° respecto de los del paso 1.',anim:'draw',
+     guia(){return an(rad8,'#2b4f73',0.06)+an([...sqC,...sqD],RO,0.07);}},
+    {h:'Una estrella de ocho',t:'Por los mismos ocho puntos, traza paralelas a los ejes y a las diagonales. Forman una estrella de ocho puntas.',c:'Las ocho rectas quedan a 0,29 del centro (1 − √2/2), con el radio como unidad.',anim:'draw',
+     guia(){return an(lin(1-1/s2,0),RO,0.07);}},
+    {h:'Más paralelas',t:'Vuelve a unir los mismos puntos, pero ahora con paralelas a los lados de los cuadrados del paso 2.',c:'Algunas de estas rectas pasan por las esquinas del cuadrado inicial.',anim:'draw',
+     guia(){return an(lin(r1*Math.SQRT1_2,22.5),'#2b4f73',0.07);}},
+    {h:'Tres circunferencias tangentes',t:'Con centro en A y radio AB, traza una circunferencia. Después, dos circunferencias tangentes a ella: una con centro en C y radio CD, y otra con centro en E y radio EF.',c:'A es el punto medio de un lado del cuadrado de pico; B, el corte del eje con el lado del otro cuadrado; C, el centro, y E, el centro de una rueda.',anim:'fade',
+     guia(){const E=W8[3],D=[A[0]*CD/Math.hypot(...A),A[1]*CD/Math.hypot(...A)],F=[E[0]+(E[0]-A[0])*EF/Math.hypot(E[0]-A[0],E[1]-A[1]),E[1]+(E[1]-A[1])*EF/Math.hypot(E[0]-A[0],E[1]-A[1])];
+       const pt=(q,t)=>`<circle cx="${X(q[0]).toFixed(3)}" cy="${Y(q[1]).toFixed(3)}" r="0.22" fill="#1b1b1b"/><text x="${(X(q[0])+0.35).toFixed(3)}" y="${(Y(q[1])-0.35).toFixed(3)}" font-size="1.1" fill="#1b1b1b">${t}</text>`;
+       return circ([A],AB,'#b5444b',0.08)+circ([[0,0]],CD,'#1d4ed8',0.08)+circ([E],EF,'#1d4ed8',0.08)+'<g class="solo-paso">'+[[A,'A'],[B,'B'],[[0,0],'C'],[D,'D'],[E,'E'],[F,'F']].map(([q,t])=>pt(q,t)).join('')+'</g>';}},
+    {h:'Las circunferencias de las ruedas',t:'Dibuja ocho circunferencias de radio EF con centro en los puntos donde se cortan los lados de los cuadrados del paso 1. Después, otras ocho de radio CD con los mismos centros.',c:'La central, de radio CD, es la de la rueda de dieciséis.',anim:'fade',
+     guia(){return circ(W8,EF,'#1d4ed8',0.07)+circ(W8,CD,RO,0.07)+circ([[0,0]],CD,RO,0.07);}},
+    {h:'Estrellas y octógonos',t:'Inscribe en las circunferencias pequeñas estrellas de ocho puntas y en las grandes, octógonos. Sus vértices están donde las circunferencias cortan a las rectas de los pasos anteriores. En el centro, la estrella tiene dieciséis puntas.',c:'Las estrellas de ocho unen los vértices de tres en tres; la de dieciséis, de seis en seis.',anim:'draw',
+     guia(){return an([...W8.flatMap(est8),...est16([0,0])],RO,0.06)+an(W8.flatMap(oct),'#1d4ed8',0.07);}},
+    {h:'Prolongar las estrellas',t:'Prolonga los lados de todas las estrellas hasta que lleguen a los lados del cuadrado inicial.',c:'También los de los cuartos de rueda de dieciséis que hay en las esquinas.',anim:'draw',
+     guia(){return an(prolonga([...W8.flatMap(est8),...ruedas16.flatMap(est16)]),RO,0.04);}},
+    {h:'Prolongar los octógonos',t:'Prolonga también los lados de los ocho octógonos hasta los lados del cuadrado inicial.',c:'Con esto ya está trazada la red sobre la que se dibuja el alicatado.',anim:'draw',
+     guia(){return ln(prolonga([...W8.flatMap(est8),...ruedas16.flatMap(est16)]),'#c9a9ab',0.03)+an(prolonga(W8.flatMap(oct)),'#1d4ed8',0.05);}},
+    {h:'El dibujo',t:'Con las líneas de los dos pasos anteriores ya está listo el patrón: solo falta destacar los trazos que forman las ruedas de ocho y de dieciséis y los enlaces entre ellas.',c:'Cada trazo es un tramo de una de las rectas prolongadas, entre dos cruces.',tipo:'remarcar'},
+    {h:'Los zafates arpados',t:'En la zona central de cada lado se modifican los candilejos y los zafates, que pasan a ser arpados para encajar en una estrella de ocho puntas.',c:'En cada lado se juntan cuatro zafates alrededor de la estrella: el que va hacia el centro, el del otro lado y dos a lo largo del borde.',anim:'draw',
+     guia(){return an(MID.flatMap(est12),RO,0.08);}},
+    {h:'La estrella del lado',t:'La estrella se forma con dos cuadrados girados 45°, de lado igual al ancho de los zafates. A partir de ella se trazan las demás líneas de los zafates arpados.',c:'La estrella del lado es igual que el sino de las ruedas de ocho.',tipo:'piezas',vt:vtM},
+    {h:'Color',t:'Azul para los sinos, negro para los zafates de la rueda grande y verde y melado para los de las pequeñas. Los zafates arpados y los cuadraditos son negros; los otros zafates intermedios, violáceos. Los candilejos y las almendrillas, blancos.',c:'Las ruedas de ocho alternan el verde y el melado alrededor de la central.',tipo:'color',vt:vtG}]});
 })();
 
 // Dibuja un paso del trazado de un patrón nuevo

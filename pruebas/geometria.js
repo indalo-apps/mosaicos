@@ -108,6 +108,25 @@ const LIBRO={
       ok(!L.every(t=>S.has(clave([-t[0],t[1],-t[2],t[3]]))),'Taca: el módulo no es simétrico por sí solo (la simetría se aplica en el paso 6)');
       ok(cerca(p.modulo.m,2*Math.SQRT2*p.k),'Taca: el módulo mínimo para teselar es el cuadrado girado 45° de lado 2√2');},
     simetria:{centro:p=>[p.k,p.k],giros:[[4,p=>0.95*p.k]]}},
+  jambas31:{pasos:13,modulo:2,
+    extra(p){const {r1,AB,CD,EF,w}=p.Gj,s2=Math.SQRT2;
+      // paso 1: los lados de los dos cuadrados se cortan en (√2/2, 1 − √2/2): los centros de las ruedas de ocho
+      ok(cerca(r1,Math.hypot(1/s2,1-1/s2),1e-12),'N.º 31: los centros de las ruedas de ocho están donde se cortan los dos cuadrados del paso 1');
+      // paso 5: A = (−½, ½), B = (0, √2/2); C es el centro y E el centro de una rueda
+      ok(cerca(AB,Math.hypot(0.5,1/s2-0.5),1e-12),'N.º 31: AB va de (−½, ½) a (0, √2/2)');
+      ok(cerca(CD,Math.hypot(0.5,0.5)-AB,1e-12)&&cerca(CD,0.1659,1e-4),'N.º 31: la circunferencia CD es tangente a la de A (CD ≈ 0,166)');
+      ok(cerca(EF,AB-Math.hypot(1/s2-0.5,(1-1/s2)-0.5),1e-12)&&cerca(EF,0.2483,1e-4),'N.º 31: la circunferencia EF es tangente a la de A (EF ≈ 0,248)');
+      // todas las rectas del dibujo: lados de las estrellas {16/6} y {8/3} (radio CD), de los octógonos (radio EF) y de la estrella del paso 12
+      const R=[],pol=(c,n,r,a0)=>Array.from({length:n},(_,i)=>{const g=rad(a0+360*i/n);return[c[0]+r*Math.cos(g),c[1]+r*Math.sin(g)];});
+      const lados=(V,m)=>V.forEach((v,i)=>{const q=V[(i+m)%V.length],dx=q[0]-v[0],dy=q[1]-v[1],L=Math.hypot(dx,dy);R.push([-dy/L,dx/L,(-dy*v[0]+dx*v[1])/L]);});
+      for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++){if((i+j)%2)continue;lados(pol([i,j],16,CD,0),6);
+        for(let m=0;m<8;m++){const g=rad(22.5+45*m),c=[i+r1*Math.cos(g),j+r1*Math.sin(g)];lados(pol(c,8,CD,0),3);lados(pol(c,8,EF,22.5),1);}}
+      // paso 12: la estrella del lado (dos cuadrados de lado w) y la recta que cierra cada brazo de la X, a 2r − w/2 de su centro
+      const r=w/2*s2;for(const c of [[1,0],[0,1],[-1,0],[0,-1]]){lados(pol(c,4,r,0),1);lados(pol(c,4,r,45),1);lados(pol(c,4,(2*r-w/2)*s2,45),1);}
+      const enRecta=(x,y,X,Y)=>R.some(([a,b,d])=>Math.abs(a*x+b*y-d)<1e-9&&Math.abs(a*X+b*Y-d)<1e-9);
+      ok(p.TR.every(([x,y,X,Y])=>enRecta(x,y,X,Y)),'N.º 31: cada trazo está en una recta de los pasos 7, 8, 9 o 12');
+      ok(cerca(w,2*CD*Math.cos(3*Math.PI/8),1e-12),'N.º 31: el ancho de los zafates es el de la estrella {16/6} y el lado de los cuadrados del paso 12');},
+    simetria:{centro:p=>[p.k,p.k],estrella:16,giros:[[4,p=>1.9*p.k]]}},
   zaguan2:{pasos:7,modulo:8},
   zaguan:{pasos:4},toledanos:{pasos:4},cenador6:{pasos:4},munecas17:{pasos:5},
   cubos:{pasos:4},alargadas:{pasos:5},alfardones:{pasos:5},octogonos:{pasos:4},
@@ -163,6 +182,7 @@ for(const [id,p] of Object.entries(PATRONES.P)){
 //  · si el nombre dice un color (negro, verde, melado, azul, blanco), la primera paleta lo pinta de ese color;
 //  · y los colores que da el libro para las piezas cuyo nombre no lo dice (tabla COLORES).
 const COLORES={
+  jambas31:[[/^Estrella de dieciséis|^Sino/,'azul'],[/^Candilejo|^Almendrilla/,'blanco']],
   reyes28:[[/^Almendrilla/,'blanco']],
   reyes29:[[/^Sino/,'negro'],[/^Hexágono|^Almendrilla|^Pieza blanca/,'blanco']],
   taca:[[/^Sino/,'azul'],[/^Cruz|^Estrella de cuatro|^Pieza pequeña/,'blanco'],[/^Zafate/,['verde','melado','negro']]],

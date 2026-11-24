@@ -157,10 +157,11 @@ const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid s
   felipe:[['Radio de la circunferencia inicial','Radius of the starting circle',Math.SQRT2],['Lado del cuadrado inscrito','Side of the inscribed square',2]],
   barca:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Radio de la circunferencia (un cuadro)','Radius of the circle (one square)',1]],
   arrayanes:[['Radio de la circunferencia inicial','Radius of the starting circle',1]],
+  jambas31:[['Lado del cuadrado inicial','Side of the starting square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]],
   reyes29:[['Radio de la circunferencia (y lado del hexágono)','Radius of the circle (and side of the hexagon)',1]],
   reyes28:[['Lado del cuadrado de cada módulo','Side of the square of each module',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]],
   taca:[['Lado del cuadrado inicial','Side of the starting square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]]};
-const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1}],reyes28:[{lado:2},{r:1}],reyes29:[{r:1}],barca:[{r:1}],zaguan2:[{r:2}]}; // si el cuadrado de partida es el propio módulo, ya va resaltado
+const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1}],reyes28:[{lado:2},{r:1}],reyes29:[{r:1}],jambas31:[{r:1}],barca:[{r:1}],zaguan2:[{r:2}]}; // si el cuadrado de partida es el propio módulo, ya va resaltado
 const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
 const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
 // todas las medidas, en centímetros (internamente se guardan en milímetros)

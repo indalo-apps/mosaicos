@@ -63,3 +63,20 @@ Todos los derechos reservados. Se permite usar la app publicada con fines person
 
 ## Aviso
 Esta app es una ayuda para practicar el dibujo geométrico y puede contener errores. En caso de error o duda, la fuente fiable son los libros «El Real Alcázar de Sevilla con regla y compás» y «La Alhambra con regla y compás».
+
+## Cómo está hecho el código (desde la 2.7)
+
+La app se publica en un solo `index.html`, pero se escribe por partes en `src/`:
+
+- `src/plantilla.html`: la página, con marcas `@incluir` donde va cada parte.
+- `src/cuerpo.html`, `src/css/` y `src/js/` (motor de lacería, patrones, construcciones, vistas, ajustes, iconos, textos en inglés…).
+
+Después de cambiar algo en `src/`:
+
+```
+node herramientas/construir.js        # junta las partes en index.html
+node pruebas/geometria.js             # 400 comprobaciones de los alicatados con las medidas del libro
+node pruebas/con-servidor.js pruebas/navegador.js   # todas las pantallas, accesibilidad y errores (necesita Playwright y axe-core)
+```
+
+`npm test` hace las tres cosas y además avisa si `index.html` no está al día con `src/`.

@@ -186,7 +186,7 @@ const PAT_EN={
    {h:'The strap',t:'The strap is drawn with parallels equidistant from the axes defined in step 6. The inner line of the strap passes through the midpoints of the sides of the first squares.',c:'The red dots are those midpoints: they set the width of the strap.'},
    {h:'Parallels and crossings',t:'At that same distance, draw parallels to the rest of the axes. Ink the right strokes so that, at the crossings, the straps pass over and under in turn.',c:'On the dado the sinos alternate black and green; the zafates are green beside the black sino and blue beside the green one, and the arrows are black. The same design is on some door jambs in the Patio de las Doncellas.'}]},
  zaguan2:{nombre:'Six- and eight-pointed stars',lugar:'Zaguán, second room',
-  nombres:['Six-pointed star','Large octagon','Honey four-pointed star','Green four-pointed star','Black eight-pointed star','Honey eight-pointed star','V piece','Small piece'],
+  nombres:['Six-pointed star','Large piece','Honey four-pointed star','Green four-pointed star','Black eight-pointed star','Honey eight-pointed star','V piece','Small piece'],
   resumen:'Eight-pointed stars at the corners of the module, six-pointed ones at the middle of its sides and a four-pointed one in the center, joined by an interlacing white strap.',
   pie:'It all comes from an 8 × 8 square with five circles of radius 2: the sides of four equilateral triangles, eight lines from the edges and a 45° line at each corner.',
   pasos:[
@@ -195,8 +195,8 @@ const PAT_EN={
    {h:'Lines from the edges',t:'Mark where the semicircles cut the grid lines nearest the edge. Draw a line through each of those points and the nearest end of the extended sides.',c:'You get eight lines, two for each side of the square, slanted like the sides of the triangles.'},
    {h:'The corners',t:'Centered on each corner draw a quarter circle with a radius equal to the diagonal of one square. Join the ends of each arc with a 45° line.',c:'These lines close the points of the eight-pointed stars at the corners.'},
    {h:'Ink',t:'Ink only the strokes of the design: an eight-pointed star around each corner, a six-pointed one at the middle of each side and a four-pointed one in the center. The lines link into one continuous network.',c:'The points of the four-pointed star touch the central circle.'},
-   {h:'The pieces',t:'Six different pieces appear: the eight-, six- and four-pointed stars, the large octagon, the V piece and a small four-sided piece.',c:'The module repeats by translation. When it repeats, the eight- and four-pointed stars alternate their colors.'},
-   {h:'Strap and color',t:'Give the strap its width with two parallels to each line and alternate the crossings over and under. In the zaguán the six-pointed stars and the small pieces are blue and the octagons, black. The eight-pointed stars alternate black and honey, and the four-pointed ones, honey and green.',c:'Try other combinations in the Color tab.'}]}
+   {h:'The pieces',t:'Six different pieces appear: the eight-, six- and four-pointed stars, the large piece, the V piece and a small four-sided piece.',c:'The module repeats by translation. When it repeats, the eight- and four-pointed stars alternate their colors.'},
+   {h:'Strap and color',t:'Give the strap its width with two parallels to each line and alternate the crossings over and under. In the zaguán the six-pointed stars and the small pieces are blue and the large pieces, black. The eight-pointed stars alternate black and honey, and the four-pointed ones, honey and green.',c:'Try other combinations in the Color tab.'}]}
 };
 if(EN){
   for(const [id,e] of Object.entries(PAT_EN)){const p=PATS[id];if(!p)continue;

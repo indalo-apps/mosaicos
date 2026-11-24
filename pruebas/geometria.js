@@ -131,5 +131,47 @@ for(const [id,p] of Object.entries(PATRONES.P)){
   if(lib.extra)lib.extra(p);
   if(fallos===antes)console.log('  ✓ todo bien');
 }
+
+// ---------- Piezas y colores (v2.9.2) ----------
+// Cada tipo de pieza tiene que ser de verdad lo que dice su nombre, y su color en la primera paleta, el que dice el libro.
+//  · todas las piezas de un tipo son iguales (mismo número de lados, de vértices entrantes y misma área);
+//  · «estrella de N» o «sino» (estrella de ocho): N vértices entrantes y al menos 2N lados; «cruz»: 4 entrantes;
+//    triángulo, cuadrado, rombo, rectángulo, trapecio, pentágono, hexágono y octógono: polígonos convexos de 3, 4, 5, 6 u 8 lados;
+//  · si el nombre dice un color (negro, verde, melado, azul, blanco), la primera paleta lo pinta de ese color;
+//  · y los colores que da el libro para las piezas cuyo nombre no lo dice (tabla COLORES).
+const COLORES={
+  taca:[[/^Sino/,'azul'],[/^Cruz|^Estrella de cuatro|^Pieza pequeña/,'blanco'],[/^Zafate/,['verde','melado','negro']]],
+  barca:[[/^Alfardón/,'verde'],[/^Pieza en Y/,'negro']],
+  felipe:[[/^Flecha/,'negro']],
+  zaguan:[[/^Cinta/,'blanco']],
+  toledanos:[[/^Triángulo/,'blanco']],
+  cenador6:[[/^Rombo|^Alfardón/,'blanco']],
+  munecas17:[[/^Rectángulo/,'negro'],[/^Trapecio/,'blanco'],[/^Cuadrado/,'verde']],
+  alfardones:[[/^Estrella/,'blanco']],
+  octogonos:[[/^Estrella/,'blanco']],
+  zaguan2:[[/^Estrella de seis|^Pieza pequeña|^Pieza en V/,'azul'],[/^Pieza grande/,'negro']]};
+const familia=h=>{const n=parseInt(h.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;
+  let hh=0;if(d){hh=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;hh*=60;if(hh<0)hh+=360;}const s=d?d/(1-Math.abs(2*l-1)):0;
+  if(l<0.18)return 'negro';if(l>0.84||s<0.15&&l>0.6)return 'blanco';if(s<0.12)return l<0.45?'negro':'blanco';
+  if(hh>=190&&hh<270)return 'azul';if(hh>=120&&hh<190)return 'verde';return 'melado';};
+const PALABRA=[[/\bnegr[oa]s?\b|oscur/i,'negro'],[/\bverdes?\b/i,'verde'],[/\bmelad[oa]s?\b/i,'melado'],[/\bazul(es)?\b/i,'azul'],[/\bblanc[oa]s?\b/i,'blanco']];
+const NUM={cuatro:4,seis:6,ocho:8,doce:12};
+const areaS=Q=>{let S=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];S+=p[0]*q[1]-q[0]*p[1];}return S/2;};
+const entrantes=Q=>{const s=Math.sign(areaS(Q));let r=0;for(let i=0;i<Q.length;i++){const a=Q[(i+Q.length-1)%Q.length],b=Q[i],c=Q[(i+1)%Q.length],cr=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]);if(Math.sign(cr)===-s&&Math.abs(cr)>1e-9)r++;}return r;};
+console.log('\nPiezas y colores');
+for(const [id,p] of Object.entries(PATRONES.P)){const antes=fallos,prep=MOTOR.preparar(p),pal=Object.values(p.paletas)[0];
+  const T=p.nombres.map(()=>[]);for(const [k,Q] of prep.piezas)T[k].push({n:Q.length,r:entrantes(Q),a:Math.abs(areaS(Q))});
+  p.nombres.forEach((nom,k)=>{const L=T[k],q=L[0];
+    ok(L.length>0,`${id}: hay piezas de «${nom}»`);if(!q)return;
+    ok(L.every(x=>x.n===q.n&&x.r===q.r&&cerca(x.a,q.a,0.01*q.a)),`${id}: todas las piezas de «${nom}» son iguales`);
+    const m=nom.match(/estrella de (cuatro|seis|ocho|doce)/i),N=m?NUM[m[1].toLowerCase()]:/^sino/i.test(nom)?8:0;
+    if(N)ok(q.r===N&&q.n>=2*N,`${id}: «${nom}» es una estrella de ${N} puntas (tiene ${q.r} vértices entrantes y ${q.n} lados)`);
+    if(/^cruz/i.test(nom))ok(q.r===4,`${id}: «${nom}» es una cruz (4 vértices entrantes; tiene ${q.r})`);
+    for(const [re,lados] of [[/^triángulo/i,3],[/^(cuadrad|rombo|rectángulo|trapecio)/i,4],[/^pentágono|\(pentágono\)/i,5],[/^hexágono|\(hexágono/i,6],[/^octógono/i,8]])
+      if(re.test(nom))ok(q.n===lados&&q.r===0,`${id}: «${nom}» es un polígono convexo de ${lados} lados (tiene ${q.n} lados y ${q.r} entrantes)`);
+    const fam=familia(pal.cols[k]);
+    for(const [re,f] of PALABRA)if(re.test(nom))ok(fam===f,`${id}: «${nom}» va de ${f} en la primera paleta (va de ${fam}, ${pal.cols[k]})`);
+    for(const [re,f] of COLORES[id]||[])if(re.test(nom)){const F=[].concat(f);ok(F.includes(fam),`${id}: según el libro, «${nom}» va de ${F.join(' o ')} (va de ${fam})`);}});
+  if(fallos===antes)console.log(`  ✓ ${id}`);}
 console.log(`\n${oks} comprobaciones bien, ${fallos} mal`);
 process.exit(fallos?1:0);

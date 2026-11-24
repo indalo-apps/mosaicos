@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.9.1">
+<meta name="app-version" content="2.9.2">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1754,8 +1754,8 @@ P.zaguan2=escalar({id:'zaguan2',nombre:'Estrellas de seis y de ocho',lugar:'Zagu
     if(n===8&&d4(x)&&d4(y))return (Math.floor(x/8)+Math.floor(y/8))%2?3:2; // estrella de cuatro: melada / verde
     if(n===4)return 7;                                            // pieza pequeña
     if(n===8&&(d0(x)||d0(y)))return 6;                            // pieza en V
-    return 1;},                                                   // octógono grande
-  nombres:['Estrella de seis','Octógono grande','Estrella de cuatro melada','Estrella de cuatro verde','Estrella de ocho negra','Estrella de ocho melada','Pieza en V','Pieza pequeña'],
+    return 1;},                                                   // pieza grande (negra, con una muesca)
+  nombres:['Estrella de seis','Pieza grande','Estrella de cuatro melada','Estrella de cuatro verde','Estrella de ocho negra','Estrella de ocho melada','Pieza en V','Pieza pequeña'],
   paletas:{
     'Alcázar':{cols:['#2f4fa3','#161616','#c98b2b','#1f5f5b','#161616','#c98b2b','#2f4fa3','#2f4fa3'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
     'Verde y melado':{cols:['#1f5f5b','#161616','#c98b2b','#c98b2b','#c98b2b','#161616','#1f5f5b','#1f5f5b'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
@@ -2010,8 +2010,8 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
     {h:'Las esquinas',t:'Con centro en cada esquina traza un cuarto de circunferencia de radio igual a la diagonal de un cuadro. Une los extremos de cada arco con una recta a 45°.',c:'Esas rectas cierran las puntas de las estrellas de ocho de las esquinas.',anim:'draw',
      guia(p,vt){const k=p.k,r=Math.SQRT2,C=[[0,0],[8,0],[0,8],[8,8]];const L=C.map(([x,y])=>[x*k,(y?y-r:y+r)*k,(x?x-r:x+r)*k,y*k]);return circulos(C.map(([x,y])=>[x*k,y*k]),r*k,RO,0.05)+animar(L,RO,0.08);}},
     {h:'Remarcar',t:'Remarca solo los trazos del dibujo: una estrella de ocho puntas alrededor de cada esquina, una de seis en el centro de cada lado y una de cuatro en el centro. Las líneas se enlazan en una red continua.',c:'Las puntas de la estrella de cuatro tocan la circunferencia del centro.',tipo:'remarcar'},
-    {h:'Las piezas',t:'Salen seis piezas distintas: las estrellas de ocho, de seis y de cuatro puntas, el octógono grande, la pieza en V y una pieza pequeña de cuatro lados.',c:'El módulo se repite por traslación. Al repetirlo, las estrellas de ocho y de cuatro alternan sus colores.',tipo:'piezas'},
-    {h:'La cinta y el color',t:'Da ancho a la cinta con dos paralelas a cada línea y alterna los cruces por encima y por debajo. En el zaguán, las estrellas de seis y las piezas pequeñas son azules y los octógonos, negros. Las estrellas de ocho alternan negro y melado, y las de cuatro, melado y verde.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
+    {h:'Las piezas',t:'Salen seis piezas distintas: las estrellas de ocho, de seis y de cuatro puntas, la pieza grande, la pieza en V y una pieza pequeña de cuatro lados.',c:'El módulo se repite por traslación. Al repetirlo, las estrellas de ocho y de cuatro alternan sus colores.',tipo:'piezas'},
+    {h:'La cinta y el color',t:'Da ancho a la cinta con dos paralelas a cada línea y alterna los cruces por encima y por debajo. En el zaguán, las estrellas de seis y las piezas pequeñas son azules y las piezas grandes, negras. Las estrellas de ocho alternan negro y melado, y las de cuatro, melado y verde.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
 
 (function(){const p=P.felipe,G=p.G,k=p.k,C=[6,6],R=G.R*k,X=v=>C[0]+v*k,Y=v=>C[1]+v*k;
   const lin=(a,d,box)=>recta([X(a[0]),Y(a[1])],d,box);
@@ -2396,7 +2396,7 @@ const PAT_EN={
    {h:'The strap',t:'The strap is drawn with parallels equidistant from the axes defined in step 6. The inner line of the strap passes through the midpoints of the sides of the first squares.',c:'The red dots are those midpoints: they set the width of the strap.'},
    {h:'Parallels and crossings',t:'At that same distance, draw parallels to the rest of the axes. Ink the right strokes so that, at the crossings, the straps pass over and under in turn.',c:'On the dado the sinos alternate black and green; the zafates are green beside the black sino and blue beside the green one, and the arrows are black. The same design is on some door jambs in the Patio de las Doncellas.'}]},
  zaguan2:{nombre:'Six- and eight-pointed stars',lugar:'Zaguán, second room',
-  nombres:['Six-pointed star','Large octagon','Honey four-pointed star','Green four-pointed star','Black eight-pointed star','Honey eight-pointed star','V piece','Small piece'],
+  nombres:['Six-pointed star','Large piece','Honey four-pointed star','Green four-pointed star','Black eight-pointed star','Honey eight-pointed star','V piece','Small piece'],
   resumen:'Eight-pointed stars at the corners of the module, six-pointed ones at the middle of its sides and a four-pointed one in the center, joined by an interlacing white strap.',
   pie:'It all comes from an 8 × 8 square with five circles of radius 2: the sides of four equilateral triangles, eight lines from the edges and a 45° line at each corner.',
   pasos:[
@@ -2405,8 +2405,8 @@ const PAT_EN={
    {h:'Lines from the edges',t:'Mark where the semicircles cut the grid lines nearest the edge. Draw a line through each of those points and the nearest end of the extended sides.',c:'You get eight lines, two for each side of the square, slanted like the sides of the triangles.'},
    {h:'The corners',t:'Centered on each corner draw a quarter circle with a radius equal to the diagonal of one square. Join the ends of each arc with a 45° line.',c:'These lines close the points of the eight-pointed stars at the corners.'},
    {h:'Ink',t:'Ink only the strokes of the design: an eight-pointed star around each corner, a six-pointed one at the middle of each side and a four-pointed one in the center. The lines link into one continuous network.',c:'The points of the four-pointed star touch the central circle.'},
-   {h:'The pieces',t:'Six different pieces appear: the eight-, six- and four-pointed stars, the large octagon, the V piece and a small four-sided piece.',c:'The module repeats by translation. When it repeats, the eight- and four-pointed stars alternate their colors.'},
-   {h:'Strap and color',t:'Give the strap its width with two parallels to each line and alternate the crossings over and under. In the zaguán the six-pointed stars and the small pieces are blue and the octagons, black. The eight-pointed stars alternate black and honey, and the four-pointed ones, honey and green.',c:'Try other combinations in the Color tab.'}]}
+   {h:'The pieces',t:'Six different pieces appear: the eight-, six- and four-pointed stars, the large piece, the V piece and a small four-sided piece.',c:'The module repeats by translation. When it repeats, the eight- and four-pointed stars alternate their colors.'},
+   {h:'Strap and color',t:'Give the strap its width with two parallels to each line and alternate the crossings over and under. In the zaguán the six-pointed stars and the small pieces are blue and the large pieces, black. The eight-pointed stars alternate black and honey, and the four-pointed ones, honey and green.',c:'Try other combinations in the Color tab.'}]}
 };
 if(EN){
   for(const [id,e] of Object.entries(PAT_EN)){const p=PATS[id];if(!p)continue;
@@ -3469,6 +3469,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.9.2",["🔧 Zaguán, second room: the large black piece is no longer called “octagon” (it has a notch, as in the book)","🧪 Behind the scenes: a new test checks that every piece is what its name says and has the book’s color"]],
     ["2.9.1",["🎨 More palettes in every tile pattern: Blue & white, Green & gold, Garnet & gold, Earth, Night, Pastel and Grays (by lightness)","🔧 Niches of the Comares Tower: the X crosses are white, as in the book, and “Module” shows the square from step 5, upright","📏 Measurements in cm with one decimal"]],
     ["2.9",["📄 On paper › Actual-size template: a PDF of your paper with margins, modules, starting figure and a 5 cm bar to check the scale","📏 Each Draw step tells you its measurements in cm for your paper (radius, distances, strap width)","⭕ The paper preview draws the starting circle or square with its size","📐 All measurements in centimeters","🧱 Color › Panel: the niche from the Comares Tower with its frieze of merlons and green borders, as in the book","🎨 The Alhambra in blue and the Alcázar in green","⚡ Opens faster: the gallery and the home screen remember their drawings"]],
     ["2.8",["🧩 New Alhambra tile pattern: eight-pointed stars and zafates from the niches of the Comares Tower (no. 15), with its 8 steps from the book","📏 Tessellate › On paper: choose A5, A4, A3 or a custom size and see how big each module and the starting circle or square must be, with the margins drawn to scale","🔍 Zoom in on the drawing with two fingers, Ctrl + wheel or the + button; “Normal size” puts it back","🖼️ Gallery in book order, with page or number, steps, pieces and difficulty","📚 Settings: the two books by Manuel Martínez Vela, contact and privacy","🔤 The fonts come with the app: titles always look right, even offline","✨ A short fade when changing stage or screen"]],
@@ -3498,6 +3499,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.9.2",["🔧 Zaguán, segunda sala: la pieza negra grande ya no se llama «octógono» (tiene una muesca, como en el libro)","🧪 Por dentro: una prueba nueva comprueba que cada pieza es lo que dice su nombre y tiene el color del libro"]],
     ["2.9.1",["🎨 Más paletas en todos los alicatados: Azul y blanco, Verde y oro, Granate y oro, Tierra, Noche, Pastel y Grises (por claridad)","🔧 Tacas de la Torre de Comares: las cruces en X son blancas, como en el libro, y «Módulo» enseña el cuadrado del paso 5, derecho","📏 Medidas en cm con un decimal"]],
     ["2.9",["📄 En papel › Plantilla a tamaño real: un PDF de tu papel con márgenes, módulos, figura de partida y una raya de 5 cm para comprobar la escala","📏 Cada paso de Trazar te dice sus medidas en cm para tu papel (radios, distancias, ancho de la cinta)","⭕ En la vista del papel se dibuja la circunferencia o el cuadrado de partida con su medida","📐 Todas las medidas, en centímetros","🧱 Colorear › Panel: la taca de la Torre de Comares con su friso de almenillas y sus cenefas verdes, como en el libro","🎨 La Alhambra en azul y el Alcázar en verde","⚡ Abre más rápido: la galería y la portada recuerdan sus dibujos"]],
     ["2.8",["🧩 Alicatado nuevo de la Alhambra: estrellas de ocho y zafates de las tacas de la Torre de Comares (n.º 15), con sus 8 pasos del libro","📏 Teselar › En papel: elige A5, A4, A3 o un papel a medida y verás cuánto miden el módulo y la circunferencia o el cuadrado de partida, con los márgenes a escala","🔍 Amplía el dibujo con dos dedos, Ctrl + rueda o el botón +; «Tamaño normal» lo deja como estaba","🖼️ Galería en el orden del libro, con página o número, pasos, piezas y dificultad","📚 Ajustes: los dos libros de Manuel Martínez Vela, contacto y privacidad","🔤 Los tipos de letra van dentro de la app: los títulos se ven siempre bien, también sin conexión","✨ Un fundido corto al cambiar de etapa o de pantalla"]],

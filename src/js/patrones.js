@@ -190,8 +190,8 @@ P.zaguan2=escalar({id:'zaguan2',nombre:'Estrellas de seis y de ocho',lugar:'Zagu
     if(n===8&&d4(x)&&d4(y))return (Math.floor(x/8)+Math.floor(y/8))%2?3:2; // estrella de cuatro: melada / verde
     if(n===4)return 7;                                            // pieza pequeña
     if(n===8&&(d0(x)||d0(y)))return 6;                            // pieza en V
-    return 1;},                                                   // octógono grande
-  nombres:['Estrella de seis','Octógono grande','Estrella de cuatro melada','Estrella de cuatro verde','Estrella de ocho negra','Estrella de ocho melada','Pieza en V','Pieza pequeña'],
+    return 1;},                                                   // pieza grande (negra, con una muesca)
+  nombres:['Estrella de seis','Pieza grande','Estrella de cuatro melada','Estrella de cuatro verde','Estrella de ocho negra','Estrella de ocho melada','Pieza en V','Pieza pequeña'],
   paletas:{
     'Alcázar':{cols:['#2f4fa3','#161616','#c98b2b','#1f5f5b','#161616','#c98b2b','#2f4fa3','#2f4fa3'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
     'Verde y melado':{cols:['#1f5f5b','#161616','#c98b2b','#c98b2b','#c98b2b','#161616','#1f5f5b','#1f5f5b'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
@@ -446,8 +446,8 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
     {h:'Las esquinas',t:'Con centro en cada esquina traza un cuarto de circunferencia de radio igual a la diagonal de un cuadro. Une los extremos de cada arco con una recta a 45°.',c:'Esas rectas cierran las puntas de las estrellas de ocho de las esquinas.',anim:'draw',
      guia(p,vt){const k=p.k,r=Math.SQRT2,C=[[0,0],[8,0],[0,8],[8,8]];const L=C.map(([x,y])=>[x*k,(y?y-r:y+r)*k,(x?x-r:x+r)*k,y*k]);return circulos(C.map(([x,y])=>[x*k,y*k]),r*k,RO,0.05)+animar(L,RO,0.08);}},
     {h:'Remarcar',t:'Remarca solo los trazos del dibujo: una estrella de ocho puntas alrededor de cada esquina, una de seis en el centro de cada lado y una de cuatro en el centro. Las líneas se enlazan en una red continua.',c:'Las puntas de la estrella de cuatro tocan la circunferencia del centro.',tipo:'remarcar'},
-    {h:'Las piezas',t:'Salen seis piezas distintas: las estrellas de ocho, de seis y de cuatro puntas, el octógono grande, la pieza en V y una pieza pequeña de cuatro lados.',c:'El módulo se repite por traslación. Al repetirlo, las estrellas de ocho y de cuatro alternan sus colores.',tipo:'piezas'},
-    {h:'La cinta y el color',t:'Da ancho a la cinta con dos paralelas a cada línea y alterna los cruces por encima y por debajo. En el zaguán, las estrellas de seis y las piezas pequeñas son azules y los octógonos, negros. Las estrellas de ocho alternan negro y melado, y las de cuatro, melado y verde.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
+    {h:'Las piezas',t:'Salen seis piezas distintas: las estrellas de ocho, de seis y de cuatro puntas, la pieza grande, la pieza en V y una pieza pequeña de cuatro lados.',c:'El módulo se repite por traslación. Al repetirlo, las estrellas de ocho y de cuatro alternan sus colores.',tipo:'piezas'},
+    {h:'La cinta y el color',t:'Da ancho a la cinta con dos paralelas a cada línea y alterna los cruces por encima y por debajo. En el zaguán, las estrellas de seis y las piezas pequeñas son azules y las piezas grandes, negras. Las estrellas de ocho alternan negro y melado, y las de cuatro, melado y verde.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color'}]});
 
 (function(){const p=P.felipe,G=p.G,k=p.k,C=[6,6],R=G.R*k,X=v=>C[0]+v*k,Y=v=>C[1]+v*k;
   const lin=(a,d,box)=>recta([X(a[0]),Y(a[1])],d,box);

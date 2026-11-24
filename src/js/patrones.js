@@ -321,6 +321,88 @@ Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,vistaModulo:[0,0,2*P.taca.k
   modulo:{m:2*Math.SQRT2*P.taca.k,cx:P.taca.k,cy:P.taca.k,giro:45,nota:[' · el dibujo va girado 45° para ver el módulo derecho; en el muro, la baldosa del paso 6 va recta',' · the drawing is turned 45° to show the module upright; on the wall, the tile from step 6 is straight']}}); // módulo mínimo: la baldosa de 2 × 2 tiene un periodo en diagonal (2, 2)
 })();
 
+// ===== LA ALHAMBRA · Sala de los Reyes, muro occidental (alicatado n.º 28) =====
+// Cuadrado de lado 2 con ejes, diagonales y circunferencia inscrita (radio 1). Arcos de radio 1 con centro en los vértices: cortan
+// las diagonales a √2 − 1 del centro (T). Octógono inscrito con vértices en ejes y diagonales; sus lados prolongados llegan al cuadrado
+// en E, a 2 − √2 del eje. Las rectas E–T, prolongadas hasta los ejes, dan la estrella de ocho (módulo A) o la de cuatro (módulo B).
+// La baldosa son dos módulos de cada tipo en orden alterno (periodo de 4 × 4). Las prolongaciones del octógono quedan dentro de la
+// estrella melada que se forma entre cuatro módulos (es una sola pieza en el despiece), así que no son aristas de pieza.
+(function(){const a=Math.SQRT1_2,e=2-Math.SQRT2,t=1-a,ri=(Math.SQRT2-1)*Math.cos(3*Math.PI/8)/Math.cos(Math.PI/8);
+const OCT=Array.from({length:8},(_,i)=>[Math.cos(rad(45*i)),Math.sin(rad(45*i))]);
+const E8=[];for(const sx of [1,-1])for(const sy of [1,-1])E8.push([[sx*e,sy],[sx*t,sy*t]],[[sx,sy*e],[sx*t,sy*t]]); // de E a la punta T del mismo cuadrante
+const est8=Array.from({length:16},(_,i)=>{const r=i%2?ri:Math.SQRT2-1,g=rad(22.5*i);return[r*Math.cos(g),r*Math.sin(g)];});
+const c4=3-2*Math.SQRT2; // vértices entrantes de la estrella de cuatro, en los ejes (donde E–T corta al eje)
+const est4=Array.from({length:8},(_,i)=>{const g=rad(45*i);return i%2?[t*Math.sign(Math.cos(g)),t*Math.sign(Math.sin(g))]:[c4*Math.round(Math.cos(g)),c4*Math.round(Math.sin(g))];});
+function modulo(tipo){const L=[...contorno(OCT)];for(const [p,q] of E8)L.push([...p,...q]);L.push(...contorno(tipo==='A'?est8:est4));return L;}
+const area=Q=>{let S=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];S+=p[0]*q[1]-q[0]*p[1];}return Math.abs(S)/2;};
+const tipoEn=(x,y)=>(Math.floor(x/2)+Math.floor(y/2))%2===0?'A':'B';
+P.reyes28=escalar({id:'reyes28',coleccion:'alhambra',num:28,nombre:'Ruedas de zafates y estrellas meladas',lugar:'Muro occidental · Sala de los Reyes · Palacio de los Leones',tipo:'mosaico',
+  W:4,H:4,
+  lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const cx=1+2*i,cy=1+2*j,tp=((i+j)%2+2)%2===0?'A':'B';
+    for(const s of modulo(tp))L.push([s[0]+cx,s[1]+cy,s[2]+cx,s[3]+cy]);}return L;},
+  clase(Q,[x,y]){const n=Q.length,mx=Math.floor(x/2),my=Math.floor(y/2),ux=x-2*mx-1,uy=y-2*my-1,enCentro=Math.hypot(ux,uy)<0.05;
+    if(n===16)return enCentro?4:3;              // estrella de ocho: blanca en el centro del módulo A, melada entre cuatro módulos
+    if(enCentro)return 5;                        // estrella de cuatro blanca, en el centro del módulo B
+    if(n===4)return 6;                           // almendrilla
+    if(tipoEn(x,y)==='A')return 0;               // zafates de las ruedas de estrella de ocho: negros
+    return ((my%2)+2)%2===0?1:2;},               // ruedas de estrella de cuatro: una fila verde, la siguiente azul
+  nombres:['Zafate negro','Zafate verde','Zafate azul','Estrella de ocho melada','Estrella de ocho blanca','Estrella de cuatro blanca','Almendrilla'],
+  paletas:{
+    'Alhambra':{cols:['#161616','#2f6f68','#4b4fae','#c98b2b','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Azul y oro':{cols:['#1d2a55','#3d63a8','#2f4fa3','#e0b04a','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Terracota':{cols:['#5a3022','#8a4b36','#b8694d','#e8b49a','#fbf4ec','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
+    'Para colorear':{cols:Array(7).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+Object.assign(P.reyes28,{Gr:{a,e,t,ri},modBase:modulo,OCT,vistaModulo:[0,0,4*P.reyes28.k,4*P.reyes28.k],
+  modulo:{m:4*P.reyes28.k,cx:2*P.reyes28.k,cy:2*P.reyes28.k,giro:0,fig:0.25}}); // la baldosa del paso 7: dos módulos de cada tipo
+})();
+
+// ===== LA ALHAMBRA · Sala de los Reyes, zócalos (alicatado n.º 29) =====
+// Circunferencia de radio 1 dividida en doce; dos hexágonos (paso 2, con un vértice arriba; paso 3, girado 30°) y dos estrellas de
+// dos triángulos (pasos 4 y 5), con sus lados a √3/4 del centro. Los cruces más alejados de los cuatro triángulos (a √3/4 ÷ cos 45°)
+// unidos de cinco en cinco dan la estrella de doce del paso 6: sus lados, prolongados, son doce rectas a h del centro, que forman
+// las calles de los doce zafates. Las seis paralelas a las diagonales del hexágono del paso 2 llegan a él en sus extremos; unidos (paso 7)
+// dan un hexágono cuyos lados forman las muescas de los zafates escotados. El hexágono del paso 8 (vértices en los puntos medios del
+// del paso 2) da la punta de los zafates redondos. El módulo es el hexágono del paso 2 y se repite por traslación (paso 10).
+(function(){const s3=Math.sqrt(3),r0=s3/4/Math.cos(Math.PI/4),h=r0*Math.cos(5*Math.PI/12);
+const tE=1-h/s3,          // la calle llega al lado del hexágono del paso 2 (esquina de la muesca)
+      tV=1-2*h/s3,        // fondo de la muesca (lados del hexágono del paso 7)
+      tR=s3/2-h/s3,       // esquina del zafate redondo (lados del hexágono del paso 8)
+      tP=s3/2;            // punta del zafate redondo (vértice del hexágono del paso 8)
+const giro=(p,g)=>{const c=Math.cos(rad(g)),s=Math.sin(rad(g));return[p[0]*c-p[1]*s,p[0]*s+p[1]*c];};
+// zafate en la dirección f (grados): en coordenadas propias el eje es +y
+function modulo(){const L=[],seg=(a,b,f)=>{const A=giro(a,f),B=giro(b,f);L.push([A[0],A[1],B[0],B[1]]);};
+  for(let k=0;k<12;k++){const f=30*k,esc=f%60===30,fin=esc?tE:tR;   // en coordenadas del zafate: eje +x
+    for(const sg of [1,-1])seg([h,sg*h],[fin,sg*h],f);               // los dos lados, desde el vértice entrante del sino
+    if(esc){seg([tE,h],[tV,0],f);seg([tE,-h],[tV,0],f);}              // la muesca
+    else{seg([tR,h],[tP,0],f);seg([tR,-h],[tP,0],f);}}               // la punta
+  return L;}
+const area=Q=>{let S=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];S+=p[0]*q[1]-q[0]*p[1];}return Math.abs(S)/2;};
+// centro de la rueda más cercana (red de hexágonos: columnas a √3, filas a 1,5 desplazadas media columna)
+function rueda(x,y){let m=null,d=9;for(const j of [Math.floor(y/1.5),Math.ceil(y/1.5)]){const o=j%2?s3/2:0,i=Math.round((x-o)/s3),c=[i*s3+o,j*1.5],e=Math.hypot(x-c[0],y-c[1]);if(e<d){d=e;m=c;}}return m;}
+P.reyes29=escalar({id:'reyes29',coleccion:'alhambra',num:29,nombre:'Ruedas de doce zafates',lugar:'Zócalos · Sala de los Reyes · Palacio de los Leones',tipo:'mosaico',
+  W:s3,H:3,
+  lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const cx=i*s3+(j%2?s3/2:0),cy=j*1.5;for(const t of modulo())L.push([t[0]+cx,t[1]+cy,t[2]+cx,t[3]+cy]);}return L;},
+  clase(Q,[x,y]){const n=Q.length,A=area(Q)/this.k/this.k;
+    if(n>=20)return 0;                                   // sino
+    if(n===4)return 6;                                   // almendrilla
+    if(A<0.07)return 7;                                  // pieza blanca entre zafates
+    if(A<0.1)return 5;                                   // hexágono blanco (en cada vértice del módulo)
+    const [cx,cy]=rueda(x,y),dx=x-cx,dy=y-cy;
+    if(A<0.122)return Math.abs(dy)<0.2*Math.abs(dx)?3:4; // zafate redondo: azul si es horizontal, negro si no
+    // zafate escotado: el color va por grupos de tres, alrededor del hexágono blanco del vértice al que apunta
+    const g=Math.atan2(dy,dx),vy=cy+Math.sin(g),f=((Math.round(vy*2)%6)+6)%6; // altura del vértice, en medios
+    return f===1||f===5?1:2;},                           // melado a 0,5 y 2,5; verde a 1 y 2
+  nombres:['Sino (estrella de doce)','Zafate escotado melado','Zafate escotado verde','Zafate redondo azul','Zafate redondo negro','Hexágono','Almendrilla','Pieza blanca'],
+  paletas:{
+    'Alhambra':{cols:['#161616','#c98b2b','#2f6f68','#4b4fae','#161616','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Azul y oro':{cols:['#1d2a55','#e0b04a','#3d63a8','#2f4fa3','#1d2a55','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Terracota':{cols:['#5a3022','#d98e6e','#8a4b36','#b8694d','#5a3022','#fbf4ec','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
+    'Para colorear':{cols:Array(8).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
+});
+Object.assign(P.reyes29,{Gz:{h,r0,tE,tV,tR,tP},modBase:modulo,modulo:{tipo:'hex',R:P.reyes29.k,cx:s3/2*P.reyes29.k,cy:1.5*P.reyes29.k}}); // el módulo es el hexágono del paso 2
+})();
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -585,6 +667,83 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
     {h:'Simetría',t:'Una vez obtenido el módulo, replícalo por simetría tomando como ejes dos de sus lados perpendiculares.',c:'Sale una baldosa de 2 × 2 módulos.',tipo:'piezas',vt:vtB},
     {h:'Repetir la baldosa',t:'Repite por traslación, en sentido vertical y horizontal, la baldosa obtenida en el paso anterior.',c:'En Teselar verás que basta un cuadrado más pequeño, girado 45°, para cubrir el plano.',tipo:'piezas',vt:vtG},
     {h:'Color',t:'En el alicatado, los sinos son azules; los zafates, verdes, melados y negros, y el resto de las piezas, blancas. En el panel los bordes se rematan y se corona con un friso de almenillas blancas y negras, que aquí no se dibujan.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:vtG}]});
+})();
+
+(function(){const p=P.reyes28,{a,e,t}=p.Gr,k=p.k;
+  // las guías se dibujan alrededor del centro del recuadro de cada paso (módulo A en el paso 5, módulo B en el 6)
+  const Cn=vt=>[vt[0]+vt[2]/2,vt[1]+vt[3]/2];
+  const tr=(L,vt)=>{const [cx,cy]=Cn(vt);return L.map(([x1,y1,x2,y2])=>[cx+x1*k,cy+y1*k,cx+x2*k,cy+y2*k]);};
+  const ln=(L,vt,col,w,d)=>guia(tr(L,vt),col,w,d),an=(L,vt,col,w)=>animar(tr(L,vt),col,w);
+  const arcos=(vt,col,w)=>{const [cx,cy]=Cn(vt),X=v=>+(cx+v*k).toFixed(3),Y=v=>+(cy+v*k).toFixed(3),r=+k.toFixed(3);
+    return `<g fill="none" stroke="${col}" stroke-width="${w}">`+[[1,1],[-1,1],[-1,-1],[1,-1]].map(([sx,sy])=>`<path pathLength="1" d="M${X(sx)} ${Y(0)} A${r} ${r} 0 0 ${sx*sy>0?0:1} ${X(0)} ${Y(sy)}"/>`).join('')+'</g>';};
+  const oct=p.OCT,ladosOct=contorno(oct),prolong=[];
+  for(const sx of [1,-1])for(const sy of [1,-1])prolong.push([sx*a,sy*a,sx*e,sy],[sx*a,sy*a,sx,sy*e]);
+  // paso 4: de cada extremo E, por el punto T del mismo cuadrante, hasta el eje más lejano (allí cae la punta de la estrella de ocho)
+  const rectas4=[];for(const sx of [1,-1])for(const sy of [1,-1])rectas4.push([sx*e,sy,0,-sy*(Math.SQRT2-1)],[sx,sy*e,-sx*(Math.SQRT2-1),0]);
+  const vt=[-0.04*k,-0.04*k,2.08*k,2.08*k],vtB=[1.96*k,-0.04*k,2.08*k,2.08*k],vtT=[-0.5,-0.5,4*k+1,4*k+1],vtG=[-0.5,-0.5,8*k+1,8*k+1];
+  Object.assign(p,{vt,
+  resumen:'Ruedas de cuatro zafates negros, verdes o azules alrededor de estrellas blancas de ocho o de cuatro puntas, y estrellas meladas de ocho puntas donde se encuentran cuatro ruedas. Decora los zócalos de pilastras y fustes del lateral de la Sala de los Reyes que linda con la galería.',
+  pie:'La composición se basa en una red de cuadrados con una circunferencia inscrita en cada uno y, dentro de ella, un octógono convexo. Prolongando los lados del octógono salen las estrellas centrales de cuatro y de ocho puntas: hay dos módulos, que se colocan en orden alterno.',
+  pasos:[
+    {h:'Cuadrado y circunferencia',t:'En un cuadrado, en el que previamente habremos trazado sus ejes y diagonales, inscribimos una circunferencia.',c:'Es la circunferencia inscrita de «Aprender a trazar».',anim:'fade',
+     guia(p,vt){return ln([[-1,-1,1,1],[-1,1,1,-1],[-1,0,1,0],[0,-1,0,1]],vt,RO,0.05,'0.3 0.2')+circulos([Cn(vt)],k,RO,0.07);}},
+    {h:'Cuatro arcos',t:'A continuación dibujamos arcos con el mismo radio, tomando como centros los vértices del cuadrado.',c:'Los arcos cortan las diagonales en cuatro puntos: los necesitarás en el paso 4.',anim:'draw',
+     guia(p,vt){return arcos(vt,RO,0.07).replace('<g ','<g class="draw" stroke-linecap="round" ');}},
+    {h:'El octógono',t:'Dibujamos el octógono inscrito en la circunferencia, para lo cual uniremos los puntos donde ésta corta a las diagonales y los ejes. Prolongamos los lados del octógono hasta su intersección con los del cuadrado.',c:'Cada lado del octógono se prolonga desde su vértice en la diagonal hasta el lado del cuadrado.',anim:'draw',
+     guia(p,vt){return an([...ladosOct,...prolong],vt,RO,0.08);}},
+    {h:'Las rectas de las estrellas',t:'Unimos los extremos de las prolongaciones de los lados del octógono con los puntos donde los arcos del paso 2 se cortan con las diagonales. Prolongamos estas rectas hasta los ejes del cuadrado.',c:'Son ocho rectas: en el centro forman una estrella de ocho puntas y, más cerca, otra de cuatro.',anim:'draw',
+     guia(p,vt){return an(rectas4,vt,'#2b4f73',0.08);}},
+    {h:'El módulo con estrella de ocho',t:'Para obtener uno de los módulos remarcamos el octógono y los segmentos necesarios de las líneas anteriores, de modo que formen la estrella de ocho puntas en el centro.',c:'Las puntas de la estrella están en los ejes y en las diagonales, donde los arcos del paso 2 cortan a las diagonales.',tipo:'remarcar'},
+    {h:'El módulo con estrella de cuatro',t:'El otro módulo se obtiene de modo similar pero remarcando la estrella central de cuatro puntas.',c:'Las puntas de esta estrella están en las diagonales, en los mismos puntos que las de la estrella de ocho.',tipo:'remarcar',vt:vtB},
+    {h:'La baldosa',t:'La baldosa que permite cubrir el plano está formada por cuatro de los módulos anteriores (dos de cada tipo) colocados en orden alterno.',c:'Entre cuatro módulos se forma una estrella de ocho más gruesa: en el despiece es una sola pieza, por eso aquí no se ven las prolongaciones del octógono.',tipo:'piezas',vt:vtT},
+    {h:'Color',t:'Los colores empleados son negro, azul, verde, melado y blanco. En el desarrollo podemos observar cómo se distribuyen los colores según la forma de las piezas.',c:'Las ruedas con estrella de ocho son negras; las de estrella de cuatro, verdes en una fila y azules en la siguiente. Las estrellas entre ruedas son meladas y lo demás, blanco.',tipo:'color',vt:vtG}]});
+})();
+
+(function(){const p=P.reyes29,{h,r0}=p.Gz,k=p.k,s3=Math.sqrt(3),C=[1.5*s3*k,4.5*k],X=v=>C[0]+v*k,Y=v=>C[1]-v*k; // y hacia arriba, como en el libro
+  const T=L=>L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]);
+  const ln=(L,col,w,d)=>guia(T(L),col,w,d),an=(L,col,w)=>animar(T(L),col,w);
+  const pol=(n,r,a0)=>Array.from({length:n},(_,i)=>[r*Math.cos(rad(a0+360*i/n)),r*Math.sin(rad(a0+360*i/n))]);
+  const lados=V=>V.map((v,i)=>[...v,...V[(i+1)%V.length]]);
+  const diag=V=>V.slice(0,V.length/2).map((v,i)=>[...v,...V[i+V.length/2]]);
+  const H2=pol(6,1,90),H3=pol(6,1,0);
+  const M2=pol(6,s3/2,0),M3=pol(6,s3/2,30);                       // puntos medios de los lados de cada hexágono
+  const tri=(M,i)=>lados([M[i],M[i+2],M[i+4]]);
+  // estrella de doce del paso 6: lados prolongados = 12 rectas a h del centro, recortadas al hexágono del paso 2
+  function recortaHex(nx,ny,d){const u=[-ny,nx],P0=[nx*d,ny*d];let t0=-9,t1=9;
+    for(let i=0;i<6;i++){const A=H2[i],B=H2[(i+1)%6],m=[-(B[1]-A[1]),B[0]-A[0]],den=u[0]*m[0]+u[1]*m[1],num=(P0[0]-A[0])*m[0]+(P0[1]-A[1])*m[1];
+      if(Math.abs(den)<1e-12)continue;const t=-num/den;if(den>0)t0=Math.max(t0,t);else t1=Math.min(t1,t);}
+    return [P0[0]+u[0]*t0,P0[1]+u[1]*t0,P0[0]+u[0]*t1,P0[1]+u[1]*t1];}
+  const rectas=a=>a.map(g=>recortaHex(Math.cos(rad(g)),Math.sin(rad(g)),h));
+  const P12=pol(12,r0,15),E12=P12.map((v,i)=>[...v,...P12[(i+5)%12]]);
+  const a7=s3/2-h,H7=pol(6,a7/Math.cos(Math.PI/6),30),H8=pol(6,s3/2,0);
+  const arcos=(col,w)=>{const r=+k.toFixed(3),Q=(x,y)=>`${+X(x).toFixed(3)} ${+Y(y).toFixed(3)}`;
+    return `<g class="draw" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round">`+[[0,1],[1,0],[0,-1],[-1,0]].map(([cx,cy])=>{
+      const a=Math.atan2(cy,cx),p1=[cx+Math.cos(a+rad(120)),cy+Math.sin(a+rad(120))],p2=[cx+Math.cos(a+rad(240)),cy+Math.sin(a+rad(240))];
+      return `<path pathLength="1" d="M${Q(...p1)} A${r} ${r} 0 0 0 ${Q(...p2)}"/>`;}).join('')+'</g>';};
+  const vt=[C[0]-1.08*k,C[1]-1.08*k,2.16*k,2.16*k],vtT=[C[0]-2.55*k,C[1]-2.3*k,5.1*k,4.6*k],vtG=[0,0,3*s3*k,4.5*k];
+  Object.assign(p,{vt,
+  resumen:'Ruedas de doce zafates, redondos y escotados, centradas por un sino negro y con almendrillas blancas. Decoran la parte baja del resto de los muros de la Sala de los Reyes, en unos zócalos más bajos que los colindantes.',
+  pie:'La composición se sustenta en una red de hexágonos regulares en cuyos centros se sitúan los sinos de las ruedas que llenan la superficie. Todo sale de dividir una circunferencia en doce partes: dos hexágonos, cuatro triángulos y una estrella de doce puntas.',
+  pasos:[
+    {h:'La circunferencia en doce',t:'Dividimos una circunferencia en doce partes iguales para lo cual trazaremos arcos del mismo radio de la circunferencia y centros en los extremos de los diámetros perpendiculares.',c:'Es la división en doce de «Aprender a trazar».',anim:'draw',
+     guia(){return ln([[-1,0,1,0],[0,-1,0,1]],RO,0.05,'0.3 0.2')+circulos([C],k,RO,0.07)+arcos(RO,0.07);}},
+    {h:'El primer hexágono',t:'Dibujamos un primer hexágono regular para lo cual deberemos unir los extremos del diámetro vertical con los puntos de división obtenidos con los arcos trazados desde los extremos de dicho diámetro. Dibujamos también sus diagonales.',c:'Este hexágono, con un vértice arriba, será el módulo que se repite.',anim:'draw',
+     guia(){return an([...lados(H2),...diag(H2)],RO,0.08);}},
+    {h:'El segundo hexágono',t:'Repetimos la operación tomando ahora el diámetro horizontal y los arcos trazados desde sus extremos. Obtenemos un nuevo hexágono regular y sus diagonales.',c:'Está girado 30° respecto al primero.',anim:'draw',
+     guia(){return an([...lados(H3),...diag(H3)],'#2b4f73',0.08);}},
+    {h:'Dos triángulos',t:'Unimos, en orden alterno, los puntos medios de los lados del hexágono obtenido en el paso 2. Obtenemos una estrella formada por dos triángulos equiláteros.',c:'Los lados de los triángulos quedan a √3/4 del centro: algo menos de la mitad del radio.',anim:'draw',
+     guia(){return an([...tri(M2,0),...tri(M2,1)],RO,0.07);}},
+    {h:'Otros dos triángulos',t:'Repetimos la operación con el segundo hexágono obteniendo una nueva estrella formada por dos triángulos equiláteros.',c:'Ahora hay cuatro triángulos que se cortan entre sí.',anim:'draw',
+     guia(){return an([...tri(M3,0),...tri(M3,1)],'#2b4f73',0.07);}},
+    {h:'La estrella de doce',t:'De los puntos donde se cortan los cuatro triángulos de los pasos anteriores tomamos los más alejados del centro. Los unimos en orden no consecutivo para obtener una estrella de doce puntas. Prolongamos sus lados.',c:'Se unen de cinco en cinco. Los lados prolongados son doce rectas, dos a dos paralelas: las calles de los zafates.',anim:'draw',
+     guia(){return ln(E12,'#2b4f73',0.05)+an(rectas(Array.from({length:12},(_,i)=>30*i)),RO,0.07);}},
+    {h:'Un hexágono girado',t:'De las rectas anteriores seleccionamos las que son paralelas a las diagonales del hexágono del paso 2 y unimos sus extremos.',c:'Sale otro hexágono con un vértice arriba, algo menor que el del paso 2: sus lados darán las muescas de los zafates escotados.',anim:'draw',
+     guia(){return ln(rectas([0,60,120,180,240,300]),'#1d4ed8',0.08)+an(lados(H7),RO,0.09);}},
+    {h:'Otro hexágono',t:'Dibujamos un nuevo hexágono regular cuyos vértices sean los puntos medios de los lados del hexágono del paso 2.',c:'Sus vértices darán la punta de los zafates redondos.',anim:'draw',
+     guia(){return an(lados(H8),RO,0.09);}},
+    {h:'El módulo hexagonal',t:'Finalmente destacamos los trazos adecuados para obtener el módulo hexagonal. Con este método de trazado se da que AB = BC y DE = EF.',c:'AB y BC son lados de la muesca de un zafate escotado; DE y EF, de la punta de un zafate redondo.',tipo:'remarcar'},
+    {h:'Repetir el módulo',t:'La repetición del módulo se efectúa por traslación, hasta conseguir rellenar la superficie con los hexágonos.',c:'Podemos dividir el hexágono en seis triángulos iguales. Estos pueden dividirse, a su vez, en dos triángulos rectángulos, que son simétricos. Uno de estos triángulos es la unidad básica mínima.',tipo:'piezas',vt:vtT},
+    {h:'Color',t:'Los aliceres que componen el alicatado son de color blanco, negro, verde, melado y azul.',c:'El sino es negro. Los zafates escotados van de tres en tres alrededor de un hexágono blanco, melados o verdes por filas; los redondos son azules si están tumbados y negros si no.',tipo:'color',vt:vtG}]});
 })();
 
 // Dibuja un paso del trazado de un patrón nuevo

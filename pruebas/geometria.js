@@ -71,6 +71,29 @@ const LIBRO={
       ok(cerca(p.modulo.R,p.k),'Arrayanes: el módulo es el hexágono de radio 1 del libro');},
     // la estrella de doce tiene simetría de 12 dentro del hexágono; el muro entero, de 6
     simetria:{centro:()=>[0,0],estrella:12,giros:[[12,p=>0.8*p.k],[6,p=>p.W*0.9]]}},
+  reyes29:{pasos:11,
+    extra(p){const {h,r0,tE,tV,tR,tP}=p.Gz,s3=Math.sqrt(3);
+      ok(cerca(r0,s3/4/Math.SQRT1_2,1e-9),'N.º 29: los cruces más alejados de los cuatro triángulos están a (√3/4)/cos 45° del centro');
+      ok(cerca(h,r0*Math.cos(5*Math.PI/12),1e-9),'N.º 29: la estrella de doce une los puntos de cinco en cinco (sus lados, a r0·cos 75°)');
+      ok(cerca(tE,1-h/s3,1e-9),'N.º 29: las calles de los zafates escotados llegan al lado del hexágono del paso 2');
+      // paso 7: el hexágono que une los extremos tiene los lados a √3/2 − h; la muesca toca sus lados
+      const a7=s3/2-h;ok(cerca(0.5*(-h)+s3/2*tE,a7,1e-9)&&cerca(s3/2*tV,a7,1e-9),'N.º 29: la muesca (paso 9) está en los lados del hexágono del paso 7');
+      ok(cerca(tP,s3/2,1e-9)&&cerca(tR+h*Math.tan(Math.PI/6),tP,1e-9),'N.º 29: la punta del zafate redondo está en el hexágono del paso 8');
+      ok(cerca(p.modulo.R,p.k),'N.º 29: el módulo es el hexágono del paso 2, de radio 1');},
+    simetria:{centro:p=>[Math.sqrt(3)/2*p.k,1.5*p.k],estrella:12,giros:[[6,p=>0.9*p.k]]}},
+  reyes28:{pasos:8,modulo:4,
+    extra(p){const {a,e,t,ri}=p.Gr;
+      ok(cerca(e,2-Math.SQRT2)&&cerca(t,1-Math.SQRT1_2),'N.º 28: E (prolongación del octógono) a 2 − √2 del eje; T (arco y diagonal) a 1 − 1/√2');
+      // el lado del octógono (de (1,0) a (a,a)) prolongado corta el lado del cuadrado y = 1 en x = e
+      const xE=1+(a-1)*(1/a);ok(cerca(xE,e,1e-9),'N.º 28: la prolongación del lado del octógono llega a (2 − √2, 1)');
+      // el arco de radio 1 con centro en el vértice (1,1) corta la diagonal en T
+      ok(cerca(Math.hypot(1-t,1-t),1,1e-9),'N.º 28: T está en el arco de radio 1 con centro en el vértice');
+      // la recta E–T llega al eje x = 0 en y = −(√2 − 1): la punta de la estrella de ocho, a la misma distancia que T
+      const yE=1+(0-e)*((t-1)/(t-e));ok(cerca(yE,-(Math.SQRT2-1),1e-9)&&cerca(Math.hypot(t,t),Math.SQRT2-1,1e-9),'N.º 28: las puntas de las estrellas están a √2 − 1 del centro (en ejes y diagonales)');
+      // y corta el eje y = 0 en x = 3 − 2√2: los vértices entrantes de la estrella de cuatro
+      const xC=e+(0-1)*((t-e)/(t-1));ok(cerca(xC,3-2*Math.SQRT2,1e-9)&&cerca(ri,3-2*Math.SQRT2,1e-9),'N.º 28: vértices entrantes de las estrellas a 3 − 2√2 del centro');
+      const A=p.modBase('A'),B=p.modBase('B');ok(A.length===8+8+16&&B.length===8+8+8,'N.º 28: octógono, 8 rectas E–T y la estrella (16 lados en A, 8 en B)');},
+    simetria:{centro:p=>[p.k,p.k],estrella:8,giros:[[4,p=>1.2*p.k]]}},
   taca:{pasos:8,
     extra(p){const {a1,d2,d3,c}=p.Gt,L=p.modBase(),ok8=[d3,a1];
       ok(cerca(d2,1-a1)&&cerca(d3,d2*Math.tan(Math.PI/8)),'Taca: el segundo octógono estrellado sale del octógono central del primero');
@@ -140,6 +163,8 @@ for(const [id,p] of Object.entries(PATRONES.P)){
 //  · si el nombre dice un color (negro, verde, melado, azul, blanco), la primera paleta lo pinta de ese color;
 //  · y los colores que da el libro para las piezas cuyo nombre no lo dice (tabla COLORES).
 const COLORES={
+  reyes28:[[/^Almendrilla/,'blanco']],
+  reyes29:[[/^Sino/,'negro'],[/^Hexágono|^Almendrilla|^Pieza blanca/,'blanco']],
   taca:[[/^Sino/,'azul'],[/^Cruz|^Estrella de cuatro|^Pieza pequeña/,'blanco'],[/^Zafate/,['verde','melado','negro']]],
   barca:[[/^Alfardón/,'verde'],[/^Pieza en Y/,'negro']],
   felipe:[[/^Flecha/,'negro']],

@@ -530,6 +530,16 @@ function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')|
 // ---------- Medidas en papel en cada paso (v2.9): en cm, según el papel y los módulos elegidos en Teselar › En papel ----------
 // [texto, texto en inglés, medida en unidades del libro]; 'rw' = ancho de la cinta
 const MEDPASO={
+  reyes29:{1:[['Radio de la circunferencia','Radius of the circle',1]],
+    2:[['Lado del hexágono','Side of the hexagon',1]],
+    4:[['Lados de los triángulos, desde el centro','Sides of the triangles, from the center',Math.sqrt(3)/4]],
+    6:[['Puntas de la estrella de doce, desde el centro','Points of the twelve-pointed star, from the center',Math.sqrt(3)/4/Math.SQRT1_2],['Cada recta, desde el centro (medio ancho del zafate)','Each line, from the center (half the zafate width)',Math.sqrt(3)/4/Math.SQRT1_2*Math.cos(5*Math.PI/12)]],
+    7:[['Lados del hexágono girado, desde el centro','Sides of the turned hexagon, from the center',Math.sqrt(3)/2-Math.sqrt(3)/4/Math.SQRT1_2*Math.cos(5*Math.PI/12)]],
+    8:[['Lado del nuevo hexágono','Side of the new hexagon',Math.sqrt(3)/2]]},
+  reyes28:{1:[['Lado del cuadrado','Side of the square',2],['Radio de la circunferencia','Radius of the circle',1]],
+    2:[['Radio de los arcos','Radius of the arcs',1],['Los arcos cortan las diagonales, desde el centro, a','The arcs cut the diagonals, from the center, at',Math.SQRT2-1]],
+    3:[['Las prolongaciones llegan al lado del cuadrado, desde el eje, a','The extensions reach the side of the square, from the axis, at',2-Math.SQRT2]],
+    4:[['Puntas de la estrella de ocho en los ejes, desde el centro','Points of the eight-pointed star on the axes, from the center',Math.SQRT2-1]]},
   taca:{1:[['Radio de la circunferencia','Radius of the circle',1],['Lado del cuadrado','Side of the square',2]],
     2:[['Distancia de las paralelas al centro','Distance of the parallels from the center',Math.SQRT1_2]],
     3:[['Vértices del octógono central, desde el centro','Vertices of the central octagon, from the center',Math.SQRT1_2/Math.cos(Math.PI/8)]],

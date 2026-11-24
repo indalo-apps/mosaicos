@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.12">
+<meta name="app-version" content="2.13">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -327,7 +327,7 @@ ul.libros{margin:6px 0 8px;padding-left:1.1em}ul.libros li{margin:4px 0}
 #pp-vista svg{display:block;max-height:340px;margin:auto}
 .pp-res{margin:6px 0 0;font-size:calc(14.5px * var(--esc,1))}
 .pp-res dt{color:var(--muted);margin-top:8px}.pp-res dd{margin:1px 0 0;font-variant-numeric:tabular-nums}
-.pp-res .pp-main{font-weight:600;color:var(--ink);font-size:1.08em}
+.pp-res .pp-nota{margin-top:10px;color:var(--muted);font-size:.92em}.pp-res .pp-main{font-weight:600;color:var(--ink);font-size:1.08em}
 @media (prefers-color-scheme:dark){#pp-vista{background:#2a2722}}
 .pp-campos[hidden]{display:none}
 .pat .pat-datos{flex-direction:row;line-height:1.3}.pat .pat-datos>span{flex-direction:row;padding:0}
@@ -3564,16 +3564,24 @@ const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1
 const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
 const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
 // todas las medidas, en centímetros (internamente se guardan en milímetros)
-const num=(v,d=1)=>(Math.round(v*10**d)/10**d).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:d});
-const cm=v=>num(v/10)+' cm';
+const num=(v,d=1)=>(Math.round(v*10**d)/10**d).toLocaleString(EN?'en':'es',{minimumFractionDigits:0,maximumFractionDigits:d});
+const cm=v=>{const c=v/10,q=Math.abs(c*20-Math.round(c*20))<1e-6&&Math.abs(c*10-Math.round(c*10))>1e-6;return num(c,q?2:1)+' cm';}; // 2,25 cm (la mitad de 4,5) se escribe entero, no «2,3»
 // Papel y escala: dónde cabe el dibujo de columnas × filas (R = resultado de tsConstruir)
 function calcPapel(R){const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0),a=+PP.w||0,b=+PP.h||0;
   const esc=(W,H)=>Math.min((W-2*m)/vw,(H-2*m)/vh);
   const base=PP.p==='med'?[Math.min(a,b),Math.max(a,b)]:PAPEL[PP.p];
   const ori=PP.ori||(esc(base[1],base[0])>esc(base[0],base[1])?'h':'v');
-  const [PW,PH]=ori==='h'?[base[1],base[0]]:base,k=esc(PW,PH);
+  const [PW,PH]=ori==="h"?[base[1],base[0]]:base;let k=esc(PW,PH);
   if(!(PW>0&&PH>0)||!(k>0))return {ok:false,PW,PH,ori,m};
-  const dw=vw*k,dh=vh*k;return {ok:true,PW,PH,ori,m,k,vb:R.vb,dw,dh,x0:(PW-dw)/2,y0:(PH-dh)/2};}
+  // v2.13: la medida principal (la primera de «En papel», con la que se empieza a trazar) se redondea hacia abajo
+  // a centímetros o medios centímetros; si es menor de 2 cm, a milímetros. Las demás salen de ella.
+  const b0=(BASE[PAT.id]||[])[0];let paso=0;
+  // Si las otras medidas son una parte exacta de la primera (cuadro de 1 en un cuadrado de 8), se procura que también salgan redondas, sin achicar más de un 20 %.
+  if(b0){const v=b0[2]*(PAT.k||1)*k;paso=v>=20?5:1;let r=Math.floor(v/paso+1e-9)*paso;
+    const mn=Math.min(...BASE[PAT.id].map(x=>x[2])),q=b0[2]/mn;
+    if(q>1&&q<=16&&Math.abs(q-Math.round(q))<1e-9){const r2=Math.floor(v/(paso*q)+1e-9)*paso*q;if(r2>=0.8*v)r=r2;}
+    if(r>0)k*=r/v;}
+  const dw=vw*k,dh=vh*k;return {ok:true,PW,PH,ori,m,k,paso,vb:R.vb,dw,dh,x0:(PW-dw)/2,y0:(PH-dh)/2};}
 // Centro del primer módulo, en coordenadas del dibujo del teselado (null si no hay figura de partida que dibujar)
 function centroFig(R){const M=PAT.modulo;if(!FIG[PAT.id]||!M)return null;
   if(M.tipo==='hex')return TS.forma==='tri'?null:[M.cx,M.cy];
@@ -3583,7 +3591,7 @@ function svgPapel(R,G,{conCotas=true,conDibujo=true,gris=false,pagina=false}={})
   const {PW,PH,x0,y0,dw,dh,k,m}=G,[vx,vy,vw,vh]=G.vb,kl=PAT.k||1,fs=Math.max(PW,PH)/22,sw=Math.max(PW,PH)/400;
   const X=x=>x0+(x-vx)*k,Y=y=>y0+(y-vy)*k;
   let dib='';if(conDibujo){dib=R.sv.replace(/<svg([^>]*?)\swidth="[^"]*"/,'<svg$1').replace('<svg ',`<svg x="${x0}" y="${y0}" width="${dw}" height="${dh}" `);if(gris)dib=`<g opacity="0.35">${dib}</g>`;}
-  const flecha=`<marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker>`;
+  const flecha=`<marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker><marker id="pp-flr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b5444b"/></marker>`;
   const txt=(x,y,t,col='#1d4ed8',anc='middle')=>`<text x="${x}" y="${y}" font-size="${fs}" text-anchor="${anc}" fill="${col}" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}">${t}</text>`;
   const cota=(x1,y1,x2,y2,t,dx,dy)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d4ed8" stroke-width="${sw}" marker-start="url(#pp-fl)" marker-end="url(#pp-fl)"/>`+txt((x1+x2)/2+dx,(y1+y2)/2+dy,t);
   let s=`<rect x="0" y="0" width="${PW}" height="${PH}" fill="#fff" stroke="#8a8172" stroke-width="${sw*1.5}"/>`+
@@ -3592,13 +3600,19 @@ function svgPapel(R,G,{conCotas=true,conDibujo=true,gris=false,pagina=false}={})
   if(conCotas){
     if(y0>fs*1.6)s+=cota(x0,y0-fs*0.6,x0+dw,y0-fs*0.6,cm(dw),0,-fs*0.35);
     if(x0>fs*1.6)s+=`<g transform="rotate(-90 ${x0-fs*0.6} ${y0+dh/2})">${cota(x0-fs*0.6-dh/2,y0+dh/2,x0-fs*0.6+dh/2,y0+dh/2,cm(dh),0,-fs*0.35)}</g>`;
-    if(y0+dh<PH-fs*1.6)s+=cota(PW/2,y0+dh,PW/2,PH,cm(PH-y0-dh),fs*2.4,fs*0.35);}
+    if(PH-y0-dh>sw*4)s+=cota(PW/2,y0+dh,PW/2,PH,cm(PH-y0-dh),fs*2.4,fs*0.35);
+    if(PW-x0-dw>sw*4){const yl=y0+dh*0.82;s+=cota(x0+dw,yl,PW,yl,cm(PW-x0-dw),0,-fs*0.35);}}  // v2.13: también el margen lateral
   // figura de partida sobre el primer módulo, con su medida
   const C=centroFig(R);
   if(C){const cx=X(C[0]),cy=Y(C[1]),RO='#b5444b';let f='';
     for(const q of FIG[PAT.id]){
       if(q.r){const r=q.r*kl*k;f+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}"/><line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="${RO}" stroke-width="${sw*1.2}"/><circle cx="${cx}" cy="${cy}" r="${sw*2.5}" fill="${RO}"/>`+txt(cx+r/2,cy-fs*0.35,'R '+cm(r),RO);}
       else{const l=q.lado*kl*k;f+=`<rect x="${cx-l/2}" y="${cy-l/2}" width="${l}" height="${l}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}" stroke-dasharray="${sw*5} ${sw*2.5}" transform="rotate(${q.giro} ${cx} ${cy})"/>`+(q.giro?'':txt(cx,cy-l/2-fs*0.3,cm(l),RO));}}
+    // v2.13: dónde pinchar el compás, medido desde el borde izquierdo y el de arriba del papel
+    if(conCotas){const RO2='#b5444b',d=`stroke="${RO2}" stroke-width="${sw}" stroke-dasharray="${sw*3} ${sw*2}"`;
+      f+=`<line x1="0" y1="${cy}" x2="${cx}" y2="${cy}" ${d} marker-start="url(#pp-flr)"/><line x1="${cx}" y1="0" x2="${cx}" y2="${cy}" ${d} marker-start="url(#pp-flr)"/>`+
+        `<line x1="${cx-fs*0.5}" y1="${cy}" x2="${cx+fs*0.5}" y2="${cy}" stroke="${RO2}" stroke-width="${sw*1.4}"/><line x1="${cx}" y1="${cy-fs*0.5}" x2="${cx}" y2="${cy+fs*0.5}" stroke="${RO2}" stroke-width="${sw*1.4}"/>`+
+        txt(Math.max(fs*1.6,cx/2),cy+fs*1.05,cm(cx),RO2)+`<g transform="rotate(-90 ${cx-fs*0.45} ${Math.max(fs*1.6,cy/2)})">${txt(cx-fs*0.45,Math.max(fs*1.6,cy/2),cm(cy),RO2)}</g>`;}
     s+=f;}
   if(pagina){ // plantilla para imprimir: pie con las medidas y una raya de 5 cm para comprobar la escala
     const t=Math.min(3.2,Math.max(2.2,m*0.28)),yb=PH-Math.max(3,m*0.35),med=medidasPapel(G).map(([a,b])=>a+': '+b).join(' · ');
@@ -3637,11 +3651,13 @@ function pintarPapel(R){if(!$('tab-imprimir').classList.contains('show'))return;
   $('pp-vista').setAttribute('aria-label',tr(`Papel de ${num(PW/10)} × ${cm(PH)} con el dibujo de ${num(dw/10)} × ${cm(dh)} en el centro`,`A ${num(PW/10)} × ${cm(PH)} sheet with the ${num(dw/10)} × ${cm(dh)} drawing in the middle`));
   const hex=M&&M.tipo==='hex'&&TS.forma!=='tri',tam=R.red.tam*k;
   const base=medidasPapel(G).map(([t,v],i)=>`<dt${i?'':' class="pp-main"'}>${t}</dt><dd${i?'':' class="pp-main"'}>${v}</dd>`).join('');
+  const C=centroFig(R),centro=C?`<dt>${tr('Dónde pinchar el compás','Where to put the compass point')}</dt><dd>${tr(`a ${cm(x0+(C[0]-G.vb[0])*k)} del borde izquierdo y a ${cm(y0+(C[1]-G.vb[1])*k)} del borde de arriba del papel (la cruz roja)`,`${cm(x0+(C[0]-G.vb[0])*k)} from the left edge and ${cm(y0+(C[1]-G.vb[1])*k)} from the top edge of the sheet (the red cross)`)}</dd>`:'';
   const modTxt=hex?tr(`${cm(M.R*k)} de lado (hexágono)`,`${cm(M.R*k)} per side (hexagon)`):tr(`${cm(tam)} de lado`,`${cm(tam)} per side`);
-  $('pp-res').innerHTML=base+`<dt>${tr('Cada módulo','Each module')}</dt><dd>${modTxt}</dd>`+
+  $('pp-res').innerHTML=base+centro+`<dt>${tr('Cada módulo','Each module')}</dt><dd>${modTxt}</dd>`+
     `<dt>${tr('Dibujo entero','Whole drawing')}</dt><dd>${num(dw/10)} × ${cm(dh)} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}</dd>`+
     `<dt>${tr('Márgenes','Margins')}</dt><dd>${tr('izquierda y derecha','left and right')} ${cm(x0)} · ${tr('arriba y abajo','top and bottom')} ${cm(y0)}</dd>`+
-    `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${num(PW/10)} × ${cm(PH)}</dd>`;}
+    `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${num(PW/10)} × ${cm(PH)}</dd>`+
+    (G.paso?`<dd class="pp-nota">${G.paso===5?tr('La primera medida va en centímetros o medios centímetros, para trazarla con la regla; las demás salen de ella.','The first measurement is in whole or half centimeters, so you can set it with the ruler; the others follow from it.'):tr('La primera medida va en milímetros exactos (es menor de 2 cm); las demás salen de ella.','The first measurement is in whole millimeters (it is under 2 cm); the others follow from it.')}</dd>`:'');}
 window.svgPapelActual=(opc)=>{const R=tsConstruir(EX.c,EX.r,TS.marcar,false),G=calcPapel(R);return G.ok?{svg:svgPapel(R,G,opc),G}:null;};
 {const gp=()=>store.set(PPK,PP);
   $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarImprimir();});
@@ -3752,6 +3768,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.13",["📏 On paper: the starting measurement is now in whole or half centimeters (6 cm, 4.5 cm…), and whenever possible the others too; what is left over goes to the margins","🔢 Fine grids, with squares under 2 cm, are given in whole millimeters","✚ Where to put the compass point: a red cross on the sheet, with its distance from the left and top edges","↔️ The side and bottom margins are always marked on the sheet"]],
     ["2.12",["🏠 A house button at the top of every page takes you back to the home screen","↺ Color › Start over: next to Undo, Export and Other colors, it puts all the coloring back to the start (tap twice; you can undo it)","📏 On paper is now in step 4, Print, with its own columns and rows","✂️ «Your tile» has been removed from Tessellate"]],
     ["2.11.1",["🎨 Hall of the Kings, wheels of twelve zafates (no. 29): the green and the blue now match the book’s color plate (p. 149), and the card shows its pages (pp. 146–149)"]],
     ["2.11",["🧩 New Alhambra pattern from the jambs of the Palace of the Lions (no. 31): a wheel of sixteen zafates ringed by eight wheels of eight, with the harp zafates of each side, its 13 steps from the book, colors and measurements in cm"]],
@@ -3786,6 +3803,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.13",["📏 En papel: la medida de partida va ahora en centímetros o medios centímetros (6 cm, 4,5 cm…) y, cuando se puede, también las demás; lo que sobra va a los márgenes","🔢 En las cuadrículas finas, con cuadros de menos de 2 cm, en milímetros exactos","✚ Dónde pinchar el compás: una cruz roja en el papel, con su distancia al borde izquierdo y al de arriba","↔️ Los márgenes lateral e inferior salen siempre marcados en el papel"]],
     ["2.12",["🏠 Botón con una casa arriba en todas las páginas para volver a la portada","↺ Colorear › Reiniciar: junto a Deshacer, Exportar y Otro color, deja todo el coloreado como al principio (dos toques; se puede deshacer)","📏 «En papel» pasa a la etapa 4, Imprimir, con sus columnas y filas","✂️ Se quita «Tu tesela» de Teselar"]],
     ["2.11.1",["🎨 Ruedas de doce zafates de la Sala de los Reyes (n.º 29): el verde y el azul son ahora los de la lámina en color del libro (pág. 149), y la ficha dice sus páginas (págs. 146 a 149)"]],
     ["2.11",["🧩 Alicatado nuevo de las jambas del Palacio de los Leones (n.º 31): una rueda de dieciséis zafates rodeada de ocho ruedas de ocho, con los zafates arpados de cada lado, sus 13 pasos del libro, sus colores y sus medidas en cm"]],

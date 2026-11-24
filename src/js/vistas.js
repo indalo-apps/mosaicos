@@ -20,7 +20,9 @@ function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const fila=(ic,t)=>`<li>${icono(ic)}<span>${t}</span></li>`;
   $('ficha').innerHTML=`<div class="ficha-img">${img}</div><ul class="ficha-datos">`+fila('libro',`${libro} · ${ref}`)+fila('lugar',`${p.lugar}`)+fila('pasos',pasos)+fila('piezas',tr(`${tipos} tipos de pieza`,`${tipos} kinds of piece`))+'</ul>';
   $('ficha').hidden=false;}
-function mostrar(v){['inicio','aprender','alicatados','mis'].forEach(n=>$('v-'+n).hidden=n!==v);
+// Tono de cada monumento (v2.9): verde para el Alcázar y azul para la Alhambra, siempre acompañado de su nombre
+const tono=col=>{if(col)document.documentElement.dataset.monu=col;else delete document.documentElement.dataset.monu;};
+function mostrar(v){tono(null);['inicio','aprender','alicatados','mis'].forEach(n=>$('v-'+n).hidden=n!==v);
   const ali=v==='a',con=v==='c';$('barra-etapas').hidden=!ali;
   if(!ali&&!con)document.querySelectorAll('.tab').forEach(x=>x.classList.remove('show'));
   document.querySelector('footer #pie').hidden=!ali;}
@@ -34,7 +36,9 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y comp
   $('seguir').hidden=!html;if(html){$('seguir').innerHTML=html;$('seguir').href='#'+u;}
   $('ic-aprender').innerHTML=`<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="#1f5f5b"/><circle cx="20" cy="20" r="13" fill="none" stroke="#e2a93b" stroke-width="1.6" stroke-dasharray="2.4 1.6"/><rect x="10.8" y="10.8" width="18.4" height="18.4" fill="none" stroke="#fbf4e2" stroke-width="2.2"/><rect x="10.8" y="10.8" width="18.4" height="18.4" fill="none" stroke="#fbf4e2" stroke-width="2.2" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="1.8" fill="#e2a93b"/></svg>`;
   $('ic-mis').innerHTML=`<svg viewBox="0 0 2 2" width="40" height="40"><rect width="1" height="1" fill="#1f5f5b"/><rect x="1" width="1" height="1" fill="#c98b2b"/><rect y="1" width="1" height="1" fill="#2f4fa3"/><rect x="1" y="1" width="1" height="1" fill="#161616"/></svg>`;
-  const banda=(p,x0,y0,w,h)=>{const pal=Object.values(p.paletas)[0];return renderLazo(datos(p),{x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');};
+  const banda=(p,x0,y0,w,h)=>{const kk='mosaicos-banda-'+VMINI+'-'+[p.id,x0,y0,w,h].join('_');try{const g=localStorage.getItem(kk);if(g)return g;}catch(e){}
+    const sv=banda0(p,x0,y0,w,h);try{for(const k of Object.keys(localStorage))if(k.startsWith('mosaicos-banda-')&&!k.startsWith('mosaicos-banda-'+VMINI+'-'))localStorage.removeItem(k);if(sv.length<200000)localStorage.setItem(kk,sv);}catch(e){}return sv;};
+  const banda0=(p,x0,y0,w,h)=>{const pal=Object.values(p.paletas)[0];return renderLazo(datos(p),{x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');};
   if(!$('portada-img').firstChild)$('portada-img').innerHTML=banda(PATS.felipe,0,4,72,27);
   if(!$('im-alcazar').firstChild)$('im-alcazar').innerHTML=banda(PATS.zaguan2,0,2,24,9);
   if(!$('im-alhambra').firstChild&&PATS.barca)$('im-alhambra').innerHTML=banda(PATS.barca,0,0,24,9);
@@ -56,13 +60,13 @@ function construccion(id){const c=CONS.L.find(x=>x.id===id);if(!c){location.hash
   window.tabEtapa('trazado',true);window.trazadoCambio();store.set(ULT,'c/'+id);}
 // ---- Alicatados
 const deCol=col=>Object.values(PATS).filter(p=>(p.coleccion||'alcazar')===col);
-function alicatados(col){col=col||'alcazar';mostrar('alicatados');const n=deCol(col).length;
+function alicatados(col){col=col||'alcazar';mostrar('alicatados');tono(col);const n=deCol(col).length;
   if(col==='alhambra')cab(tr('La Alhambra de Granada','The Alhambra of Granada'),tr(`${n} ${n===1?'alicatado':'alicatados'} por ahora`,`${n} tile ${n===1?'pattern':'patterns'} so far`),'#inicio',tr('Los alicatados de <i>La Alhambra con regla y compás</i>. Se irán añadiendo más.','The tile patterns from <i>La Alhambra con regla y compás</i> (“The Alhambra with ruler and compass”). More will be added.'));
   else cab(tr('Real Alcázar de Sevilla','Royal Alcázar of Seville'),tr(`${n} alicatados del libro`,`${n} tile patterns from the book`),'#inicio','');
   pintarGaleria(col);}
 // ---- Alicatado en 4 etapas
 function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}if(!ETAPAS.includes(etapa))etapa='trazado';
-  const antes=MODO.c;MODO.c=null;mostrar('a');
+  const antes=MODO.c;MODO.c=null;mostrar('a');tono(PATS[id].coleccion||'alcazar');
   if(PAT.id!==id)cambiarPatron(id);else if(antes||!$('dots').children.length)window.trazadoCambio();
   cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',etapa==='trazado'?PAT.intro:''); // el texto largo, solo al empezar: en las demás etapas el dibujo queda más arriba
   document.querySelector('footer #pie').hidden=etapa!=='trazado';if(etapa==='trazado')ficha(PAT);
@@ -137,8 +141,9 @@ function tesCapa(red,vb){const T=tesTrazos();if(!T.length&&!TS.actual)return '';
     g+=`<g transform="translate(${(O[0]+i*A[0]+j*B[0]).toFixed(3)} ${(O[1]+i*A[1]+j*B[1]).toFixed(3)})">${camino}</g>`;
   return `<g id="ts-capa" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none">${g}</g>`;}
 {const alto=()=>{const b=document.getElementById('barra-etapas');if(b&&!b.hidden)document.documentElement.style.setProperty('--alto-tabs',b.offsetHeight+'px');};addEventListener('resize',alto);addEventListener('hashchange',()=>setTimeout(alto,50));setTimeout(alto,300);}
-// ---- En papel (v2.8): medidas del módulo y de la figura de partida para dibujar el teselado a mano
+// ---- En papel (v2.8; v2.9 en cm, con la figura de partida, plantilla a tamaño real y medidas en Trazar)
 // Figura de partida de cada alicatado, en unidades del libro: [texto, texto en inglés, medida]. La primera es la principal.
+// FIG: cómo dibujarla en el papel sobre el primer módulo: circunferencias (r) y cuadrados (lado, giro respecto al módulo derecho), centrados en el módulo.
 const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
   zaguan:[['Lado de cada cuadro (el ancho de la cinta)','Side of each square (the strap width)',1]],
   toledanos:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
@@ -153,47 +158,99 @@ const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid s
   barca:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Radio de la circunferencia (un cuadro)','Radius of the circle (one square)',1]],
   arrayanes:[['Radio de la circunferencia inicial','Radius of the starting circle',1]],
   taca:[['Lado del cuadrado inicial','Side of the starting square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]]};
+const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1}],barca:[{r:1}],zaguan2:[{r:2}]}; // si el cuadrado de partida es el propio módulo, ya va resaltado
 const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
 const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
-const mm=v=>(Math.round(v*10)/10).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:1})+' mm';
+// todas las medidas, en centímetros (internamente se guardan en milímetros)
+const num=(v,d=2)=>(Math.round(v*10**d)/10**d).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:d});
+const cm=v=>num(v/10)+' cm';
+// Papel y escala: dónde cabe el dibujo de columnas × filas (R = resultado de tsConstruir)
+function calcPapel(R){const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0),a=+PP.w||0,b=+PP.h||0;
+  const esc=(W,H)=>Math.min((W-2*m)/vw,(H-2*m)/vh);
+  const base=PP.p==='med'?[Math.min(a,b),Math.max(a,b)]:PAPEL[PP.p];
+  const ori=PP.ori||(esc(base[1],base[0])>esc(base[0],base[1])?'h':'v');
+  const [PW,PH]=ori==='h'?[base[1],base[0]]:base,k=esc(PW,PH);
+  if(!(PW>0&&PH>0)||!(k>0))return {ok:false,PW,PH,ori,m};
+  const dw=vw*k,dh=vh*k;return {ok:true,PW,PH,ori,m,k,vb:R.vb,dw,dh,x0:(PW-dw)/2,y0:(PH-dh)/2};}
+// Centro del primer módulo, en coordenadas del dibujo del teselado (null si no hay figura de partida que dibujar)
+function centroFig(R){const M=PAT.modulo;if(!FIG[PAT.id]||!M)return null;
+  if(M.tipo==='hex')return TS.forma==='tri'?null:[M.cx,M.cy];
+  return [R.red.O[0]+M.m/2,R.red.O[1]+M.m/2];}
+// Papel en SVG (mm): el dibujo a escala, márgenes, cotas en cm y la figura de partida
+function svgPapel(R,G,{conCotas=true,conDibujo=true,gris=false,pagina=false}={}){
+  const {PW,PH,x0,y0,dw,dh,k,m}=G,[vx,vy,vw,vh]=G.vb,kl=PAT.k||1,fs=Math.max(PW,PH)/22,sw=Math.max(PW,PH)/400;
+  const X=x=>x0+(x-vx)*k,Y=y=>y0+(y-vy)*k;
+  let dib='';if(conDibujo){dib=R.sv.replace(/<svg([^>]*?)\swidth="[^"]*"/,'<svg$1').replace('<svg ',`<svg x="${x0}" y="${y0}" width="${dw}" height="${dh}" `);if(gris)dib=`<g opacity="0.35">${dib}</g>`;}
+  const flecha=`<marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker>`;
+  const txt=(x,y,t,col='#1d4ed8',anc='middle')=>`<text x="${x}" y="${y}" font-size="${fs}" text-anchor="${anc}" fill="${col}" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}">${t}</text>`;
+  const cota=(x1,y1,x2,y2,t,dx,dy)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d4ed8" stroke-width="${sw}" marker-start="url(#pp-fl)" marker-end="url(#pp-fl)"/>`+txt((x1+x2)/2+dx,(y1+y2)/2+dy,t);
+  let s=`<rect x="0" y="0" width="${PW}" height="${PH}" fill="#fff" stroke="#8a8172" stroke-width="${sw*1.5}"/>`+
+    `<rect x="${m}" y="${m}" width="${PW-2*m}" height="${PH-2*m}" fill="none" stroke="#8a8172" stroke-width="${sw}" stroke-dasharray="${sw*6} ${sw*4}"/>`+dib+
+    `<rect x="${x0}" y="${y0}" width="${dw}" height="${dh}" fill="none" stroke="#1d4ed8" stroke-width="${sw}"/>`;
+  if(conCotas){
+    if(y0>fs*1.6)s+=cota(x0,y0-fs*0.6,x0+dw,y0-fs*0.6,cm(dw),0,-fs*0.35);
+    if(x0>fs*1.6)s+=`<g transform="rotate(-90 ${x0-fs*0.6} ${y0+dh/2})">${cota(x0-fs*0.6-dh/2,y0+dh/2,x0-fs*0.6+dh/2,y0+dh/2,cm(dh),0,-fs*0.35)}</g>`;
+    if(y0+dh<PH-fs*1.6)s+=cota(PW/2,y0+dh,PW/2,PH,cm(PH-y0-dh),fs*2.4,fs*0.35);}
+  // figura de partida sobre el primer módulo, con su medida
+  const C=centroFig(R);
+  if(C){const cx=X(C[0]),cy=Y(C[1]),RO='#b5444b';let f='';
+    for(const q of FIG[PAT.id]){
+      if(q.r){const r=q.r*kl*k;f+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}"/><line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="${RO}" stroke-width="${sw*1.2}"/><circle cx="${cx}" cy="${cy}" r="${sw*2.5}" fill="${RO}"/>`+txt(cx+r/2,cy-fs*0.35,'R '+cm(r),RO);}
+      else{const l=q.lado*kl*k;f+=`<rect x="${cx-l/2}" y="${cy-l/2}" width="${l}" height="${l}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}" stroke-dasharray="${sw*5} ${sw*2.5}" transform="rotate(${q.giro} ${cx} ${cy})"/>`+(q.giro?'':txt(cx,cy-l/2-fs*0.3,cm(l),RO));}}
+    s+=f;}
+  if(pagina){ // plantilla para imprimir: pie con las medidas y una raya de 5 cm para comprobar la escala
+    const t=Math.min(3.2,Math.max(2.2,m*0.28)),yb=PH-Math.max(3,m*0.35),med=medidasPapel(G).map(([a,b])=>a+': '+b).join(' · ');
+    const linea=(x,y,str,anc='start',col='#555')=>`<text x="${x}" y="${y}" font-size="${t}" text-anchor="${anc}" fill="${col}" font-family="Inter,sans-serif">${str}</text>`;
+    s+=linea(Math.max(3,m*0.35),yb,`${PAT.nombre} · ${med}`)+linea(Math.max(3,m*0.35),yb-t*1.35,tr('Imprime a tamaño real (100 %, sin ajustar a la página). La raya mide 5 cm: compruébala con la regla.','Print at actual size (100 %, no fit to page). The bar is 5 cm long: check it with a ruler.'),'start','#777');
+    const xr=PW-Math.max(3,m*0.35)-50;s+=`<line x1="${xr}" y1="${yb-t*0.3}" x2="${xr+50}" y2="${yb-t*0.3}" stroke="#000" stroke-width="0.5"/><line x1="${xr}" y1="${yb-t*0.9}" x2="${xr}" y2="${yb+t*0.3}" stroke="#000" stroke-width="0.35"/><line x1="${xr+50}" y1="${yb-t*0.9}" x2="${xr+50}" y2="${yb+t*0.3}" stroke="#000" stroke-width="0.35"/>`+linea(xr+25,yb-t*0.6,'5 cm','middle','#000');
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${PW} ${PH}" width="${PW}mm" height="${PH}mm"><defs>${flecha}</defs>${s}</svg>`;}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-fs} ${-fs} ${PW+2*fs} ${PH+2*fs}" width="100%" aria-hidden="true" focusable="false"><defs>${flecha}</defs>${s}</svg>`;}
+// Plantilla en PDF a tamaño real (1:1): el papel con márgenes, la red de módulos, la figura de partida y, si se quiere, el dibujo en gris
+async function plantillaPdf(){const R=tsConstruir(EX.c,EX.r,true,false),G=calcPapel(R);if(!G.ok)return;
+  const svg=svgPapel(R,G,{conCotas:true,conDibujo:true,gris:!!PP.gris,pagina:true}).replace(/<svg([^>]*?) width="[^"]*mm" height="[^"]*mm"/,'<svg$1');
+  const dpi=Math.min(300,8000/(Math.max(G.PW,G.PH)/25.4)),px=dpi/25.4,W=Math.round(G.PW*px),H=Math.round(G.PH*px);
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,W,H);
+  const s2=PP.dib===false?svgPapel(R,G,{conCotas:true,conDibujo:false,pagina:true}).replace(/<svg([^>]*?) width="[^"]*mm" height="[^"]*mm"/,'<svg$1'):svg;
+  const img=await cargarImg(s2.replace('<svg ',`<svg width="${W}" height="${H}" `));cx.drawImage(img,0,0,W,H);
+  const jpg=await new Promise((ok,mal)=>cv.toBlob(b=>b?ok(b):mal(new Error('jpg')),'image/jpeg',0.92));
+  const bytes=new Uint8Array(await jpg.arrayBuffer());cv.width=cv.height=1;
+  return pdfJpeg(bytes,W,H,G.PW*72/25.4,G.PH*72/25.4);}
+// Medidas de la figura de partida para el papel elegido (para «En papel» y para Trazar)
+function medidasPapel(G){const kl=PAT.k||1;return (BASE[PAT.id]||[]).map(([t,te,v])=>[tr(t,te),cm(v*kl*G.k)]);}
+let PAC=null;
+window.papelActual=()=>{const key=JSON.stringify([PAT.id,EX.c,EX.r,TS.forma,PP]);if(PAC&&PAC.key===key)return PAC.v;const R=tsConstruir(EX.c,EX.r,false,false),G=calcPapel(R);PAC={key,v:null};return PAC.v=G.ok?{R,G,med:medidasPapel(G),desc:`${PP.p==='med'?tr('papel a medida','custom paper'):PP.p} ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}`}:null;};
+window.cmPapel=cm;
 function pintarPapel(R){const det=$('ts-papel');if(!det||!det.open)return;
   document.querySelectorAll('#pp-papel [data-pp]').forEach(b=>{const on=b.dataset.pp===PP.p;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  $('pp-medidas').hidden=PP.p!=='med';if(PP.p==='med'){if(document.activeElement!==$('pp-w'))$('pp-w').value=PP.w;if(document.activeElement!==$('pp-h'))$('pp-h').value=PP.h;}
-  if(document.activeElement!==$('pp-m'))$('pp-m').value=PP.m;
-  const a=+PP.w||0,b=+PP.h||0; // medidas a mano (solo «A medida»)
-  const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0);
-  // orientación: la que elijas; si no, la que deja el dibujo más grande
-  const esc=(W,H)=>Math.min((W-2*m)/vw,(H-2*m)/vh);
-  let ori=PP.ori;if(!ori){const p0=PP.p==='med'?[a,b]:[Math.min(a,b),Math.max(a,b)];ori=esc(p0[1],p0[0])>esc(p0[0],p0[1])?'h':'v';}
-  let PW,PH;if(PP.p==='med'){PW=a;PH=b;if(ori==='h'&&PW<PH||ori==='v'&&PW>PH)[PW,PH]=[PH,PW];}else{const [x,y]=PAPEL[PP.p];[PW,PH]=ori==='h'?[y,x]:[x,y];}
-  document.querySelectorAll('#pp-ori [data-ori]').forEach(b=>{const on=b.dataset.ori===ori;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  const k=esc(PW,PH);
-  if(!(PW>0&&PH>0)||!(k>0)){$('pp-vista').innerHTML='';$('pp-res').innerHTML=`<dt>${tr('No cabe','It does not fit')}</dt><dd>${tr('Con ese margen no queda sitio para el dibujo. Prueba un margen menor o un papel más grande.','With that margin there is no room for the drawing. Try a smaller margin or a larger sheet.')}</dd>`;return;}
-  const dw=vw*k,dh=vh*k,x0=(PW-dw)/2,y0=(PH-dh)/2,M=PAT.modulo,kl=PAT.k||1;
-  // dibujo a escala dentro del papel
-  const fs=Math.max(PW,PH)/22,sw=Math.max(PW,PH)/400;
-  const dib=R.sv.replace(/<svg([^>]*?)\swidth="[^"]*"/,'<svg$1').replace('<svg ',`<svg x="${x0}" y="${y0}" width="${dw}" height="${dh}" preserveAspectRatio="xMidYMid meet" `);
-  const cota=(x1,y1,x2,y2,t,dx,dy)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d4ed8" stroke-width="${sw}" marker-start="url(#pp-fl)" marker-end="url(#pp-fl)"/><text x="${(x1+x2)/2+dx}" y="${(y1+y2)/2+dy}" font-size="${fs}" text-anchor="middle" fill="#1d4ed8" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}">${t}</text>`;
-  $('pp-vista').innerHTML=`<svg viewBox="${-fs} ${-fs} ${PW+2*fs} ${PH+2*fs}" width="100%" aria-hidden="true" focusable="false"><defs><marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker></defs>`+
-    `<rect x="0" y="0" width="${PW}" height="${PH}" fill="#fff" stroke="#8a8172" stroke-width="${sw*1.5}"/>`+
-    `<rect x="${m}" y="${m}" width="${PW-2*m}" height="${PH-2*m}" fill="none" stroke="#8a8172" stroke-width="${sw}" stroke-dasharray="${sw*6} ${sw*4}"/>`+dib+
-    `<rect x="${x0}" y="${y0}" width="${dw}" height="${dh}" fill="none" stroke="#1d4ed8" stroke-width="${sw}"/>`+
-    (y0>fs*1.6?cota(x0,y0-fs*0.6,x0+dw,y0-fs*0.6,mm(dw),0,-fs*0.35):'')+
-    (x0>fs*1.6?`<g transform="rotate(-90 ${x0-fs*0.6} ${y0+dh/2})">${cota(x0-fs*0.6-dh/2,y0+dh/2,x0-fs*0.6+dh/2,y0+dh/2,mm(dh),0,-fs*0.35)}</g>`:'')+
-    (y0+dh<PH-fs*1.6?cota(PW/2,y0+dh,PW/2,PH,mm(PH-y0-dh),fs*2.6,fs*0.35):'')+
-    `</svg>`;
-  $('pp-vista').setAttribute('aria-label',tr(`Papel de ${mm(PW)} × ${mm(PH)} con el dibujo de ${mm(dw)} × ${mm(dh)} en el centro`,`A ${mm(PW)} × ${mm(PH)} sheet with the ${mm(dw)} × ${mm(dh)} drawing in the middle`));
-  const hex=M&&M.tipo==='hex',tam=R.red.tam*k;
-  const base=(BASE[PAT.id]||[]).map(([t,te,v],i)=>`<dt${i?'':' class="pp-main"'}>${tr(t,te)}</dt><dd${i?'':' class="pp-main"'}>${mm(v*kl*k)}</dd>`).join('');
-  const modTxt=hex&&TS.forma!=='tri'?tr(`${mm(M.R*k)} de lado (hexágono)`,`${mm(M.R*k)} per side (hexagon)`):tr(`${mm(tam)} de lado`,`${mm(tam)} per side`);
+  $('pp-medidas').hidden=PP.p!=='med';
+  if(PP.p==='med'){if(document.activeElement!==$('pp-w'))$('pp-w').value=num(PP.w/10).replace(',','.');if(document.activeElement!==$('pp-h'))$('pp-h').value=num(PP.h/10).replace(',','.');}
+  if(document.activeElement!==$('pp-m'))$('pp-m').value=num(PP.m/10).replace(',','.');
+  const G=calcPapel(R);
+  document.querySelectorAll('#pp-ori [data-ori]').forEach(b=>{const on=b.dataset.ori===G.ori;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  $('pp-pdf').disabled=!G.ok;
+  if(!G.ok){$('pp-vista').innerHTML='';$('pp-res').innerHTML=`<dt>${tr('No cabe','It does not fit')}</dt><dd>${tr('Con ese margen no queda sitio para el dibujo. Prueba un margen menor o un papel más grande.','With that margin there is no room for the drawing. Try a smaller margin or a larger sheet.')}</dd>`;return;}
+  const {PW,PH,dw,dh,x0,y0,k}=G,M=PAT.modulo;
+  $('pp-vista').innerHTML=svgPapel(R,G);
+  $('pp-vista').setAttribute('aria-label',tr(`Papel de ${num(PW/10)} × ${cm(PH)} con el dibujo de ${num(dw/10)} × ${cm(dh)} en el centro`,`A ${num(PW/10)} × ${cm(PH)} sheet with the ${num(dw/10)} × ${cm(dh)} drawing in the middle`));
+  const hex=M&&M.tipo==='hex'&&TS.forma!=='tri',tam=R.red.tam*k;
+  const base=medidasPapel(G).map(([t,v],i)=>`<dt${i?'':' class="pp-main"'}>${t}</dt><dd${i?'':' class="pp-main"'}>${v}</dd>`).join('');
+  const modTxt=hex?tr(`${cm(M.R*k)} de lado (hexágono)`,`${cm(M.R*k)} per side (hexagon)`):tr(`${cm(tam)} de lado`,`${cm(tam)} per side`);
   $('pp-res').innerHTML=base+`<dt>${tr('Cada módulo','Each module')}</dt><dd>${modTxt}</dd>`+
-    `<dt>${tr('Dibujo entero','Whole drawing')}</dt><dd>${mm(dw).replace(' mm','')} × ${mm(dh)} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}</dd>`+
-    `<dt>${tr('Márgenes','Margins')}</dt><dd>${tr('izquierda y derecha','left and right')} ${mm(x0)} · ${tr('arriba y abajo','top and bottom')} ${mm(y0)}</dd>`+
-    `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${mm(PW).replace(' mm','')} × ${mm(PH)}</dd>`;}
+    `<dt>${tr('Dibujo entero','Whole drawing')}</dt><dd>${num(dw/10)} × ${cm(dh)} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}</dd>`+
+    `<dt>${tr('Márgenes','Margins')}</dt><dd>${tr('izquierda y derecha','left and right')} ${cm(x0)} · ${tr('arriba y abajo','top and bottom')} ${cm(y0)}</dd>`+
+    `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${num(PW/10)} × ${cm(PH)}</dd>`;}
+window.svgPapelActual=(opc)=>{const R=tsConstruir(EX.c,EX.r,TS.marcar,false),G=calcPapel(R);return G.ok?{svg:svgPapel(R,G,opc),G}:null;};
 {const gp=()=>store.set(PPK,PP);
   $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarTeselar();});
   $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarTeselar();});
-  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v;gp();window.pintarTeselar();});
+  $('pp-dib').checked=PP.dib!==false;$('pp-gris').checked=PP.gris!==false;PP.gris=PP.gris!==false;
+  $('pp-dib').onchange=e=>{PP.dib=e.target.checked;gp();};$('pp-gris').onchange=e=>{PP.gris=e.target.checked;gp();};
+  $('pp-pdf').onclick=async()=>{const b=$('pp-pdf');b.disabled=true;$('pp-msg').textContent=tr('Preparando la plantilla…','Preparing the template…');
+    try{const blob=await plantillaPdf();$('pp-msg').textContent=blob?await entregar(blob,`mosaicos-plantilla-${PAT.id}-${PP.p==='med'?'medida':PP.p}.pdf`):'';}
+    catch(e){console.error(e);$('pp-msg').textContent=tr('No se ha podido crear el PDF.','The PDF could not be created.');}
+    b.disabled=false;};
+  // los campos van en centímetros
+  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v*10;gp();window.pintarTeselar();});
   $('ts-papel').addEventListener('toggle',()=>{if($('ts-papel').open)window.pintarTeselar();});}
 window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent=EX.r;
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');

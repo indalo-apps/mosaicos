@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.8">
+<meta name="app-version" content="2.9">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -330,6 +330,26 @@ ul.libros{margin:6px 0 8px;padding-left:1.1em}ul.libros li{margin:4px 0}
 @media (prefers-color-scheme:dark){#pp-vista{background:#2a2722}}
 .pp-campos[hidden]{display:none}
 .pat .pat-datos{flex-direction:row;line-height:1.3}.pat .pat-datos>span{flex-direction:row;padding:0}
+/* ===== Medidas en papel en Trazar (v2.9) ===== */
+.medpapel{margin:10px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);font-size:calc(14px * var(--esc,1))}
+.medpapel .mp-t{margin:0 0 4px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}.medpapel .mp-t span{color:var(--muted)}
+.medpapel .mp-t svg.ic{margin:0}
+.medpapel ul{margin:0;padding-left:1.1em}.medpapel li{margin:2px 0}
+.medpapel[hidden]{display:none}
+button.enlace{background:none;border:0;padding:0 2px;min-height:0;color:var(--accent,#1f5f5b);text-decoration:underline;font:inherit;cursor:pointer}
+@media (pointer:coarse){button.enlace{min-height:44px;padding:0 6px}}
+/* ===== Tono de cada monumento (v2.9): el Alcázar en verde y la Alhambra en azul; el nombre siempre va escrito ===== */
+:root[data-monu=alhambra]{--accent:#2d4a8a;--accent-t:#fff}
+:root[data-tema=oscuro][data-monu=alhambra]{--accent:#9db7ee;--accent-t:#101a33}
+@media (prefers-color-scheme:dark){:root:not([data-tema=claro])[data-monu=alhambra]{--accent:#9db7ee;--accent-t:#101a33}}
+:root[data-monu] .etapas button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-t)}
+:root[data-monu] .etapas button.on span{background:var(--accent-t);color:var(--accent)}
+:root[data-monu] .ficha{border-top:5px solid var(--accent)}
+:root[data-monu] #titulo .sub{color:var(--accent)}
+:root[data-monu] #v-alicatados .pat.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.mini-hueco{display:block;width:48px;height:48px;border-radius:6px;background:linear-gradient(110deg,var(--line) 30%,var(--paper) 50%,var(--line) 70%);background-size:200% 100%;flex:none}
+#v-alicatados .pat .mini-hueco{width:100%;height:auto;aspect-ratio:1;border-radius:8px}
+@media (prefers-reduced-motion:no-preference){.mini-hueco{animation:brillo 1.2s linear infinite}@keyframes brillo{to{background-position:-200% 0}}}
 </style>
 <style>:root{--ik-accent:#1f5f5b}</style>
 <style>
@@ -600,7 +620,7 @@ const IK = (function(){
     <div class="tzside">
       <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
-      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div>
+      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="medpapel" id="stepm" hidden></div>
         <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div>
         <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
         <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
@@ -616,6 +636,7 @@ const IK = (function(){
       <button data-v="2x2">2 × 2</button>
       <button data-v="3x2">Zócalo 3 × 2</button>
       <button data-v="4x3">4 × 3</button>
+      <button data-v="panel" hidden>Panel</button>
     </div>
     <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
     <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
@@ -680,11 +701,17 @@ const IK = (function(){
         <summary>📏 En papel <small>· medidas para dibujarlo a mano</small></summary>
         <p class="hint" style="margin:0 0 8px">Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
         <div class="ops" id="pp-papel" role="group" aria-label="Papel"><button data-pp="A5">A5</button><button data-pp="A4">A4</button><button data-pp="A3">A3</button><button data-pp="med">A medida</button></div>
-        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (mm) <input type="number" id="pp-w" min="50" max="3000" step="1" inputmode="decimal"></label><label>Alto (mm) <input type="number" id="pp-h" min="50" max="3000" step="1" inputmode="decimal"></label></div>
+        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (cm) <input type="number" id="pp-w" min="5" max="300" step="0.1" inputmode="decimal"></label><label>Alto (cm) <input type="number" id="pp-h" min="5" max="300" step="0.1" inputmode="decimal"></label></div>
         <div class="ops" id="pp-ori" role="group" aria-label="Orientación" style="margin-top:8px"><button data-ori="v">Vertical</button><button data-ori="h">Horizontal</button></div>
-        <div class="pp-campos"><label>Margen (mm) <input type="number" id="pp-m" min="0" max="200" step="1" inputmode="decimal"></label></div>
+        <div class="pp-campos"><label>Margen (cm) <input type="number" id="pp-m" min="0" max="20" step="0.1" inputmode="decimal"></label></div>
         <div id="pp-vista" role="img" aria-label="El papel con el dibujo y sus márgenes"></div>
         <dl id="pp-res" class="pp-res" aria-live="polite"></dl>
+        <h3 class="grupo-ts" style="margin-top:14px">Plantilla a tamaño real</h3>
+        <p class="hint" style="margin:0 0 6px">Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.</p>
+        <div class="row"><label for="pp-dib">Con el dibujo</label><input type="checkbox" id="pp-dib" checked></div>
+        <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
+        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
+        <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
       </details>
 
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>
@@ -812,6 +839,14 @@ const IK = (function(){
 <script>
 // ---------- Inglés (v1.5): textos fijos de la página ----------
 const ES_EN={
+ "Ancho (cm)":"Width (cm)",
+ "Alto (cm)":"Height (cm)",
+ "Margen (cm)":"Margin (cm)",
+ "Plantilla a tamaño real":"Actual-size template",
+ "Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.":"A PDF the size of the paper with the margins, the modules, the starting figure and a 5 cm bar to check the scale. Print it at 100 %.",
+ "Con el dibujo":"With the drawing",
+ "Dibujo en gris claro, para repasarlo":"Drawing in light gray, to trace over",
+ "📄 Plantilla en PDF":"📄 Template as PDF",
  "📏 En papel":"📏 On paper",
  "· medidas para dibujarlo a mano":"· measurements to draw it by hand",
  "Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.":"Choose the paper and you will see how big each module and the starting figure are, so that the columns × rows drawing fits with its margins.",
@@ -1843,6 +1878,9 @@ P.taca=escalar({id:'taca',coleccion:'alhambra',num:15,nombre:'Estrellas de ocho 
     'Para colorear':{cols:Array(7).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
 });
 Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,
+  // Paso 8: el panel se corona con un friso de almenillas blancas y negras entre dos cenefas verdes. En la figura del libro, cada
+  // pareja de almenillas ocupa 8 × 7 cuadros y mide la mitad del lado del cuadrado inicial (una unidad, el radio de la circunferencia).
+  panel:{periodo:P.taca.k,cuadros:8,alto:7,cenefa:1.75,campo:[0,0,3*24,2*24],colores:{oscuro:'#161616',claro:'#ffffff',cenefa:'#1f5f5b'}},
   modulo:{m:2*Math.SQRT2*P.taca.k,cx:P.taca.k,cy:P.taca.k,giro:45,nota:[' · el dibujo va girado 45° para ver el módulo derecho; en el muro, la baldosa del paso 6 va recta',' · the drawing is turned 45° to show the module upright; on the wall, the tile from step 6 is straight']}}); // módulo mínimo: la baldosa de 2 × 2 tiene un periodo en diagonal (2, 2)
 })();
 
@@ -2175,7 +2213,7 @@ const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',p
   intro:'Es el módulo de las páginas 133 a 136 de <em>El Real Alcázar de Sevilla con regla y compás</em>, trazado sobre la cuadrícula 5-7-5-7.',
   pie:'La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.'}};
 for(const p of Object.values(PATRONES.P)){const m=+(p.W*0.06).toFixed(2);
-  PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H]},
+  PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H],panel:p.panel?p.panel.campo:[0,0,3*p.W,2*p.H]},
     titulo:p.nombre+' · '+p.lugar,intro:p.coleccion==='alhambra'?`Es el alicatado n.º ${p.num} de <em>La Alhambra con regla y compás</em>. ${p.resumen}`:`Es el alicatado de las páginas ${p.pags} de <em>El Real Alcázar de Sevilla con regla y compás</em>. ${p.resumen}`});}
 const MONU={alcazar:['Real Alcázar de Sevilla','Royal Alcázar of Seville'],alhambra:['La Alhambra de Granada','The Alhambra of Granada']};
 const monu=p=>tr(...MONU[p.coleccion||'alcazar']);
@@ -2379,9 +2417,25 @@ function opts(){const [x0,y0,w,h]=PAT.vistas[st.view],o={x0,y0,w,h,cols:st.cols,
     else Object.assign(o,{x0:M.cx-M.m/2,y0:M.cy-M.m/2,w:M.m,h:M.m,giro:M.giro?[M.giro,M.cx,M.cy]:null});
     o.frame=true;}
   return o;}
+// Panel (v2.9): el dibujo con el friso de almenillas y las cenefas, como en el último paso del libro
+function frisoSvg(F,x0,y0,w,opc){const c=F.periodo/F.cuadros,alto=F.alto*c,cen=F.cenefa*c,n=Math.ceil(w/F.periodo)+1;
+  const P=[[0,0],[1.5,1.5],[1.5,3.5],[2.5,3.5],[2.5,5.5],[4,7],[5.5,5.5],[5.5,3.5],[6.5,3.5],[6.5,1.5],[8,0]];
+  const blanco=opc.cols.every(v=>/^#f{6}$/i.test(v)),K=F.colores,lin=blanco?(opc.outline||'#222'):opc.ribbon,lw=blanco?0.08:Math.max(0.04,opc.rw||0.1);
+  const col=v=>blanco?'#ffffff':v,yf=y0+cen;
+  let s=`<rect x="${x0}" y="${y0}" width="${w}" height="${cen}" fill="${col(K.cenefa)}" stroke="${lin}" stroke-width="${lw}"/>`+
+    `<rect x="${x0}" y="${yf}" width="${w}" height="${alto}" fill="${col(K.oscuro)}" stroke="${lin}" stroke-width="${lw}"/>`;
+  for(let i=0;i<n;i++){const X=x0+i*F.periodo-F.periodo/2;s+=`<polygon points="${P.map(([u,v])=>(X+u*c).toFixed(3)+','+(yf+v*c).toFixed(3)).join(' ')}" fill="${col(K.claro)}" stroke="${lin}" stroke-width="${lw}" stroke-linejoin="round"/>`;}
+  s+=`<rect x="${x0}" y="${yf+alto}" width="${w}" height="${cen}" fill="${col(K.cenefa)}" stroke="${lin}" stroke-width="${lw}"/>`;
+  return {svg:`<g class="friso" pointer-events="none"><clipPath id="friso-clip"><rect x="${x0}" y="${y0}" width="${w}" height="${2*cen+alto}"/></clipPath><g clip-path="url(#friso-clip)">${s}</g></g>`,alto:2*cen+alto,cen};}
+function conPanel(sv,F){const m=sv.match(/viewBox="([-\d.e]+) ([-\d.e]+) ([-\d.e]+) ([-\d.e]+)"/);if(!m)return sv;const [x0,y0,w,h]=m.slice(1).map(Number);
+  const o=opts(),fr=frisoSvg(F,x0,y0,w,o),fh=fr.alto,bh=fr.cen;
+  const pie=`<rect x="${x0}" y="${y0+h}" width="${w}" height="${bh}" fill="${o.cols.every(v=>/^#f{6}$/i.test(v))?'#ffffff':F.colores.cenefa}" stroke="${o.ribbon}" stroke-width="${Math.max(0.04,o.rw||0.1)}"/>`;
+  return sv.replace(m[0],`viewBox="${x0} ${y0-fh} ${w} ${h+fh+bh}"`).replace(/<\/svg>\s*$/,`<g transform="translate(0 ${-fh})">${fr.svg}</g>${pie}</svg>`);}
 function draw(){
   guardar();
-  $('svg').innerHTML=renderLazo(D,opts());
+  if(st.view==='panel'&&!PAT.panel)st.view='2x2';
+  $('svg').innerHTML=st.view==='panel'?conPanel(renderLazo(D,opts()),PAT.panel):renderLazo(D,opts());
+  {const bp=document.querySelector('[data-v="panel"]');if(bp)bp.hidden=!PAT.panel;}
   document.querySelectorAll('[data-v]').forEach(b=>{const on=b.dataset.v===st.view;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   const mos=PAT.tipo==='mosaico',lazo=PAT.id==='lazo8';
   document.querySelector('[data-v="mod"]').textContent=(lazo?tr('Módulo (29×29)','Module (29×29)'):tr('Módulo','Module'));
@@ -2764,8 +2818,15 @@ $('ex-bajar').onclick=async()=>{
 $('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(false));$('ex-msg').textContent=tr('SVG copiado. Pégalo en un archivo .svg, en Inkscape o en tu programa de corte.','SVG copied. Paste it into an .svg file, Inkscape or your cutting software.');}catch(err){$('ex-msg').textContent=tr('El navegador no ha dejado copiar. Usa «Descargar».','The browser did not allow copying. Use “Download”.');}};
 
 // ---------- Galería de patrones ----------
-function miniatura(p){const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
-  return renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');}
+// Miniaturas (v2.9): se guardan en el móvil la primera vez, para no recalcular cada alicatado al abrir la galería
+const MINI={},VMINI=(document.querySelector('meta[name="app-version"]')||{}).content||'';
+function miniatura(p){if(MINI[p.id])return MINI[p.id];const kk='mosaicos-mini-'+VMINI+'-'+p.id;
+  try{const g=localStorage.getItem(kk);if(g)return MINI[p.id]=g;}catch(e){}
+  const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
+  const sv=renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');
+  MINI[p.id]=sv;try{for(const k of Object.keys(localStorage))if(k.startsWith('mosaicos-mini-')&&!k.startsWith('mosaicos-mini-'+VMINI+'-'))localStorage.removeItem(k);if(sv.length<150000)localStorage.setItem(kk,sv);}catch(e){}
+  return sv;}
+const yaMini=p=>{if(MINI[p.id])return true;try{return !!localStorage.getItem('mosaicos-mini-'+VMINI+'-'+p.id);}catch(e){return false;}};
 function contarGaleria(){}
 // Galería (v2.8): en el orden del libro, y cada tarjeta con su página o número, los pasos, las piezas y la dificultad (con texto, no solo con color)
 function nPasos(p){return p.pasos?p.pasos.length:(window.LAZO_PASOS||6);}
@@ -2775,12 +2836,13 @@ function datosPat(p){const d=dificultad(p),DIF=[tr('Fácil','Easy'),tr('Media','
   const pt=`<span class="dif" aria-hidden="true">${'●'.repeat(d+1)}${'○'.repeat(2-d)}</span>`;
   return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(p.nombres.length+' piezas',p.nombres.length+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
 const ordenLibro=p=>p.coleccion==='alhambra'?p.num:parseInt(p.pags)||0;
-function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}</span></button>`).join('');}
+function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${yaMini(p)?miniatura(p):`<span class="mini-hueco" data-mini="${p.id}"></span>`}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}</span></button>`).join('');
+  const huecos=[...$('galeria').querySelectorAll('[data-mini]')],sig=()=>{const h=huecos.shift();if(!h)return;if(h.isConnected){const t=document.createElement('span');t.innerHTML=miniatura(PATS[h.dataset.mini]);h.replaceWith(t.firstChild);}setTimeout(sig,0);};setTimeout(sig,30);}
 function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${monu(PAT)}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
 function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);HIST=[];$('deshacer').disabled=true;SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
 $('galeria').addEventListener('click',e=>{const b=e.target.closest('[data-pat]');if(b)location.hash='#a/'+b.dataset.pat+'/trazado';});
-cargar(new URLSearchParams(location.search).get('patron')||ESTADO.pat);pintarPaletas();pintarGaleria();cabecera();
+cargar(new URLSearchParams(location.search).get('patron')||ESTADO.pat);pintarPaletas();cabecera(); // la galería se pinta al abrirla
 draw();
 // ---------- Trazado paso a paso ----------
 (function(){
@@ -2863,6 +2925,42 @@ function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')|
   pinta('.previo',e=>{e.setAttribute('stroke','#a7a196');});
   pinta('.actual',e=>{e.setAttribute('stroke','#1d4ed8');const w=parseFloat(e.getAttribute('stroke-width'));if(w)e.setAttribute('stroke-width',+(w*1.5).toFixed(3));});
   const hay=!!raiz.querySelector('.previo')&&!!raiz.querySelector('.actual');document.getElementById('leyenda-paso').hidden=!hay;}
+// ---------- Medidas en papel en cada paso (v2.9): en cm, según el papel y los módulos elegidos en Teselar › En papel ----------
+// [texto, texto en inglés, medida en unidades del libro]; 'rw' = ancho de la cinta
+const MEDPASO={
+  taca:{1:[['Radio de la circunferencia','Radius of the circle',1],['Lado del cuadrado','Side of the square',2]],
+    2:[['Distancia de las paralelas al centro','Distance of the parallels from the center',Math.SQRT1_2]],
+    3:[['Vértices del octógono central, desde el centro','Vertices of the central octagon, from the center',Math.SQRT1_2/Math.cos(Math.PI/8)]],
+    4:[['Vértices del nuevo octógono central, desde el centro','Vertices of the new central octagon, from the center',(1-Math.SQRT1_2)/Math.cos(Math.PI/8)],['Rectas del segundo octógono estrellado, desde el centro','Lines of the second star octagon, from the center',(1-Math.SQRT1_2)*Math.tan(Math.PI/8)]]},
+  felipe:{1:[['Radio de la circunferencia','Radius of the circle',Math.SQRT2],['Lado de los cuadrados inscritos','Side of the inscribed squares',2]],
+    2:[['Los ocho puntos de corte, desde el centro','The eight crossing points, from the center',1/Math.cos(Math.PI/8)]],
+    3:[['Distancia de las ocho rectas al centro','Distance of the eight lines from the center','G.dB']],
+    4:[['Radio de las circunferencias pequeñas','Radius of the small circles','G.rho']],
+    5:[['Lado del cuadrado del marco','Side of the frame square','G.s2'],['Del centro a cada vértice del rombo','From the center to each vertex of the rhombus','G.q']],
+    8:[['Ancho de la cinta','Strap width','rw']],9:[['Ancho de la cinta','Strap width','rw']]},
+  barca:{1:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Lado de cada cuadro y radio de la circunferencia','Side of each square and radius of the circle',1]],
+    2:[['Distancia de cada paralela al centro','Distance of each parallel from the center',Math.SQRT1_2]],
+    3:[['Distancia de las paralelas al centro','Distance of the parallels from the center',Math.SQRT1_2]],
+    4:[['Distancia de las paralelas al centro','Distance of the parallels from the center',1+Math.SQRT1_2]],
+    5:[['Las paralelas cortan los ejes, desde el centro, a','The parallels cut the axes, from the center, at',1+Math.SQRT2]],
+    6:[['Distancia de las paralelas al centro','Distance of the parallels from the center',1+3*Math.SQRT1_2]],
+    8:[['A (entre las rectas del paso 4)','A (between the lines of step 4)',2+Math.SQRT2],['B = A/10','B = A/10',(2+Math.SQRT2)/10],['Ancho de la cinta (2B)','Strap width (2B)','rw']]},
+  arrayanes:{1:[['Radio de la circunferencia (y de los arcos)','Radius of the circle (and of the arcs)',1]],
+    2:[['Lado del hexágono','Side of the hexagon',1]],
+    3:[['Radio de la circunferencia tangente','Radius of the tangent circle',Math.sqrt(3)/2]],
+    8:[['Ancho de la cinta','Strap width','rw']]},
+  zaguan2:{1:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Lado de cada cuadro','Side of each square',1],['Radio de las circunferencias (2 cuadros)','Radius of the circles (2 squares)',2]],
+    4:[['Radio de los cuartos de circunferencia','Radius of the quarter circles',Math.SQRT2]]}};
+function medPaso(){const el=document.getElementById('stepm');if(!el)return;
+  if(MODO.c||!window.papelActual){el.hidden=true;return;}
+  const P=window.papelActual();if(!P){el.hidden=true;return;}
+  const kl=PAT.k||1,cmv=v=>window.cmPapel(v*kl*P.G.k);
+  const val=v=>{if(v==='rw')return window.cmPapel(PAT.rw*P.G.k);if(typeof v==='string'&&v.startsWith('G.')){const G=PAT.G||{},n=v.slice(2);return cmv(n==='s2'?2*G.s:G[n]);}return cmv(v);};
+  let L=(!metB()&&step>0&&MEDPASO[PAT.id]&&MEDPASO[PAT.id][step])?MEDPASO[PAT.id][step].map(([a,b,v])=>[tr(a,b),val(v)]):null;
+  if(!L)L=step===0?P.med:P.med.slice(0,1);
+  el.innerHTML=`<p class="mp-t">${icono('regla')}<b>${tr('En papel','On paper')}</b> <span>· ${P.desc}</span> <button type="button" class="enlace" id="mp-cambiar">${tr('Cambiar','Change')}</button></p><ul>`+L.map(([t,v])=>`<li>${t}: <b>${v}</b></li>`).join('')+'</ul>';
+  el.hidden=false;
+  document.getElementById('mp-cambiar').onclick=()=>{location.hash='#a/'+PAT.id+'/teselar';setTimeout(()=>{const d=document.getElementById('ts-papel');if(d){d.open=true;d.scrollIntoView({block:'start',behavior:'smooth'});}},350);};}
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
@@ -2871,7 +2969,7 @@ function show(){
   const etq=step===0?tr('Objetivo','Goal'):tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
   document.getElementById('stepn').textContent=etq;
   document.getElementById('paso-chip').textContent=step===0?tr('La figura terminada','The finished figure'):etq+' · '+s.h;
-  document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c||'';
+  document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c||'';try{medPaso();}catch(e){}
   let svg;
   if(step===0){
     if(MODO.c)svg=consSvg(MODO.c,0,true);
@@ -2994,7 +3092,9 @@ function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const fila=(ic,t)=>`<li>${icono(ic)}<span>${t}</span></li>`;
   $('ficha').innerHTML=`<div class="ficha-img">${img}</div><ul class="ficha-datos">`+fila('libro',`${libro} · ${ref}`)+fila('lugar',`${p.lugar}`)+fila('pasos',pasos)+fila('piezas',tr(`${tipos} tipos de pieza`,`${tipos} kinds of piece`))+'</ul>';
   $('ficha').hidden=false;}
-function mostrar(v){['inicio','aprender','alicatados','mis'].forEach(n=>$('v-'+n).hidden=n!==v);
+// Tono de cada monumento (v2.9): verde para el Alcázar y azul para la Alhambra, siempre acompañado de su nombre
+const tono=col=>{if(col)document.documentElement.dataset.monu=col;else delete document.documentElement.dataset.monu;};
+function mostrar(v){tono(null);['inicio','aprender','alicatados','mis'].forEach(n=>$('v-'+n).hidden=n!==v);
   const ali=v==='a',con=v==='c';$('barra-etapas').hidden=!ali;
   if(!ali&&!con)document.querySelectorAll('.tab').forEach(x=>x.classList.remove('show'));
   document.querySelector('footer #pie').hidden=!ali;}
@@ -3008,7 +3108,9 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y comp
   $('seguir').hidden=!html;if(html){$('seguir').innerHTML=html;$('seguir').href='#'+u;}
   $('ic-aprender').innerHTML=`<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="#1f5f5b"/><circle cx="20" cy="20" r="13" fill="none" stroke="#e2a93b" stroke-width="1.6" stroke-dasharray="2.4 1.6"/><rect x="10.8" y="10.8" width="18.4" height="18.4" fill="none" stroke="#fbf4e2" stroke-width="2.2"/><rect x="10.8" y="10.8" width="18.4" height="18.4" fill="none" stroke="#fbf4e2" stroke-width="2.2" transform="rotate(45 20 20)"/><circle cx="20" cy="20" r="1.8" fill="#e2a93b"/></svg>`;
   $('ic-mis').innerHTML=`<svg viewBox="0 0 2 2" width="40" height="40"><rect width="1" height="1" fill="#1f5f5b"/><rect x="1" width="1" height="1" fill="#c98b2b"/><rect y="1" width="1" height="1" fill="#2f4fa3"/><rect x="1" y="1" width="1" height="1" fill="#161616"/></svg>`;
-  const banda=(p,x0,y0,w,h)=>{const pal=Object.values(p.paletas)[0];return renderLazo(datos(p),{x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');};
+  const banda=(p,x0,y0,w,h)=>{const kk='mosaicos-banda-'+VMINI+'-'+[p.id,x0,y0,w,h].join('_');try{const g=localStorage.getItem(kk);if(g)return g;}catch(e){}
+    const sv=banda0(p,x0,y0,w,h);try{for(const k of Object.keys(localStorage))if(k.startsWith('mosaicos-banda-')&&!k.startsWith('mosaicos-banda-'+VMINI+'-'))localStorage.removeItem(k);if(sv.length<200000)localStorage.setItem(kk,sv);}catch(e){}return sv;};
+  const banda0=(p,x0,y0,w,h)=>{const pal=Object.values(p.paletas)[0];return renderLazo(datos(p),{x0,y0,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');};
   if(!$('portada-img').firstChild)$('portada-img').innerHTML=banda(PATS.felipe,0,4,72,27);
   if(!$('im-alcazar').firstChild)$('im-alcazar').innerHTML=banda(PATS.zaguan2,0,2,24,9);
   if(!$('im-alhambra').firstChild&&PATS.barca)$('im-alhambra').innerHTML=banda(PATS.barca,0,0,24,9);
@@ -3030,13 +3132,13 @@ function construccion(id){const c=CONS.L.find(x=>x.id===id);if(!c){location.hash
   window.tabEtapa('trazado',true);window.trazadoCambio();store.set(ULT,'c/'+id);}
 // ---- Alicatados
 const deCol=col=>Object.values(PATS).filter(p=>(p.coleccion||'alcazar')===col);
-function alicatados(col){col=col||'alcazar';mostrar('alicatados');const n=deCol(col).length;
+function alicatados(col){col=col||'alcazar';mostrar('alicatados');tono(col);const n=deCol(col).length;
   if(col==='alhambra')cab(tr('La Alhambra de Granada','The Alhambra of Granada'),tr(`${n} ${n===1?'alicatado':'alicatados'} por ahora`,`${n} tile ${n===1?'pattern':'patterns'} so far`),'#inicio',tr('Los alicatados de <i>La Alhambra con regla y compás</i>. Se irán añadiendo más.','The tile patterns from <i>La Alhambra con regla y compás</i> (“The Alhambra with ruler and compass”). More will be added.'));
   else cab(tr('Real Alcázar de Sevilla','Royal Alcázar of Seville'),tr(`${n} alicatados del libro`,`${n} tile patterns from the book`),'#inicio','');
   pintarGaleria(col);}
 // ---- Alicatado en 4 etapas
 function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}if(!ETAPAS.includes(etapa))etapa='trazado';
-  const antes=MODO.c;MODO.c=null;mostrar('a');
+  const antes=MODO.c;MODO.c=null;mostrar('a');tono(PATS[id].coleccion||'alcazar');
   if(PAT.id!==id)cambiarPatron(id);else if(antes||!$('dots').children.length)window.trazadoCambio();
   cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',etapa==='trazado'?PAT.intro:''); // el texto largo, solo al empezar: en las demás etapas el dibujo queda más arriba
   document.querySelector('footer #pie').hidden=etapa!=='trazado';if(etapa==='trazado')ficha(PAT);
@@ -3111,8 +3213,9 @@ function tesCapa(red,vb){const T=tesTrazos();if(!T.length&&!TS.actual)return '';
     g+=`<g transform="translate(${(O[0]+i*A[0]+j*B[0]).toFixed(3)} ${(O[1]+i*A[1]+j*B[1]).toFixed(3)})">${camino}</g>`;
   return `<g id="ts-capa" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none">${g}</g>`;}
 {const alto=()=>{const b=document.getElementById('barra-etapas');if(b&&!b.hidden)document.documentElement.style.setProperty('--alto-tabs',b.offsetHeight+'px');};addEventListener('resize',alto);addEventListener('hashchange',()=>setTimeout(alto,50));setTimeout(alto,300);}
-// ---- En papel (v2.8): medidas del módulo y de la figura de partida para dibujar el teselado a mano
+// ---- En papel (v2.8; v2.9 en cm, con la figura de partida, plantilla a tamaño real y medidas en Trazar)
 // Figura de partida de cada alicatado, en unidades del libro: [texto, texto en inglés, medida]. La primera es la principal.
+// FIG: cómo dibujarla en el papel sobre el primer módulo: circunferencias (r) y cuadrados (lado, giro respecto al módulo derecho), centrados en el módulo.
 const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
   zaguan:[['Lado de cada cuadro (el ancho de la cinta)','Side of each square (the strap width)',1]],
   toledanos:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
@@ -3127,47 +3230,99 @@ const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid s
   barca:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Radio de la circunferencia (un cuadro)','Radius of the circle (one square)',1]],
   arrayanes:[['Radio de la circunferencia inicial','Radius of the starting circle',1]],
   taca:[['Lado del cuadrado inicial','Side of the starting square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]]};
+const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1}],barca:[{r:1}],zaguan2:[{r:2}]}; // si el cuadrado de partida es el propio módulo, ya va resaltado
 const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
 const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
-const mm=v=>(Math.round(v*10)/10).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:1})+' mm';
+// todas las medidas, en centímetros (internamente se guardan en milímetros)
+const num=(v,d=2)=>(Math.round(v*10**d)/10**d).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:d});
+const cm=v=>num(v/10)+' cm';
+// Papel y escala: dónde cabe el dibujo de columnas × filas (R = resultado de tsConstruir)
+function calcPapel(R){const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0),a=+PP.w||0,b=+PP.h||0;
+  const esc=(W,H)=>Math.min((W-2*m)/vw,(H-2*m)/vh);
+  const base=PP.p==='med'?[Math.min(a,b),Math.max(a,b)]:PAPEL[PP.p];
+  const ori=PP.ori||(esc(base[1],base[0])>esc(base[0],base[1])?'h':'v');
+  const [PW,PH]=ori==='h'?[base[1],base[0]]:base,k=esc(PW,PH);
+  if(!(PW>0&&PH>0)||!(k>0))return {ok:false,PW,PH,ori,m};
+  const dw=vw*k,dh=vh*k;return {ok:true,PW,PH,ori,m,k,vb:R.vb,dw,dh,x0:(PW-dw)/2,y0:(PH-dh)/2};}
+// Centro del primer módulo, en coordenadas del dibujo del teselado (null si no hay figura de partida que dibujar)
+function centroFig(R){const M=PAT.modulo;if(!FIG[PAT.id]||!M)return null;
+  if(M.tipo==='hex')return TS.forma==='tri'?null:[M.cx,M.cy];
+  return [R.red.O[0]+M.m/2,R.red.O[1]+M.m/2];}
+// Papel en SVG (mm): el dibujo a escala, márgenes, cotas en cm y la figura de partida
+function svgPapel(R,G,{conCotas=true,conDibujo=true,gris=false,pagina=false}={}){
+  const {PW,PH,x0,y0,dw,dh,k,m}=G,[vx,vy,vw,vh]=G.vb,kl=PAT.k||1,fs=Math.max(PW,PH)/22,sw=Math.max(PW,PH)/400;
+  const X=x=>x0+(x-vx)*k,Y=y=>y0+(y-vy)*k;
+  let dib='';if(conDibujo){dib=R.sv.replace(/<svg([^>]*?)\swidth="[^"]*"/,'<svg$1').replace('<svg ',`<svg x="${x0}" y="${y0}" width="${dw}" height="${dh}" `);if(gris)dib=`<g opacity="0.35">${dib}</g>`;}
+  const flecha=`<marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker>`;
+  const txt=(x,y,t,col='#1d4ed8',anc='middle')=>`<text x="${x}" y="${y}" font-size="${fs}" text-anchor="${anc}" fill="${col}" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}">${t}</text>`;
+  const cota=(x1,y1,x2,y2,t,dx,dy)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d4ed8" stroke-width="${sw}" marker-start="url(#pp-fl)" marker-end="url(#pp-fl)"/>`+txt((x1+x2)/2+dx,(y1+y2)/2+dy,t);
+  let s=`<rect x="0" y="0" width="${PW}" height="${PH}" fill="#fff" stroke="#8a8172" stroke-width="${sw*1.5}"/>`+
+    `<rect x="${m}" y="${m}" width="${PW-2*m}" height="${PH-2*m}" fill="none" stroke="#8a8172" stroke-width="${sw}" stroke-dasharray="${sw*6} ${sw*4}"/>`+dib+
+    `<rect x="${x0}" y="${y0}" width="${dw}" height="${dh}" fill="none" stroke="#1d4ed8" stroke-width="${sw}"/>`;
+  if(conCotas){
+    if(y0>fs*1.6)s+=cota(x0,y0-fs*0.6,x0+dw,y0-fs*0.6,cm(dw),0,-fs*0.35);
+    if(x0>fs*1.6)s+=`<g transform="rotate(-90 ${x0-fs*0.6} ${y0+dh/2})">${cota(x0-fs*0.6-dh/2,y0+dh/2,x0-fs*0.6+dh/2,y0+dh/2,cm(dh),0,-fs*0.35)}</g>`;
+    if(y0+dh<PH-fs*1.6)s+=cota(PW/2,y0+dh,PW/2,PH,cm(PH-y0-dh),fs*2.4,fs*0.35);}
+  // figura de partida sobre el primer módulo, con su medida
+  const C=centroFig(R);
+  if(C){const cx=X(C[0]),cy=Y(C[1]),RO='#b5444b';let f='';
+    for(const q of FIG[PAT.id]){
+      if(q.r){const r=q.r*kl*k;f+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}"/><line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="${RO}" stroke-width="${sw*1.2}"/><circle cx="${cx}" cy="${cy}" r="${sw*2.5}" fill="${RO}"/>`+txt(cx+r/2,cy-fs*0.35,'R '+cm(r),RO);}
+      else{const l=q.lado*kl*k;f+=`<rect x="${cx-l/2}" y="${cy-l/2}" width="${l}" height="${l}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}" stroke-dasharray="${sw*5} ${sw*2.5}" transform="rotate(${q.giro} ${cx} ${cy})"/>`+(q.giro?'':txt(cx,cy-l/2-fs*0.3,cm(l),RO));}}
+    s+=f;}
+  if(pagina){ // plantilla para imprimir: pie con las medidas y una raya de 5 cm para comprobar la escala
+    const t=Math.min(3.2,Math.max(2.2,m*0.28)),yb=PH-Math.max(3,m*0.35),med=medidasPapel(G).map(([a,b])=>a+': '+b).join(' · ');
+    const linea=(x,y,str,anc='start',col='#555')=>`<text x="${x}" y="${y}" font-size="${t}" text-anchor="${anc}" fill="${col}" font-family="Inter,sans-serif">${str}</text>`;
+    s+=linea(Math.max(3,m*0.35),yb,`${PAT.nombre} · ${med}`)+linea(Math.max(3,m*0.35),yb-t*1.35,tr('Imprime a tamaño real (100 %, sin ajustar a la página). La raya mide 5 cm: compruébala con la regla.','Print at actual size (100 %, no fit to page). The bar is 5 cm long: check it with a ruler.'),'start','#777');
+    const xr=PW-Math.max(3,m*0.35)-50;s+=`<line x1="${xr}" y1="${yb-t*0.3}" x2="${xr+50}" y2="${yb-t*0.3}" stroke="#000" stroke-width="0.5"/><line x1="${xr}" y1="${yb-t*0.9}" x2="${xr}" y2="${yb+t*0.3}" stroke="#000" stroke-width="0.35"/><line x1="${xr+50}" y1="${yb-t*0.9}" x2="${xr+50}" y2="${yb+t*0.3}" stroke="#000" stroke-width="0.35"/>`+linea(xr+25,yb-t*0.6,'5 cm','middle','#000');
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${PW} ${PH}" width="${PW}mm" height="${PH}mm"><defs>${flecha}</defs>${s}</svg>`;}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-fs} ${-fs} ${PW+2*fs} ${PH+2*fs}" width="100%" aria-hidden="true" focusable="false"><defs>${flecha}</defs>${s}</svg>`;}
+// Plantilla en PDF a tamaño real (1:1): el papel con márgenes, la red de módulos, la figura de partida y, si se quiere, el dibujo en gris
+async function plantillaPdf(){const R=tsConstruir(EX.c,EX.r,true,false),G=calcPapel(R);if(!G.ok)return;
+  const svg=svgPapel(R,G,{conCotas:true,conDibujo:true,gris:!!PP.gris,pagina:true}).replace(/<svg([^>]*?) width="[^"]*mm" height="[^"]*mm"/,'<svg$1');
+  const dpi=Math.min(300,8000/(Math.max(G.PW,G.PH)/25.4)),px=dpi/25.4,W=Math.round(G.PW*px),H=Math.round(G.PH*px);
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,W,H);
+  const s2=PP.dib===false?svgPapel(R,G,{conCotas:true,conDibujo:false,pagina:true}).replace(/<svg([^>]*?) width="[^"]*mm" height="[^"]*mm"/,'<svg$1'):svg;
+  const img=await cargarImg(s2.replace('<svg ',`<svg width="${W}" height="${H}" `));cx.drawImage(img,0,0,W,H);
+  const jpg=await new Promise((ok,mal)=>cv.toBlob(b=>b?ok(b):mal(new Error('jpg')),'image/jpeg',0.92));
+  const bytes=new Uint8Array(await jpg.arrayBuffer());cv.width=cv.height=1;
+  return pdfJpeg(bytes,W,H,G.PW*72/25.4,G.PH*72/25.4);}
+// Medidas de la figura de partida para el papel elegido (para «En papel» y para Trazar)
+function medidasPapel(G){const kl=PAT.k||1;return (BASE[PAT.id]||[]).map(([t,te,v])=>[tr(t,te),cm(v*kl*G.k)]);}
+let PAC=null;
+window.papelActual=()=>{const key=JSON.stringify([PAT.id,EX.c,EX.r,TS.forma,PP]);if(PAC&&PAC.key===key)return PAC.v;const R=tsConstruir(EX.c,EX.r,false,false),G=calcPapel(R);PAC={key,v:null};return PAC.v=G.ok?{R,G,med:medidasPapel(G),desc:`${PP.p==='med'?tr('papel a medida','custom paper'):PP.p} ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}`}:null;};
+window.cmPapel=cm;
 function pintarPapel(R){const det=$('ts-papel');if(!det||!det.open)return;
   document.querySelectorAll('#pp-papel [data-pp]').forEach(b=>{const on=b.dataset.pp===PP.p;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  $('pp-medidas').hidden=PP.p!=='med';if(PP.p==='med'){if(document.activeElement!==$('pp-w'))$('pp-w').value=PP.w;if(document.activeElement!==$('pp-h'))$('pp-h').value=PP.h;}
-  if(document.activeElement!==$('pp-m'))$('pp-m').value=PP.m;
-  const a=+PP.w||0,b=+PP.h||0; // medidas a mano (solo «A medida»)
-  const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0);
-  // orientación: la que elijas; si no, la que deja el dibujo más grande
-  const esc=(W,H)=>Math.min((W-2*m)/vw,(H-2*m)/vh);
-  let ori=PP.ori;if(!ori){const p0=PP.p==='med'?[a,b]:[Math.min(a,b),Math.max(a,b)];ori=esc(p0[1],p0[0])>esc(p0[0],p0[1])?'h':'v';}
-  let PW,PH;if(PP.p==='med'){PW=a;PH=b;if(ori==='h'&&PW<PH||ori==='v'&&PW>PH)[PW,PH]=[PH,PW];}else{const [x,y]=PAPEL[PP.p];[PW,PH]=ori==='h'?[y,x]:[x,y];}
-  document.querySelectorAll('#pp-ori [data-ori]').forEach(b=>{const on=b.dataset.ori===ori;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
-  const k=esc(PW,PH);
-  if(!(PW>0&&PH>0)||!(k>0)){$('pp-vista').innerHTML='';$('pp-res').innerHTML=`<dt>${tr('No cabe','It does not fit')}</dt><dd>${tr('Con ese margen no queda sitio para el dibujo. Prueba un margen menor o un papel más grande.','With that margin there is no room for the drawing. Try a smaller margin or a larger sheet.')}</dd>`;return;}
-  const dw=vw*k,dh=vh*k,x0=(PW-dw)/2,y0=(PH-dh)/2,M=PAT.modulo,kl=PAT.k||1;
-  // dibujo a escala dentro del papel
-  const fs=Math.max(PW,PH)/22,sw=Math.max(PW,PH)/400;
-  const dib=R.sv.replace(/<svg([^>]*?)\swidth="[^"]*"/,'<svg$1').replace('<svg ',`<svg x="${x0}" y="${y0}" width="${dw}" height="${dh}" preserveAspectRatio="xMidYMid meet" `);
-  const cota=(x1,y1,x2,y2,t,dx,dy)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d4ed8" stroke-width="${sw}" marker-start="url(#pp-fl)" marker-end="url(#pp-fl)"/><text x="${(x1+x2)/2+dx}" y="${(y1+y2)/2+dy}" font-size="${fs}" text-anchor="middle" fill="#1d4ed8" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}">${t}</text>`;
-  $('pp-vista').innerHTML=`<svg viewBox="${-fs} ${-fs} ${PW+2*fs} ${PH+2*fs}" width="100%" aria-hidden="true" focusable="false"><defs><marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker></defs>`+
-    `<rect x="0" y="0" width="${PW}" height="${PH}" fill="#fff" stroke="#8a8172" stroke-width="${sw*1.5}"/>`+
-    `<rect x="${m}" y="${m}" width="${PW-2*m}" height="${PH-2*m}" fill="none" stroke="#8a8172" stroke-width="${sw}" stroke-dasharray="${sw*6} ${sw*4}"/>`+dib+
-    `<rect x="${x0}" y="${y0}" width="${dw}" height="${dh}" fill="none" stroke="#1d4ed8" stroke-width="${sw}"/>`+
-    (y0>fs*1.6?cota(x0,y0-fs*0.6,x0+dw,y0-fs*0.6,mm(dw),0,-fs*0.35):'')+
-    (x0>fs*1.6?`<g transform="rotate(-90 ${x0-fs*0.6} ${y0+dh/2})">${cota(x0-fs*0.6-dh/2,y0+dh/2,x0-fs*0.6+dh/2,y0+dh/2,mm(dh),0,-fs*0.35)}</g>`:'')+
-    (y0+dh<PH-fs*1.6?cota(PW/2,y0+dh,PW/2,PH,mm(PH-y0-dh),fs*2.6,fs*0.35):'')+
-    `</svg>`;
-  $('pp-vista').setAttribute('aria-label',tr(`Papel de ${mm(PW)} × ${mm(PH)} con el dibujo de ${mm(dw)} × ${mm(dh)} en el centro`,`A ${mm(PW)} × ${mm(PH)} sheet with the ${mm(dw)} × ${mm(dh)} drawing in the middle`));
-  const hex=M&&M.tipo==='hex',tam=R.red.tam*k;
-  const base=(BASE[PAT.id]||[]).map(([t,te,v],i)=>`<dt${i?'':' class="pp-main"'}>${tr(t,te)}</dt><dd${i?'':' class="pp-main"'}>${mm(v*kl*k)}</dd>`).join('');
-  const modTxt=hex&&TS.forma!=='tri'?tr(`${mm(M.R*k)} de lado (hexágono)`,`${mm(M.R*k)} per side (hexagon)`):tr(`${mm(tam)} de lado`,`${mm(tam)} per side`);
+  $('pp-medidas').hidden=PP.p!=='med';
+  if(PP.p==='med'){if(document.activeElement!==$('pp-w'))$('pp-w').value=num(PP.w/10).replace(',','.');if(document.activeElement!==$('pp-h'))$('pp-h').value=num(PP.h/10).replace(',','.');}
+  if(document.activeElement!==$('pp-m'))$('pp-m').value=num(PP.m/10).replace(',','.');
+  const G=calcPapel(R);
+  document.querySelectorAll('#pp-ori [data-ori]').forEach(b=>{const on=b.dataset.ori===G.ori;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  $('pp-pdf').disabled=!G.ok;
+  if(!G.ok){$('pp-vista').innerHTML='';$('pp-res').innerHTML=`<dt>${tr('No cabe','It does not fit')}</dt><dd>${tr('Con ese margen no queda sitio para el dibujo. Prueba un margen menor o un papel más grande.','With that margin there is no room for the drawing. Try a smaller margin or a larger sheet.')}</dd>`;return;}
+  const {PW,PH,dw,dh,x0,y0,k}=G,M=PAT.modulo;
+  $('pp-vista').innerHTML=svgPapel(R,G);
+  $('pp-vista').setAttribute('aria-label',tr(`Papel de ${num(PW/10)} × ${cm(PH)} con el dibujo de ${num(dw/10)} × ${cm(dh)} en el centro`,`A ${num(PW/10)} × ${cm(PH)} sheet with the ${num(dw/10)} × ${cm(dh)} drawing in the middle`));
+  const hex=M&&M.tipo==='hex'&&TS.forma!=='tri',tam=R.red.tam*k;
+  const base=medidasPapel(G).map(([t,v],i)=>`<dt${i?'':' class="pp-main"'}>${t}</dt><dd${i?'':' class="pp-main"'}>${v}</dd>`).join('');
+  const modTxt=hex?tr(`${cm(M.R*k)} de lado (hexágono)`,`${cm(M.R*k)} per side (hexagon)`):tr(`${cm(tam)} de lado`,`${cm(tam)} per side`);
   $('pp-res').innerHTML=base+`<dt>${tr('Cada módulo','Each module')}</dt><dd>${modTxt}</dd>`+
-    `<dt>${tr('Dibujo entero','Whole drawing')}</dt><dd>${mm(dw).replace(' mm','')} × ${mm(dh)} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}</dd>`+
-    `<dt>${tr('Márgenes','Margins')}</dt><dd>${tr('izquierda y derecha','left and right')} ${mm(x0)} · ${tr('arriba y abajo','top and bottom')} ${mm(y0)}</dd>`+
-    `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${mm(PW).replace(' mm','')} × ${mm(PH)}</dd>`;}
+    `<dt>${tr('Dibujo entero','Whole drawing')}</dt><dd>${num(dw/10)} × ${cm(dh)} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}</dd>`+
+    `<dt>${tr('Márgenes','Margins')}</dt><dd>${tr('izquierda y derecha','left and right')} ${cm(x0)} · ${tr('arriba y abajo','top and bottom')} ${cm(y0)}</dd>`+
+    `<dt>${tr('Papel','Paper')}</dt><dd>${PP.p==='med'?tr('a medida','custom'):PP.p} · ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${num(PW/10)} × ${cm(PH)}</dd>`;}
+window.svgPapelActual=(opc)=>{const R=tsConstruir(EX.c,EX.r,TS.marcar,false),G=calcPapel(R);return G.ok?{svg:svgPapel(R,G,opc),G}:null;};
 {const gp=()=>store.set(PPK,PP);
   $('pp-papel').addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(!b)return;PP.p=b.dataset.pp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();window.pintarTeselar();});
   $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarTeselar();});
-  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v;gp();window.pintarTeselar();});
+  $('pp-dib').checked=PP.dib!==false;$('pp-gris').checked=PP.gris!==false;PP.gris=PP.gris!==false;
+  $('pp-dib').onchange=e=>{PP.dib=e.target.checked;gp();};$('pp-gris').onchange=e=>{PP.gris=e.target.checked;gp();};
+  $('pp-pdf').onclick=async()=>{const b=$('pp-pdf');b.disabled=true;$('pp-msg').textContent=tr('Preparando la plantilla…','Preparing the template…');
+    try{const blob=await plantillaPdf();$('pp-msg').textContent=blob?await entregar(blob,`mosaicos-plantilla-${PAT.id}-${PP.p==='med'?'medida':PP.p}.pdf`):'';}
+    catch(e){console.error(e);$('pp-msg').textContent=tr('No se ha podido crear el PDF.','The PDF could not be created.');}
+    b.disabled=false;};
+  // los campos van en centímetros
+  for(const [id,k] of [['pp-w','w'],['pp-h','h'],['pp-m','m']])$(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=0))return;PP[k]=v*10;gp();window.pintarTeselar();});
   $('ts-papel').addEventListener('toggle',()=>{if($('ts-papel').open)window.pintarTeselar();});}
 window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent=EX.r;
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');
@@ -3291,6 +3446,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.9",["📄 On paper › Actual-size template: a PDF of your paper with margins, modules, starting figure and a 5 cm bar to check the scale","📏 Each Draw step tells you its measurements in cm for your paper (radius, distances, strap width)","⭕ The paper preview draws the starting circle or square with its size","📐 All measurements in centimeters","🧱 Color › Panel: the niche from the Comares Tower with its frieze of merlons and green borders, as in the book","🎨 The Alhambra in blue and the Alcázar in green","⚡ Opens faster: the gallery and the home screen remember their drawings"]],
     ["2.8",["🧩 New Alhambra tile pattern: eight-pointed stars and zafates from the niches of the Comares Tower (no. 15), with its 8 steps from the book","📏 Tessellate › On paper: choose A5, A4, A3 or a custom size and see how big each module and the starting circle or square must be, with the margins drawn to scale","🔍 Zoom in on the drawing with two fingers, Ctrl + wheel or the + button; “Normal size” puts it back","🖼️ Gallery in book order, with page or number, steps, pieces and difficulty","📚 Settings: the two books by Manuel Martínez Vela, contact and privacy","🔤 The fonts come with the app: titles always look right, even offline","✨ A short fade when changing stage or screen"]],
     ["2.7",["🏷️ Each tile pattern opens with its own cover: the wall in color, the book and page, the place, the steps and the pieces","✏️ Drawn icons instead of emojis on buttons: they look the same on every phone","🖥️ On iPad and computer the drawing sits beside the steps and colors, and always fits on screen","🧪 Behind the scenes: an automatic test checks every pattern against the book's measurements"]],
     ["2.6.1",["👆 In Tessellate, Color and Print the drawing is higher up: the long introduction only appears in Draw","📌 Color on the phone: the drawing stays at the top while you scroll through the options","✏️ “Your tile” folds away until you open it","🔧 Small fixes: Alhambra colors in the goal step, “Mark the modules” next to columns and rows"]],
@@ -3318,6 +3474,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.9",["📄 En papel › Plantilla a tamaño real: un PDF de tu papel con márgenes, módulos, figura de partida y una raya de 5 cm para comprobar la escala","📏 Cada paso de Trazar te dice sus medidas en cm para tu papel (radios, distancias, ancho de la cinta)","⭕ En la vista del papel se dibuja la circunferencia o el cuadrado de partida con su medida","📐 Todas las medidas, en centímetros","🧱 Colorear › Panel: la taca de la Torre de Comares con su friso de almenillas y sus cenefas verdes, como en el libro","🎨 La Alhambra en azul y el Alcázar en verde","⚡ Abre más rápido: la galería y la portada recuerdan sus dibujos"]],
     ["2.8",["🧩 Alicatado nuevo de la Alhambra: estrellas de ocho y zafates de las tacas de la Torre de Comares (n.º 15), con sus 8 pasos del libro","📏 Teselar › En papel: elige A5, A4, A3 o un papel a medida y verás cuánto miden el módulo y la circunferencia o el cuadrado de partida, con los márgenes a escala","🔍 Amplía el dibujo con dos dedos, Ctrl + rueda o el botón +; «Tamaño normal» lo deja como estaba","🖼️ Galería en el orden del libro, con página o número, pasos, piezas y dificultad","📚 Ajustes: los dos libros de Manuel Martínez Vela, contacto y privacidad","🔤 Los tipos de letra van dentro de la app: los títulos se ven siempre bien, también sin conexión","✨ Un fundido corto al cambiar de etapa o de pantalla"]],
     ["2.7",["🏷️ Cada alicatado empieza con su portada: el muro en color, el libro y la página, el lugar, los pasos y las piezas","✏️ Iconos dibujados en vez de emojis en los botones: se ven igual en todos los móviles","🖥️ En el iPad y el ordenador el dibujo va al lado de los pasos y los colores, y cabe siempre entero","🧪 Por dentro: una prueba automática comprueba cada alicatado con las medidas del libro"]],
     ["2.6.1",["👆 En Teselar, Colorear e Imprimir el dibujo queda más arriba: la presentación larga solo sale en Trazar","📌 Colorear en el móvil: el dibujo se queda arriba mientras bajas por las opciones","✏️ «Tu tesela» va plegada hasta que la abras","🔧 Arreglos: colores de la Alhambra en el objetivo, «Marcar los módulos» junto a columnas y filas"]],

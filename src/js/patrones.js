@@ -314,6 +314,9 @@ P.taca=escalar({id:'taca',coleccion:'alhambra',num:15,nombre:'Estrellas de ocho 
     'Para colorear':{cols:Array(7).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
 });
 Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,
+  // Paso 8: el panel se corona con un friso de almenillas blancas y negras entre dos cenefas verdes. En la figura del libro, cada
+  // pareja de almenillas ocupa 8 × 7 cuadros y mide la mitad del lado del cuadrado inicial (una unidad, el radio de la circunferencia).
+  panel:{periodo:P.taca.k,cuadros:8,alto:7,cenefa:1.75,campo:[0,0,3*24,2*24],colores:{oscuro:'#161616',claro:'#ffffff',cenefa:'#1f5f5b'}},
   modulo:{m:2*Math.SQRT2*P.taca.k,cx:P.taca.k,cy:P.taca.k,giro:45,nota:[' · el dibujo va girado 45° para ver el módulo derecho; en el muro, la baldosa del paso 6 va recta',' · the drawing is turned 45° to show the module upright; on the wall, the tile from step 6 is straight']}}); // módulo mínimo: la baldosa de 2 × 2 tiene un periodo en diagonal (2, 2)
 })();
 

@@ -4,7 +4,7 @@ const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',p
   intro:'Es el módulo de las páginas 133 a 136 de <em>El Real Alcázar de Sevilla con regla y compás</em>, trazado sobre la cuadrícula 5-7-5-7.',
   pie:'La geometría sale de la cuadrícula del libro: estrellas de ocho puntas cada 12 cuadros, con cuadrado de 5 y rombo de radio 3,5, prolongadas y remarcadas como en el paso 3 de la página 136. Las líneas rojas discontinuas son las diagonales de construcción y las azules oscuras, las divisiones 5-7.'}};
 for(const p of Object.values(PATRONES.P)){const m=+(p.W*0.06).toFixed(2);
-  PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H]},
+  PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H],panel:p.panel?p.panel.campo:[0,0,3*p.W,2*p.H]},
     titulo:p.nombre+' · '+p.lugar,intro:p.coleccion==='alhambra'?`Es el alicatado n.º ${p.num} de <em>La Alhambra con regla y compás</em>. ${p.resumen}`:`Es el alicatado de las páginas ${p.pags} de <em>El Real Alcázar de Sevilla con regla y compás</em>. ${p.resumen}`});}
 const MONU={alcazar:['Real Alcázar de Sevilla','Royal Alcázar of Seville'],alhambra:['La Alhambra de Granada','The Alhambra of Granada']};
 const monu=p=>tr(...MONU[p.coleccion||'alcazar']);

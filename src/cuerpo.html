@@ -43,7 +43,7 @@
     <div class="tzside">
       <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
-      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div>
+      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="medpapel" id="stepm" hidden></div>
         <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div>
         <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
         <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
@@ -59,6 +59,7 @@
       <button data-v="2x2">2 × 2</button>
       <button data-v="3x2">Zócalo 3 × 2</button>
       <button data-v="4x3">4 × 3</button>
+      <button data-v="panel" hidden>Panel</button>
     </div>
     <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
     <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
@@ -123,11 +124,17 @@
         <summary>📏 En papel <small>· medidas para dibujarlo a mano</small></summary>
         <p class="hint" style="margin:0 0 8px">Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
         <div class="ops" id="pp-papel" role="group" aria-label="Papel"><button data-pp="A5">A5</button><button data-pp="A4">A4</button><button data-pp="A3">A3</button><button data-pp="med">A medida</button></div>
-        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (mm) <input type="number" id="pp-w" min="50" max="3000" step="1" inputmode="decimal"></label><label>Alto (mm) <input type="number" id="pp-h" min="50" max="3000" step="1" inputmode="decimal"></label></div>
+        <div class="pp-campos" id="pp-medidas" hidden><label>Ancho (cm) <input type="number" id="pp-w" min="5" max="300" step="0.1" inputmode="decimal"></label><label>Alto (cm) <input type="number" id="pp-h" min="5" max="300" step="0.1" inputmode="decimal"></label></div>
         <div class="ops" id="pp-ori" role="group" aria-label="Orientación" style="margin-top:8px"><button data-ori="v">Vertical</button><button data-ori="h">Horizontal</button></div>
-        <div class="pp-campos"><label>Margen (mm) <input type="number" id="pp-m" min="0" max="200" step="1" inputmode="decimal"></label></div>
+        <div class="pp-campos"><label>Margen (cm) <input type="number" id="pp-m" min="0" max="20" step="0.1" inputmode="decimal"></label></div>
         <div id="pp-vista" role="img" aria-label="El papel con el dibujo y sus márgenes"></div>
         <dl id="pp-res" class="pp-res" aria-live="polite"></dl>
+        <h3 class="grupo-ts" style="margin-top:14px">Plantilla a tamaño real</h3>
+        <p class="hint" style="margin:0 0 6px">Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.</p>
+        <div class="row"><label for="pp-dib">Con el dibujo</label><input type="checkbox" id="pp-dib" checked></div>
+        <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
+        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
+        <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
       </details>
 
       <p class="tip">En «Aprender a trazar», «Movimientos en el plano» enseña los cuatro movimientos con los que se generan todos los mosaicos.</p>

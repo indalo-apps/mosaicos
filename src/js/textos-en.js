@@ -1,5 +1,13 @@
 // ---------- Inglés (v1.5): textos fijos de la página ----------
 const ES_EN={
+ "Ancho (cm)":"Width (cm)",
+ "Alto (cm)":"Height (cm)",
+ "Margen (cm)":"Margin (cm)",
+ "Plantilla a tamaño real":"Actual-size template",
+ "Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.":"A PDF the size of the paper with the margins, the modules, the starting figure and a 5 cm bar to check the scale. Print it at 100 %.",
+ "Con el dibujo":"With the drawing",
+ "Dibujo en gris claro, para repasarlo":"Drawing in light gray, to trace over",
+ "📄 Plantilla en PDF":"📄 Template as PDF",
  "📏 En papel":"📏 On paper",
  "· medidas para dibujarlo a mano":"· measurements to draw it by hand",
  "Elige el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.":"Choose the paper and you will see how big each module and the starting figure are, so that the columns × rows drawing fits with its margins.",

@@ -18,9 +18,25 @@ function opts(){const [x0,y0,w,h]=PAT.vistas[st.view],o={x0,y0,w,h,cols:st.cols,
     else Object.assign(o,{x0:M.cx-M.m/2,y0:M.cy-M.m/2,w:M.m,h:M.m,giro:M.giro?[M.giro,M.cx,M.cy]:null});
     o.frame=true;}
   return o;}
+// Panel (v2.9): el dibujo con el friso de almenillas y las cenefas, como en el último paso del libro
+function frisoSvg(F,x0,y0,w,opc){const c=F.periodo/F.cuadros,alto=F.alto*c,cen=F.cenefa*c,n=Math.ceil(w/F.periodo)+1;
+  const P=[[0,0],[1.5,1.5],[1.5,3.5],[2.5,3.5],[2.5,5.5],[4,7],[5.5,5.5],[5.5,3.5],[6.5,3.5],[6.5,1.5],[8,0]];
+  const blanco=opc.cols.every(v=>/^#f{6}$/i.test(v)),K=F.colores,lin=blanco?(opc.outline||'#222'):opc.ribbon,lw=blanco?0.08:Math.max(0.04,opc.rw||0.1);
+  const col=v=>blanco?'#ffffff':v,yf=y0+cen;
+  let s=`<rect x="${x0}" y="${y0}" width="${w}" height="${cen}" fill="${col(K.cenefa)}" stroke="${lin}" stroke-width="${lw}"/>`+
+    `<rect x="${x0}" y="${yf}" width="${w}" height="${alto}" fill="${col(K.oscuro)}" stroke="${lin}" stroke-width="${lw}"/>`;
+  for(let i=0;i<n;i++){const X=x0+i*F.periodo-F.periodo/2;s+=`<polygon points="${P.map(([u,v])=>(X+u*c).toFixed(3)+','+(yf+v*c).toFixed(3)).join(' ')}" fill="${col(K.claro)}" stroke="${lin}" stroke-width="${lw}" stroke-linejoin="round"/>`;}
+  s+=`<rect x="${x0}" y="${yf+alto}" width="${w}" height="${cen}" fill="${col(K.cenefa)}" stroke="${lin}" stroke-width="${lw}"/>`;
+  return {svg:`<g class="friso" pointer-events="none"><clipPath id="friso-clip"><rect x="${x0}" y="${y0}" width="${w}" height="${2*cen+alto}"/></clipPath><g clip-path="url(#friso-clip)">${s}</g></g>`,alto:2*cen+alto,cen};}
+function conPanel(sv,F){const m=sv.match(/viewBox="([-\d.e]+) ([-\d.e]+) ([-\d.e]+) ([-\d.e]+)"/);if(!m)return sv;const [x0,y0,w,h]=m.slice(1).map(Number);
+  const o=opts(),fr=frisoSvg(F,x0,y0,w,o),fh=fr.alto,bh=fr.cen;
+  const pie=`<rect x="${x0}" y="${y0+h}" width="${w}" height="${bh}" fill="${o.cols.every(v=>/^#f{6}$/i.test(v))?'#ffffff':F.colores.cenefa}" stroke="${o.ribbon}" stroke-width="${Math.max(0.04,o.rw||0.1)}"/>`;
+  return sv.replace(m[0],`viewBox="${x0} ${y0-fh} ${w} ${h+fh+bh}"`).replace(/<\/svg>\s*$/,`<g transform="translate(0 ${-fh})">${fr.svg}</g>${pie}</svg>`);}
 function draw(){
   guardar();
-  $('svg').innerHTML=renderLazo(D,opts());
+  if(st.view==='panel'&&!PAT.panel)st.view='2x2';
+  $('svg').innerHTML=st.view==='panel'?conPanel(renderLazo(D,opts()),PAT.panel):renderLazo(D,opts());
+  {const bp=document.querySelector('[data-v="panel"]');if(bp)bp.hidden=!PAT.panel;}
   document.querySelectorAll('[data-v]').forEach(b=>{const on=b.dataset.v===st.view;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   const mos=PAT.tipo==='mosaico',lazo=PAT.id==='lazo8';
   document.querySelector('[data-v="mod"]').textContent=(lazo?tr('Módulo (29×29)','Module (29×29)'):tr('Módulo','Module'));
@@ -403,8 +419,15 @@ $('ex-bajar').onclick=async()=>{
 $('ex-copiar').onclick=async()=>{try{await navigator.clipboard.writeText(exSvg(false));$('ex-msg').textContent=tr('SVG copiado. Pégalo en un archivo .svg, en Inkscape o en tu programa de corte.','SVG copied. Paste it into an .svg file, Inkscape or your cutting software.');}catch(err){$('ex-msg').textContent=tr('El navegador no ha dejado copiar. Usa «Descargar».','The browser did not allow copying. Use “Download”.');}};
 
 // ---------- Galería de patrones ----------
-function miniatura(p){const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
-  return renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');}
+// Miniaturas (v2.9): se guardan en el móvil la primera vez, para no recalcular cada alicatado al abrir la galería
+const MINI={},VMINI=(document.querySelector('meta[name="app-version"]')||{}).content||'';
+function miniatura(p){if(MINI[p.id])return MINI[p.id];const kk='mosaicos-mini-'+VMINI+'-'+p.id;
+  try{const g=localStorage.getItem(kk);if(g)return MINI[p.id]=g;}catch(e){}
+  const d=datos(p),pal=Object.values(p.paletas)[0],[x0,y0,w,h]=p.vistas.mod,l=Math.min(w,h);
+  const sv=renderLazo(d,{x0,y0,w:l,h:l,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:false}).replace('width="100%"','width="48" height="48" aria-hidden="true" focusable="false"');
+  MINI[p.id]=sv;try{for(const k of Object.keys(localStorage))if(k.startsWith('mosaicos-mini-')&&!k.startsWith('mosaicos-mini-'+VMINI+'-'))localStorage.removeItem(k);if(sv.length<150000)localStorage.setItem(kk,sv);}catch(e){}
+  return sv;}
+const yaMini=p=>{if(MINI[p.id])return true;try{return !!localStorage.getItem('mosaicos-mini-'+VMINI+'-'+p.id);}catch(e){return false;}};
 function contarGaleria(){}
 // Galería (v2.8): en el orden del libro, y cada tarjeta con su página o número, los pasos, las piezas y la dificultad (con texto, no solo con color)
 function nPasos(p){return p.pasos?p.pasos.length:(window.LAZO_PASOS||6);}
@@ -414,12 +437,13 @@ function datosPat(p){const d=dificultad(p),DIF=[tr('Fácil','Easy'),tr('Media','
   const pt=`<span class="dif" aria-hidden="true">${'●'.repeat(d+1)}${'○'.repeat(2-d)}</span>`;
   return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(p.nombres.length+' piezas',p.nombres.length+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
 const ordenLibro=p=>p.coleccion==='alhambra'?p.num:parseInt(p.pags)||0;
-function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${miniatura(p)}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}</span></button>`).join('');}
+function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${yaMini(p)?miniatura(p):`<span class="mini-hueco" data-mini="${p.id}"></span>`}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}</span></button>`).join('');
+  const huecos=[...$('galeria').querySelectorAll('[data-mini]')],sig=()=>{const h=huecos.shift();if(!h)return;if(h.isConnected){const t=document.createElement('span');t.innerHTML=miniatura(PATS[h.dataset.mini]);h.replaceWith(t.firstChild);}setTimeout(sig,0);};setTimeout(sig,30);}
 function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${monu(PAT)}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
 function cambiarPatron(id){if(id===PAT.id)return;guardar();cargar(id);HIST=[];$('deshacer').disabled=true;SEL=-1;guardar();pintarPaletas();cabecera();draw();if(window.trazadoCambio)window.trazadoCambio();}
 $('galeria').addEventListener('click',e=>{const b=e.target.closest('[data-pat]');if(b)location.hash='#a/'+b.dataset.pat+'/trazado';});
-cargar(new URLSearchParams(location.search).get('patron')||ESTADO.pat);pintarPaletas();pintarGaleria();cabecera();
+cargar(new URLSearchParams(location.search).get('patron')||ESTADO.pat);pintarPaletas();cabecera(); // la galería se pinta al abrirla
 draw();
 // ---------- Trazado paso a paso ----------
 (function(){
@@ -502,6 +526,42 @@ function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')|
   pinta('.previo',e=>{e.setAttribute('stroke','#a7a196');});
   pinta('.actual',e=>{e.setAttribute('stroke','#1d4ed8');const w=parseFloat(e.getAttribute('stroke-width'));if(w)e.setAttribute('stroke-width',+(w*1.5).toFixed(3));});
   const hay=!!raiz.querySelector('.previo')&&!!raiz.querySelector('.actual');document.getElementById('leyenda-paso').hidden=!hay;}
+// ---------- Medidas en papel en cada paso (v2.9): en cm, según el papel y los módulos elegidos en Teselar › En papel ----------
+// [texto, texto en inglés, medida en unidades del libro]; 'rw' = ancho de la cinta
+const MEDPASO={
+  taca:{1:[['Radio de la circunferencia','Radius of the circle',1],['Lado del cuadrado','Side of the square',2]],
+    2:[['Distancia de las paralelas al centro','Distance of the parallels from the center',Math.SQRT1_2]],
+    3:[['Vértices del octógono central, desde el centro','Vertices of the central octagon, from the center',Math.SQRT1_2/Math.cos(Math.PI/8)]],
+    4:[['Vértices del nuevo octógono central, desde el centro','Vertices of the new central octagon, from the center',(1-Math.SQRT1_2)/Math.cos(Math.PI/8)],['Rectas del segundo octógono estrellado, desde el centro','Lines of the second star octagon, from the center',(1-Math.SQRT1_2)*Math.tan(Math.PI/8)]]},
+  felipe:{1:[['Radio de la circunferencia','Radius of the circle',Math.SQRT2],['Lado de los cuadrados inscritos','Side of the inscribed squares',2]],
+    2:[['Los ocho puntos de corte, desde el centro','The eight crossing points, from the center',1/Math.cos(Math.PI/8)]],
+    3:[['Distancia de las ocho rectas al centro','Distance of the eight lines from the center','G.dB']],
+    4:[['Radio de las circunferencias pequeñas','Radius of the small circles','G.rho']],
+    5:[['Lado del cuadrado del marco','Side of the frame square','G.s2'],['Del centro a cada vértice del rombo','From the center to each vertex of the rhombus','G.q']],
+    8:[['Ancho de la cinta','Strap width','rw']],9:[['Ancho de la cinta','Strap width','rw']]},
+  barca:{1:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Lado de cada cuadro y radio de la circunferencia','Side of each square and radius of the circle',1]],
+    2:[['Distancia de cada paralela al centro','Distance of each parallel from the center',Math.SQRT1_2]],
+    3:[['Distancia de las paralelas al centro','Distance of the parallels from the center',Math.SQRT1_2]],
+    4:[['Distancia de las paralelas al centro','Distance of the parallels from the center',1+Math.SQRT1_2]],
+    5:[['Las paralelas cortan los ejes, desde el centro, a','The parallels cut the axes, from the center, at',1+Math.SQRT2]],
+    6:[['Distancia de las paralelas al centro','Distance of the parallels from the center',1+3*Math.SQRT1_2]],
+    8:[['A (entre las rectas del paso 4)','A (between the lines of step 4)',2+Math.SQRT2],['B = A/10','B = A/10',(2+Math.SQRT2)/10],['Ancho de la cinta (2B)','Strap width (2B)','rw']]},
+  arrayanes:{1:[['Radio de la circunferencia (y de los arcos)','Radius of the circle (and of the arcs)',1]],
+    2:[['Lado del hexágono','Side of the hexagon',1]],
+    3:[['Radio de la circunferencia tangente','Radius of the tangent circle',Math.sqrt(3)/2]],
+    8:[['Ancho de la cinta','Strap width','rw']]},
+  zaguan2:{1:[['Lado del cuadrado de 8 × 8','Side of the 8 × 8 square',8],['Lado de cada cuadro','Side of each square',1],['Radio de las circunferencias (2 cuadros)','Radius of the circles (2 squares)',2]],
+    4:[['Radio de los cuartos de circunferencia','Radius of the quarter circles',Math.SQRT2]]}};
+function medPaso(){const el=document.getElementById('stepm');if(!el)return;
+  if(MODO.c||!window.papelActual){el.hidden=true;return;}
+  const P=window.papelActual();if(!P){el.hidden=true;return;}
+  const kl=PAT.k||1,cmv=v=>window.cmPapel(v*kl*P.G.k);
+  const val=v=>{if(v==='rw')return window.cmPapel(PAT.rw*P.G.k);if(typeof v==='string'&&v.startsWith('G.')){const G=PAT.G||{},n=v.slice(2);return cmv(n==='s2'?2*G.s:G[n]);}return cmv(v);};
+  let L=(!metB()&&step>0&&MEDPASO[PAT.id]&&MEDPASO[PAT.id][step])?MEDPASO[PAT.id][step].map(([a,b,v])=>[tr(a,b),val(v)]):null;
+  if(!L)L=step===0?P.med:P.med.slice(0,1);
+  el.innerHTML=`<p class="mp-t">${icono('regla')}<b>${tr('En papel','On paper')}</b> <span>· ${P.desc}</span> <button type="button" class="enlace" id="mp-cambiar">${tr('Cambiar','Change')}</button></p><ul>`+L.map(([t,v])=>`<li>${t}: <b>${v}</b></li>`).join('')+'</ul>';
+  el.hidden=false;
+  document.getElementById('mp-cambiar').onclick=()=>{location.hash='#a/'+PAT.id+'/teselar';setTimeout(()=>{const d=document.getElementById('ts-papel');if(d){d.open=true;d.scrollIntoView({block:'start',behavior:'smooth'});}},350);};}
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
@@ -510,7 +570,7 @@ function show(){
   const etq=step===0?tr('Objetivo','Goal'):tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
   document.getElementById('stepn').textContent=etq;
   document.getElementById('paso-chip').textContent=step===0?tr('La figura terminada','The finished figure'):etq+' · '+s.h;
-  document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c||'';
+  document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c||'';try{medPaso();}catch(e){}
   let svg;
   if(step===0){
     if(MODO.c)svg=consSvg(MODO.c,0,true);

@@ -79,7 +79,19 @@ const LIBRO={
       // paso 7: el hexágono que une los extremos tiene los lados a √3/2 − h; la muesca toca sus lados
       const a7=s3/2-h;ok(cerca(0.5*(-h)+s3/2*tE,a7,1e-9)&&cerca(s3/2*tV,a7,1e-9),'N.º 29: la muesca (paso 9) está en los lados del hexágono del paso 7');
       ok(cerca(tP,s3/2,1e-9)&&cerca(tR+h*Math.tan(Math.PI/6),tP,1e-9),'N.º 29: la punta del zafate redondo está en el hexágono del paso 8');
-      ok(cerca(p.modulo.R,p.k),'N.º 29: el módulo es el hexágono del paso 2, de radio 1');},
+      ok(cerca(p.modulo.R,p.k),'N.º 29: el módulo es el hexágono del paso 2, de radio 1');
+      // paso 9: «con este método de trazado se da que AB = BC y DE = EF» (pág. 148). Lado sg de un zafate en la dirección f (grados)
+      const g=(q,f)=>{const c=Math.cos(rad(f)),n=Math.sin(rad(f));return[q[0]*c-q[1]*n,q[0]*n+q[1]*c];},
+        lado=(f,sg)=>[g([0,sg*h],f),g([1,0],f)],
+        corte=([p1,d1],[p2,d2])=>{const t=((p2[0]-p1[0])*d2[1]-(p2[1]-p1[1])*d2[0])/(d1[0]*d2[1]-d1[1]*d2[0]);return[p1[0]+t*d1[0],p1[1]+t*d1[1]];},
+        dist=(u,v)=>Math.hypot(u[0]-v[0],u[1]-v[1]);
+      const A=g([tE,-h],150),B=corte(lado(150,-1),lado(120,1)),C=corte(lado(120,1),lado(180,-1));
+      const D=g([tP,0],120),E=g([tR,-h],120),F=corte(lado(120,-1),lado(90,1));
+      ok(cerca(dist(A,B),dist(B,C),1e-9),`N.º 29: AB = BC, como dice el paso 9 (${dist(A,B).toFixed(4)} y ${dist(B,C).toFixed(4)})`);
+      ok(cerca(dist(D,E),dist(E,F),1e-9),`N.º 29: DE = EF, como dice el paso 9 (${dist(D,E).toFixed(4)} y ${dist(E,F).toFixed(4)})`);
+      // los seis puntos son vértices del dibujo: están en sus trazos
+      const L=p.modBase(),enTrazo=q=>L.some(([x1,y1,x2,y2])=>{const dx=x2-x1,dy=y2-y1,t=((q[0]-x1)*dx+(q[1]-y1)*dy)/(dx*dx+dy*dy);return t>-1e-9&&t<1+1e-9&&Math.hypot(x1+t*dx-q[0],y1+t*dy-q[1])<1e-9;});
+      ok([A,B,C,D,E,F].every(enTrazo),'N.º 29: A, B, C, D, E y F están en los trazos del módulo');},
     simetria:{centro:p=>[Math.sqrt(3)/2*p.k,1.5*p.k],estrella:12,giros:[[6,p=>0.9*p.k]]}},
   reyes28:{pasos:8,modulo:4,
     extra(p){const {a,e,t,ri}=p.Gr;

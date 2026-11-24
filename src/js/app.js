@@ -434,7 +434,7 @@ function contarGaleria(){}
 function nPasos(p){return p.pasos?p.pasos.length:(window.LAZO_PASOS||6);}
 function dificultad(p){const n=nPasos(p)+p.nombres.length/2;return n<=7?0:n<=11?1:2;}
 function datosPat(p){const d=dificultad(p),DIF=[tr('Fácil','Easy'),tr('Media','Medium'),tr('Difícil','Hard')];
-  const ref=p.coleccion==='alhambra'?tr(`n.º ${p.num}`,`no. ${p.num}`):tr(`págs. ${String(p.pags).replace(/ a /,'–')}`,`pp. ${String(p.pags).replace(/ (a|y) /,'–')}`);
+  const ref=p.coleccion==='alhambra'?tr(`n.º ${p.num}`,`no. ${p.num}`)+(p.pags?tr(` · págs. ${String(p.pags).replace(/ a /,'–')}`,` · pp. ${String(p.pags).replace(/ (a|y) /,'–')}`):''):tr(`págs. ${String(p.pags).replace(/ a /,'–')}`,`pp. ${String(p.pags).replace(/ (a|y) /,'–')}`);
   const pt=`<span class="dif" aria-hidden="true">${'●'.repeat(d+1)}${'○'.repeat(2-d)}</span>`;
   return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(p.nombres.length+' piezas',p.nombres.length+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
 const ordenLibro=p=>p.coleccion==='alhambra'?p.num:parseInt(p.pags)||0;

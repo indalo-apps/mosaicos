@@ -380,7 +380,7 @@ function modulo(){const L=[],seg=(a,b,f)=>{const A=giro(a,f),B=giro(b,f);L.push(
 const area=Q=>{let S=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];S+=p[0]*q[1]-q[0]*p[1];}return Math.abs(S)/2;};
 // centro de la rueda más cercana (red de hexágonos: columnas a √3, filas a 1,5 desplazadas media columna)
 function rueda(x,y){let m=null,d=9;for(const j of [Math.floor(y/1.5),Math.ceil(y/1.5)]){const o=j%2?s3/2:0,i=Math.round((x-o)/s3),c=[i*s3+o,j*1.5],e=Math.hypot(x-c[0],y-c[1]);if(e<d){d=e;m=c;}}return m;}
-P.reyes29=escalar({id:'reyes29',coleccion:'alhambra',num:29,nombre:'Ruedas de doce zafates',lugar:'Zócalos · Sala de los Reyes · Palacio de los Leones',tipo:'mosaico',
+P.reyes29=escalar({id:'reyes29',coleccion:'alhambra',num:29,pags:'146 a 149',nombre:'Ruedas de doce zafates',lugar:'Zócalos · Sala de los Reyes · Palacio de los Leones',tipo:'mosaico',
   W:s3,H:3,
   lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const cx=i*s3+(j%2?s3/2:0),cy=j*1.5;for(const t of modulo())L.push([t[0]+cx,t[1]+cy,t[2]+cx,t[3]+cy]);}return L;},
   clase(Q,[x,y]){const n=Q.length,A=area(Q)/this.k/this.k;
@@ -395,7 +395,7 @@ P.reyes29=escalar({id:'reyes29',coleccion:'alhambra',num:29,nombre:'Ruedas de do
     return f===1||f===5?1:2;},                           // melado a 0,5 y 2,5; verde a 1 y 2
   nombres:['Sino (estrella de doce)','Zafate escotado melado','Zafate escotado verde','Zafate redondo azul','Zafate redondo negro','Hexágono','Almendrilla','Pieza blanca'],
   paletas:{
-    'Alhambra':{cols:['#161616','#c98b2b','#2f6f68','#4b4fae','#161616','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Alhambra':{cols:['#161616','#c98b2b','#48876c','#3c587f','#161616','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
     'Azul y oro':{cols:['#1d2a55','#e0b04a','#3d63a8','#2f4fa3','#1d2a55','#ffffff','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
     'Terracota':{cols:['#5a3022','#d98e6e','#8a4b36','#b8694d','#5a3022','#fbf4ec','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
     'Para colorear':{cols:Array(8).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}

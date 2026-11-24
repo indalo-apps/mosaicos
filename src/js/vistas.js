@@ -14,7 +14,7 @@ function cab(t,sub,volver,intro){$('titulo').innerHTML=t+(sub?`<span class="sub"
 function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const img=renderLazo(datos(p),{x0:p.W*0.25,y0:p.H*0.25,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');
   const alh=p.coleccion==='alhambra',libro=alh?'<i>La Alhambra con regla y compás</i>':'<i>El Real Alcázar de Sevilla con regla y compás</i>';
-  const ref=alh?tr(`alicatado n.º ${p.num}`,`tile pattern no. ${p.num}`):tr(`págs. ${p.pags}`,`pp. ${String(p.pags).replace(/ a /,'–')}`);
+  const ref=alh?tr(`alicatado n.º ${p.num}`,`tile pattern no. ${p.num}`)+(p.pags?tr(`, págs. ${p.pags}`,`, pp. ${String(p.pags).replace(/ (a|y) /,'–')}`):''):tr(`págs. ${p.pags}`,`pp. ${String(p.pags).replace(/ a /,'–')}`);
   const n=(p.pasos||[]).length,nB=(p.pasosB||[]).length,tipos=p.nombres.length;
   const pasos=p.id==='lazo8'?tr('Paso a paso','Step by step'):tr(`${n} pasos`,`${n} steps`)+(nB?tr(' · también con cuadrícula',' · also with a grid'):'');
   const fila=(ic,t)=>`<li>${icono(ic)}<span>${t}</span></li>`;

@@ -302,18 +302,19 @@ P.taca=escalar({id:'taca',coleccion:'alhambra',num:15,nombre:'Estrellas de ocho 
   lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const sx=i%2?-1:1,sy=j%2?-1:1,cx=1+2*i,cy=1+2*j; // simetría por los lados del cuadrado
     for(const t of modulo())L.push([cx+sx*t[0],cy+sy*t[1],cx+sx*t[2],cy+sy*t[3]]);}return L;},
   clase(Q,[x,y]){const n=Q.length,Ar=area(Q)/this.k/this.k,par=(Math.floor(x/2)+Math.floor(y/2))%2===0;
-    if(n===16)return Ar>0.34?0:1;          // sinos: estrella de ocho grande y pequeña
+    if(n===16)return Ar>0.34?0:1;          // 16 lados: el sino (estrella de ocho) o la cruz en X, más pequeña
     if(n===6)return par?2:3;                // zafates en grupos de cuatro: un grupo melado, el siguiente verde
     if(n===8)return Ar>0.2?4:5;             // zafate negro / estrella de cuatro blanca
     return 6;},
-  nombres:['Sino grande (estrella de ocho)','Sino pequeño (estrella de ocho)','Zafate (grupos melados)','Zafate (grupos verdes)','Zafate negro','Estrella de cuatro','Pieza pequeña'],
+  nombres:['Sino (estrella de ocho)','Cruz','Zafate (grupos melados)','Zafate (grupos verdes)','Zafate negro','Estrella de cuatro','Pieza pequeña'],
   paletas:{
-    'Alhambra':{cols:['#2f4fa3','#2f4fa3','#c98b2b','#1f5f5b','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
-    'Azul y oro':{cols:['#2f4fa3','#1f3a7a','#e0b04a','#e0b04a','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
-    'Terracota':{cols:['#8a4b36','#8a4b36','#d98e6e','#e8b49a','#5a3022','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
+    'Alhambra':{cols:['#2f4fa3','#ffffff','#c98b2b','#1f5f5b','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Azul y oro':{cols:['#2f4fa3','#ffffff','#e0b04a','#e0b04a','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Terracota':{cols:['#8a4b36','#fbf4ec','#d98e6e','#e8b49a','#5a3022','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
     'Para colorear':{cols:Array(7).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
 });
-Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,
+Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,vistaModulo:[0,0,2*P.taca.k,2*P.taca.k], // en Colorear, «Módulo» enseña el cuadrado del paso 5, derecho
+
   // Paso 8: el panel se corona con un friso de almenillas blancas y negras entre dos cenefas verdes. En la figura del libro, cada
   // pareja de almenillas ocupa 8 × 7 cuadros y mide la mitad del lado del cuadrado inicial (una unidad, el radio de la circunferencia).
   panel:{periodo:P.taca.k,cuadros:8,alto:7,cenefa:1.75,campo:[0,0,3*24,2*24],colores:{oscuro:'#161616',claro:'#ffffff',cenefa:'#1f5f5b'}},

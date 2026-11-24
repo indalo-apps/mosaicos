@@ -162,7 +162,7 @@ const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1
 const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
 const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
 // todas las medidas, en centímetros (internamente se guardan en milímetros)
-const num=(v,d=2)=>(Math.round(v*10**d)/10**d).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:d});
+const num=(v,d=1)=>(Math.round(v*10**d)/10**d).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:d});
 const cm=v=>num(v/10)+' cm';
 // Papel y escala: dónde cabe el dibujo de columnas × filas (R = resultado de tsConstruir)
 function calcPapel(R){const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0),a=+PP.w||0,b=+PP.h||0;

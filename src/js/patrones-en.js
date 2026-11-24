@@ -6,11 +6,32 @@ const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',p
 for(const p of Object.values(PATRONES.P)){const m=+(p.W*0.06).toFixed(2);
   PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H],panel:p.panel?p.panel.campo:[0,0,3*p.W,2*p.H]},
     titulo:p.nombre+' · '+p.lugar,intro:p.coleccion==='alhambra'?`Es el alicatado n.º ${p.num} de <em>La Alhambra con regla y compás</em>. ${p.resumen}`:`Es el alicatado de las páginas ${p.pags} de <em>El Real Alcázar de Sevilla con regla y compás</em>. ${p.resumen}`});}
+// ---------- Más paletas (v2.9.1): las de siempre se recolorean por papeles (negro, azul, verde, melado, blanco) ----------
+// Así cada pieza conserva su papel (los sinos, los zafates, la cinta…) y cambia solo la gama. «Grises» ordena por claridad: sirve sin distinguir colores.
+(function(){
+  const GAMAS={'Azul y blanco':{negro:'#1e3a78',azul:'#3d63a8',verde:'#9ab6dc',melado:'#dfe8f4',blanco:'#ffffff'},
+    'Verde y oro':{negro:'#0f3b36',azul:'#2f7a6d',verde:'#d4a83c',melado:'#e9c86a',blanco:'#f8f3e6'},
+    'Granate y oro':{negro:'#2a1416',azul:'#7a2e3a',verde:'#c98b2b',melado:'#e0b04a',blanco:'#fbf4ec'},
+    'Tierra':{negro:'#3a2a20',azul:'#8a4b36',verde:'#6f7f45',melado:'#d98e6e',blanco:'#fbf4ec'},
+    'Noche':{negro:'#0e1726',azul:'#d4a83c',verde:'#1f4f6b',melado:'#7a2e3a',blanco:'#e8e2d0'},
+    'Pastel':{negro:'#5d6b82',azul:'#9ab6dc',verde:'#a8d5c2',melado:'#f2c9a0',blanco:'#ffffff'},
+    'Grises':{negro:'#1a1a1a',azul:'#5a5a5a',verde:'#8f8f8f',melado:'#c8c8c8',blanco:'#ffffff'}};
+  const hsl=h=>{const n=parseInt(h.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;
+    let hh=0;if(d){hh=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;hh*=60;if(hh<0)hh+=360;}return [hh,d?d/(1-Math.abs(2*l-1)):0,l];};
+  const papel=c=>{const [h,s,l]=hsl(c);if(l<0.18)return 'negro';if(l>0.84||s<0.12&&l>0.6)return 'blanco';if(s<0.12)return l<0.45?'negro':'blanco';
+    if(h>=190&&h<270)return 'azul';if(h>=120&&h<190)return 'verde';return 'melado';};
+  for(const p of Object.values(PATS)){const P=p.paletas,base=P['Alcázar']||P['Alhambra']||Object.values(P)[0];if(!base)continue;
+    const nuevas={};for(const [nom,G] of Object.entries(GAMAS)){if(P[nom])continue;
+      const cols=base.cols.map(c=>G[papel(c)]);if(new Set(cols).size<2)continue;
+      nuevas[nom]={cols,ribbon:G[papel(base.ribbon)]||G.blanco,outline:p.tipo==='mosaico'?G[papel(base.outline)]:G.negro};}
+    const pc=P['Para colorear'],out={};for(const [k,v] of Object.entries(P))if(k!=='Para colorear')out[k]=v;Object.assign(out,nuevas);if(pc)out['Para colorear']=pc;
+    p.paletas=out;}
+})();
 const MONU={alcazar:['Real Alcázar de Sevilla','Royal Alcázar of Seville'],alhambra:['La Alhambra de Granada','The Alhambra of Granada']};
 const monu=p=>tr(...MONU[p.coleccion||'alcazar']);
 // ---------- Inglés (v1.5): nombres, textos y pasos de cada alicatado ----------
 const LIBRO_EN='<em>El Real Alcázar de Sevilla con regla y compás</em> (“The Royal Alcázar of Seville with ruler and compass”)';
-const PAL_EN={'Alcázar':'Alcázar','Alhambra':'Alhambra','Yesería':'Plasterwork','Azul y oro':'Blue & gold','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
+const PAL_EN={'Granate y oro':'Garnet & gold','Tierra':'Earth','Noche':'Night','Pastel':'Pastel','Grises':'Grays','Alcázar':'Alcázar','Alhambra':'Alhambra','Yesería':'Plasterwork','Azul y oro':'Blue & gold','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
 const PAT_EN={
  lazo8:{nombre:'Eight-fold knot',lugar:'Patio de las Muñecas',
   nombres:['Corner star','Small piece by the star','Alfardón (long hexagon)','Side V piece','Triangle by the alfardón','Triangle by the central star','Edge star','Central V piece','Central star'],
@@ -115,7 +136,7 @@ const PAT_EN={
    {h:'Repeat the module',t:'The module repeats by translation until it covers the plane. This works because the regular hexagon is one of the polygons that tile the plane.',c:'If you join the centers of the stars, a network of equilateral triangles appears.'},
    {h:'The straps',t:'Give the lines their width with two parallels and alternate the crossings over and under. In the hall it is plasterwork: everything is plaster-colored and the design reads through the relief.',c:'Try other combinations in the Color tab.'}]},
  taca:{nombre:'Eight-pointed stars and zafates',lugar:'Niches of the Comares Tower · Court of the Myrtles',
-  nombres:['Large sino (eight-pointed star)','Small sino (eight-pointed star)','Zafate (honey groups)','Zafate (green groups)','Black zafate','Four-pointed star','Small piece'],
+  nombres:['Sino (eight-pointed star)','Cross','Zafate (honey groups)','Zafate (green groups)','Black zafate','Four-pointed star','Small piece'],
   resumen:'Blue eight-pointed stars surrounded by green, honey and black zafates on a background of white pieces. It lines the walls of the tacas, the small niches in the entrance arch of the Comares Tower.',
   pie:'It all comes from a square with its inscribed circle: two squares turned 45° give an octagon, and two ever smaller star octagons give the lines of the module. The module is mirrored and the resulting tile is repeated by translation.',
   pasos:[

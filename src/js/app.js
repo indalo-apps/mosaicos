@@ -13,7 +13,8 @@ function guardar(){ESTADO.p[PAT.id]=st;try{localStorage.setItem(ST2,JSON.stringi
 const $=id=>document.getElementById(id);
 function opts(){const [x0,y0,w,h]=PAT.vistas[st.view],o={x0,y0,w,h,cols:st.cols,over:st.over,ribbon:st.ribbon,outline:st.outline,rw:st.rw,ow:st.ow,interlace:st.interlace,wc:st.wc,grid:st.grid,construct:st.construct};
   // «Módulo»: el módulo mínimo del libro (cuadrado girado o hexágono), no el bloque que se repite para los colores
-  const M=PAT.modulo;if(st.view==='mod'&&M){
+  const M=PAT.modulo;if(st.view==='mod'&&PAT.vistaModulo){const [a,b,w,h]=PAT.vistaModulo;Object.assign(o,{x0:a,y0:b,w,h,frame:true});}
+  else if(st.view==='mod'&&M){
     if(M.tipo==='hex'){const R=M.R,a=R*Math.sqrt(3)/2;Object.assign(o,{x0:M.cx-a-0.3,y0:M.cy-R-0.3,w:2*a+0.6,h:2*R+0.6,clip:Array.from({length:6},(_,i)=>{const t=(90+60*i)*Math.PI/180;return [M.cx+R*Math.cos(t),M.cy+R*Math.sin(t)];})});}
     else Object.assign(o,{x0:M.cx-M.m/2,y0:M.cy-M.m/2,w:M.m,h:M.m,giro:M.giro?[M.giro,M.cx,M.cy]:null});
     o.frame=true;}

@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.9">
+<meta name="app-version" content="2.9.1">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1866,18 +1866,19 @@ P.taca=escalar({id:'taca',coleccion:'alhambra',num:15,nombre:'Estrellas de ocho 
   lineas(){const L=[];for(let i=-1;i<=2;i++)for(let j=-1;j<=2;j++){const sx=i%2?-1:1,sy=j%2?-1:1,cx=1+2*i,cy=1+2*j; // simetría por los lados del cuadrado
     for(const t of modulo())L.push([cx+sx*t[0],cy+sy*t[1],cx+sx*t[2],cy+sy*t[3]]);}return L;},
   clase(Q,[x,y]){const n=Q.length,Ar=area(Q)/this.k/this.k,par=(Math.floor(x/2)+Math.floor(y/2))%2===0;
-    if(n===16)return Ar>0.34?0:1;          // sinos: estrella de ocho grande y pequeña
+    if(n===16)return Ar>0.34?0:1;          // 16 lados: el sino (estrella de ocho) o la cruz en X, más pequeña
     if(n===6)return par?2:3;                // zafates en grupos de cuatro: un grupo melado, el siguiente verde
     if(n===8)return Ar>0.2?4:5;             // zafate negro / estrella de cuatro blanca
     return 6;},
-  nombres:['Sino grande (estrella de ocho)','Sino pequeño (estrella de ocho)','Zafate (grupos melados)','Zafate (grupos verdes)','Zafate negro','Estrella de cuatro','Pieza pequeña'],
+  nombres:['Sino (estrella de ocho)','Cruz','Zafate (grupos melados)','Zafate (grupos verdes)','Zafate negro','Estrella de cuatro','Pieza pequeña'],
   paletas:{
-    'Alhambra':{cols:['#2f4fa3','#2f4fa3','#c98b2b','#1f5f5b','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
-    'Azul y oro':{cols:['#2f4fa3','#1f3a7a','#e0b04a','#e0b04a','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
-    'Terracota':{cols:['#8a4b36','#8a4b36','#d98e6e','#e8b49a','#5a3022','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
+    'Alhambra':{cols:['#2f4fa3','#ffffff','#c98b2b','#1f5f5b','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Azul y oro':{cols:['#2f4fa3','#ffffff','#e0b04a','#e0b04a','#161616','#ffffff','#ffffff'],ribbon:'#ffffff',outline:'#ffffff'},
+    'Terracota':{cols:['#8a4b36','#fbf4ec','#d98e6e','#e8b49a','#5a3022','#fbf4ec','#fbf4ec'],ribbon:'#fbf4ec',outline:'#fbf4ec'},
     'Para colorear':{cols:Array(7).fill('#ffffff'),ribbon:'#222222',outline:'#222222'}}
 });
-Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,
+Object.assign(P.taca,{Gt:{a1,d2,d3,c},modBase:modulo,vistaModulo:[0,0,2*P.taca.k,2*P.taca.k], // en Colorear, «Módulo» enseña el cuadrado del paso 5, derecho
+
   // Paso 8: el panel se corona con un friso de almenillas blancas y negras entre dos cenefas verdes. En la figura del libro, cada
   // pareja de almenillas ocupa 8 × 7 cuadros y mide la mitad del lado del cuadrado inicial (una unidad, el radio de la circunferencia).
   panel:{periodo:P.taca.k,cuadros:8,alto:7,cenefa:1.75,campo:[0,0,3*24,2*24],colores:{oscuro:'#161616',claro:'#ffffff',cenefa:'#1f5f5b'}},
@@ -2215,11 +2216,32 @@ const PATS={lazo8:{id:'lazo8',nombre:'Lazo de 8',lugar:'Patio de las Muñecas',p
 for(const p of Object.values(PATRONES.P)){const m=+(p.W*0.06).toFixed(2);
   PATS[p.id]=Object.assign(p,{vistas:{mod:[-m,-m,p.W+2*m,p.H+2*m],'2x2':[0,0,2*p.W,2*p.H],'3x2':[0,0,3*p.W,2*p.H],'4x3':[0,0,4*p.W,3*p.H],panel:p.panel?p.panel.campo:[0,0,3*p.W,2*p.H]},
     titulo:p.nombre+' · '+p.lugar,intro:p.coleccion==='alhambra'?`Es el alicatado n.º ${p.num} de <em>La Alhambra con regla y compás</em>. ${p.resumen}`:`Es el alicatado de las páginas ${p.pags} de <em>El Real Alcázar de Sevilla con regla y compás</em>. ${p.resumen}`});}
+// ---------- Más paletas (v2.9.1): las de siempre se recolorean por papeles (negro, azul, verde, melado, blanco) ----------
+// Así cada pieza conserva su papel (los sinos, los zafates, la cinta…) y cambia solo la gama. «Grises» ordena por claridad: sirve sin distinguir colores.
+(function(){
+  const GAMAS={'Azul y blanco':{negro:'#1e3a78',azul:'#3d63a8',verde:'#9ab6dc',melado:'#dfe8f4',blanco:'#ffffff'},
+    'Verde y oro':{negro:'#0f3b36',azul:'#2f7a6d',verde:'#d4a83c',melado:'#e9c86a',blanco:'#f8f3e6'},
+    'Granate y oro':{negro:'#2a1416',azul:'#7a2e3a',verde:'#c98b2b',melado:'#e0b04a',blanco:'#fbf4ec'},
+    'Tierra':{negro:'#3a2a20',azul:'#8a4b36',verde:'#6f7f45',melado:'#d98e6e',blanco:'#fbf4ec'},
+    'Noche':{negro:'#0e1726',azul:'#d4a83c',verde:'#1f4f6b',melado:'#7a2e3a',blanco:'#e8e2d0'},
+    'Pastel':{negro:'#5d6b82',azul:'#9ab6dc',verde:'#a8d5c2',melado:'#f2c9a0',blanco:'#ffffff'},
+    'Grises':{negro:'#1a1a1a',azul:'#5a5a5a',verde:'#8f8f8f',melado:'#c8c8c8',blanco:'#ffffff'}};
+  const hsl=h=>{const n=parseInt(h.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;
+    let hh=0;if(d){hh=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;hh*=60;if(hh<0)hh+=360;}return [hh,d?d/(1-Math.abs(2*l-1)):0,l];};
+  const papel=c=>{const [h,s,l]=hsl(c);if(l<0.18)return 'negro';if(l>0.84||s<0.12&&l>0.6)return 'blanco';if(s<0.12)return l<0.45?'negro':'blanco';
+    if(h>=190&&h<270)return 'azul';if(h>=120&&h<190)return 'verde';return 'melado';};
+  for(const p of Object.values(PATS)){const P=p.paletas,base=P['Alcázar']||P['Alhambra']||Object.values(P)[0];if(!base)continue;
+    const nuevas={};for(const [nom,G] of Object.entries(GAMAS)){if(P[nom])continue;
+      const cols=base.cols.map(c=>G[papel(c)]);if(new Set(cols).size<2)continue;
+      nuevas[nom]={cols,ribbon:G[papel(base.ribbon)]||G.blanco,outline:p.tipo==='mosaico'?G[papel(base.outline)]:G.negro};}
+    const pc=P['Para colorear'],out={};for(const [k,v] of Object.entries(P))if(k!=='Para colorear')out[k]=v;Object.assign(out,nuevas);if(pc)out['Para colorear']=pc;
+    p.paletas=out;}
+})();
 const MONU={alcazar:['Real Alcázar de Sevilla','Royal Alcázar of Seville'],alhambra:['La Alhambra de Granada','The Alhambra of Granada']};
 const monu=p=>tr(...MONU[p.coleccion||'alcazar']);
 // ---------- Inglés (v1.5): nombres, textos y pasos de cada alicatado ----------
 const LIBRO_EN='<em>El Real Alcázar de Sevilla con regla y compás</em> (“The Royal Alcázar of Seville with ruler and compass”)';
-const PAL_EN={'Alcázar':'Alcázar','Alhambra':'Alhambra','Yesería':'Plasterwork','Azul y oro':'Blue & gold','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
+const PAL_EN={'Granate y oro':'Garnet & gold','Tierra':'Earth','Noche':'Night','Pastel':'Pastel','Grises':'Grays','Alcázar':'Alcázar','Alhambra':'Alhambra','Yesería':'Plasterwork','Azul y oro':'Blue & gold','Melado y cobalto':'Honey & cobalt','Terracota':'Terracotta','Azulejo portugués':'Portuguese azulejo','Verde y oro':'Green & gold','Para colorear':'For coloring','Azul y blanco':'Blue & white','Cobalto':'Cobalt','Dos azules':'Two blues','Melado':'Honey','Grises':'Grays','Verde y negro':'Green & black','Azul':'Blue','Verde y melado':'Green & honey'};
 const PAT_EN={
  lazo8:{nombre:'Eight-fold knot',lugar:'Patio de las Muñecas',
   nombres:['Corner star','Small piece by the star','Alfardón (long hexagon)','Side V piece','Triangle by the alfardón','Triangle by the central star','Edge star','Central V piece','Central star'],
@@ -2324,7 +2346,7 @@ const PAT_EN={
    {h:'Repeat the module',t:'The module repeats by translation until it covers the plane. This works because the regular hexagon is one of the polygons that tile the plane.',c:'If you join the centers of the stars, a network of equilateral triangles appears.'},
    {h:'The straps',t:'Give the lines their width with two parallels and alternate the crossings over and under. In the hall it is plasterwork: everything is plaster-colored and the design reads through the relief.',c:'Try other combinations in the Color tab.'}]},
  taca:{nombre:'Eight-pointed stars and zafates',lugar:'Niches of the Comares Tower · Court of the Myrtles',
-  nombres:['Large sino (eight-pointed star)','Small sino (eight-pointed star)','Zafate (honey groups)','Zafate (green groups)','Black zafate','Four-pointed star','Small piece'],
+  nombres:['Sino (eight-pointed star)','Cross','Zafate (honey groups)','Zafate (green groups)','Black zafate','Four-pointed star','Small piece'],
   resumen:'Blue eight-pointed stars surrounded by green, honey and black zafates on a background of white pieces. It lines the walls of the tacas, the small niches in the entrance arch of the Comares Tower.',
   pie:'It all comes from a square with its inscribed circle: two squares turned 45° give an octagon, and two ever smaller star octagons give the lines of the module. The module is mirrored and the resulting tile is repeated by translation.',
   pasos:[
@@ -2412,7 +2434,8 @@ function guardar(){ESTADO.p[PAT.id]=st;try{localStorage.setItem(ST2,JSON.stringi
 const $=id=>document.getElementById(id);
 function opts(){const [x0,y0,w,h]=PAT.vistas[st.view],o={x0,y0,w,h,cols:st.cols,over:st.over,ribbon:st.ribbon,outline:st.outline,rw:st.rw,ow:st.ow,interlace:st.interlace,wc:st.wc,grid:st.grid,construct:st.construct};
   // «Módulo»: el módulo mínimo del libro (cuadrado girado o hexágono), no el bloque que se repite para los colores
-  const M=PAT.modulo;if(st.view==='mod'&&M){
+  const M=PAT.modulo;if(st.view==='mod'&&PAT.vistaModulo){const [a,b,w,h]=PAT.vistaModulo;Object.assign(o,{x0:a,y0:b,w,h,frame:true});}
+  else if(st.view==='mod'&&M){
     if(M.tipo==='hex'){const R=M.R,a=R*Math.sqrt(3)/2;Object.assign(o,{x0:M.cx-a-0.3,y0:M.cy-R-0.3,w:2*a+0.6,h:2*R+0.6,clip:Array.from({length:6},(_,i)=>{const t=(90+60*i)*Math.PI/180;return [M.cx+R*Math.cos(t),M.cy+R*Math.sin(t)];})});}
     else Object.assign(o,{x0:M.cx-M.m/2,y0:M.cy-M.m/2,w:M.m,h:M.m,giro:M.giro?[M.giro,M.cx,M.cy]:null});
     o.frame=true;}
@@ -3234,7 +3257,7 @@ const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1
 const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
 const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
 // todas las medidas, en centímetros (internamente se guardan en milímetros)
-const num=(v,d=2)=>(Math.round(v*10**d)/10**d).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:d});
+const num=(v,d=1)=>(Math.round(v*10**d)/10**d).toLocaleString(EN?'en':'es',{minimumFractionDigits:1,maximumFractionDigits:d});
 const cm=v=>num(v/10)+' cm';
 // Papel y escala: dónde cabe el dibujo de columnas × filas (R = resultado de tsConstruir)
 function calcPapel(R){const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0),a=+PP.w||0,b=+PP.h||0;
@@ -3446,6 +3469,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.9.1",["🎨 More palettes in every tile pattern: Blue & white, Green & gold, Garnet & gold, Earth, Night, Pastel and Grays (by lightness)","🔧 Niches of the Comares Tower: the X crosses are white, as in the book, and “Module” shows the square from step 5, upright","📏 Measurements in cm with one decimal"]],
     ["2.9",["📄 On paper › Actual-size template: a PDF of your paper with margins, modules, starting figure and a 5 cm bar to check the scale","📏 Each Draw step tells you its measurements in cm for your paper (radius, distances, strap width)","⭕ The paper preview draws the starting circle or square with its size","📐 All measurements in centimeters","🧱 Color › Panel: the niche from the Comares Tower with its frieze of merlons and green borders, as in the book","🎨 The Alhambra in blue and the Alcázar in green","⚡ Opens faster: the gallery and the home screen remember their drawings"]],
     ["2.8",["🧩 New Alhambra tile pattern: eight-pointed stars and zafates from the niches of the Comares Tower (no. 15), with its 8 steps from the book","📏 Tessellate › On paper: choose A5, A4, A3 or a custom size and see how big each module and the starting circle or square must be, with the margins drawn to scale","🔍 Zoom in on the drawing with two fingers, Ctrl + wheel or the + button; “Normal size” puts it back","🖼️ Gallery in book order, with page or number, steps, pieces and difficulty","📚 Settings: the two books by Manuel Martínez Vela, contact and privacy","🔤 The fonts come with the app: titles always look right, even offline","✨ A short fade when changing stage or screen"]],
     ["2.7",["🏷️ Each tile pattern opens with its own cover: the wall in color, the book and page, the place, the steps and the pieces","✏️ Drawn icons instead of emojis on buttons: they look the same on every phone","🖥️ On iPad and computer the drawing sits beside the steps and colors, and always fits on screen","🧪 Behind the scenes: an automatic test checks every pattern against the book's measurements"]],
@@ -3474,6 +3498,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.9.1",["🎨 Más paletas en todos los alicatados: Azul y blanco, Verde y oro, Granate y oro, Tierra, Noche, Pastel y Grises (por claridad)","🔧 Tacas de la Torre de Comares: las cruces en X son blancas, como en el libro, y «Módulo» enseña el cuadrado del paso 5, derecho","📏 Medidas en cm con un decimal"]],
     ["2.9",["📄 En papel › Plantilla a tamaño real: un PDF de tu papel con márgenes, módulos, figura de partida y una raya de 5 cm para comprobar la escala","📏 Cada paso de Trazar te dice sus medidas en cm para tu papel (radios, distancias, ancho de la cinta)","⭕ En la vista del papel se dibuja la circunferencia o el cuadrado de partida con su medida","📐 Todas las medidas, en centímetros","🧱 Colorear › Panel: la taca de la Torre de Comares con su friso de almenillas y sus cenefas verdes, como en el libro","🎨 La Alhambra en azul y el Alcázar en verde","⚡ Abre más rápido: la galería y la portada recuerdan sus dibujos"]],
     ["2.8",["🧩 Alicatado nuevo de la Alhambra: estrellas de ocho y zafates de las tacas de la Torre de Comares (n.º 15), con sus 8 pasos del libro","📏 Teselar › En papel: elige A5, A4, A3 o un papel a medida y verás cuánto miden el módulo y la circunferencia o el cuadrado de partida, con los márgenes a escala","🔍 Amplía el dibujo con dos dedos, Ctrl + rueda o el botón +; «Tamaño normal» lo deja como estaba","🖼️ Galería en el orden del libro, con página o número, pasos, piezas y dificultad","📚 Ajustes: los dos libros de Manuel Martínez Vela, contacto y privacidad","🔤 Los tipos de letra van dentro de la app: los títulos se ven siempre bien, también sin conexión","✨ Un fundido corto al cambiar de etapa o de pantalla"]],
     ["2.7",["🏷️ Cada alicatado empieza con su portada: el muro en color, el libro y la página, el lugar, los pasos y las piezas","✏️ Iconos dibujados en vez de emojis en los botones: se ven igual en todos los móviles","🖥️ En el iPad y el ordenador el dibujo va al lado de los pasos y los colores, y cabe siempre entero","🧪 Por dentro: una prueba automática comprueba cada alicatado con las medidas del libro"]],

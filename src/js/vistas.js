@@ -174,6 +174,10 @@ function calcPapel(R){const [vx,vy,vw,vh]=R.vb,m=Math.max(0,+PP.m||0),a=+PP.w||0
 function centroFig(R){const M=PAT.modulo;if(!FIG[PAT.id]||!M)return null;
   if(M.tipo==='hex')return TS.forma==='tri'?null:[M.cx,M.cy];
   const f=M.fig||0.5;return [R.red.O[0]+M.m*f,R.red.O[1]+M.m*f];} // M.fig: dónde cae el cuadrado de partida dentro del módulo (n.º 28: el primer módulo de la baldosa)
+// Centros de todos los módulos del dibujo (v2.14): donde se pincha el compás en cada uno, en coordenadas del dibujo
+function centrosFig(R){const C=centroFig(R),M=PAT.modulo;if(!C)return [];const L=[];
+  if(M.tipo==='hex'){const a=M.R*Math.sqrt(3)/2;for(let j=0;j<EX.r;j++)for(let i=0;i<EX.c;i++)L.push([M.cx+i*2*a+(j%2)*a,M.cy+j*1.5*M.R]);return L;}
+  const {A,B}=R.red;for(let j=0;j<EX.r;j++)for(let i=0;i<EX.c;i++)L.push([C[0]+i*A[0]+j*B[0],C[1]+i*A[1]+j*B[1]]);return L;}
 // Papel en SVG (mm): el dibujo a escala, márgenes, cotas en cm y la figura de partida
 function svgPapel(R,G,{conCotas=true,conDibujo=true,gris=false,pagina=false}={}){
   const {PW,PH,x0,y0,dw,dh,k,m}=G,[vx,vy,vw,vh]=G.vb,kl=PAT.k||1,fs=Math.max(PW,PH)/22,sw=Math.max(PW,PH)/400;
@@ -199,7 +203,7 @@ function svgPapel(R,G,{conCotas=true,conDibujo=true,gris=false,pagina=false}={})
     // v2.13: dónde pinchar el compás, medido desde el borde izquierdo y el de arriba del papel
     if(conCotas){const RO2='#b5444b',d=`stroke="${RO2}" stroke-width="${sw}" stroke-dasharray="${sw*3} ${sw*2}"`;
       f+=`<line x1="0" y1="${cy}" x2="${cx}" y2="${cy}" ${d} marker-start="url(#pp-flr)"/><line x1="${cx}" y1="0" x2="${cx}" y2="${cy}" ${d} marker-start="url(#pp-flr)"/>`+
-        `<line x1="${cx-fs*0.5}" y1="${cy}" x2="${cx+fs*0.5}" y2="${cy}" stroke="${RO2}" stroke-width="${sw*1.4}"/><line x1="${cx}" y1="${cy-fs*0.5}" x2="${cx}" y2="${cy+fs*0.5}" stroke="${RO2}" stroke-width="${sw*1.4}"/>`+
+        centrosFig(R).map(([u,v])=>{const px=X(u),py=Y(v);return `<line x1="${px-fs*0.5}" y1="${py}" x2="${px+fs*0.5}" y2="${py}" stroke="${RO2}" stroke-width="${sw*1.4}"/><line x1="${px}" y1="${py-fs*0.5}" x2="${px}" y2="${py+fs*0.5}" stroke="${RO2}" stroke-width="${sw*1.4}"/><circle cx="${px}" cy="${py}" r="${sw*2}" fill="${RO2}"/>`;}).join('')+
         txt(Math.max(fs*1.6,cx/2),cy+fs*1.05,cm(cx),RO2)+`<g transform="rotate(-90 ${cx-fs*0.45} ${Math.max(fs*1.6,cy/2)})">${txt(cx-fs*0.45,Math.max(fs*1.6,cy/2),cm(cy),RO2)}</g>`;}
     s+=f;}
   if(pagina){ // plantilla para imprimir: pie con las medidas y una raya de 5 cm para comprobar la escala
@@ -239,7 +243,10 @@ function pintarPapel(R){if(!$('tab-imprimir').classList.contains('show'))return;
   $('pp-vista').setAttribute('aria-label',tr(`Papel de ${num(PW/10)} × ${cm(PH)} con el dibujo de ${num(dw/10)} × ${cm(dh)} en el centro`,`A ${num(PW/10)} × ${cm(PH)} sheet with the ${num(dw/10)} × ${cm(dh)} drawing in the middle`));
   const hex=M&&M.tipo==='hex'&&TS.forma!=='tri',tam=R.red.tam*k;
   const base=medidasPapel(G).map(([t,v],i)=>`<dt${i?'':' class="pp-main"'}>${t}</dt><dd${i?'':' class="pp-main"'}>${v}</dd>`).join('');
-  const C=centroFig(R),centro=C?`<dt>${tr('Dónde pinchar el compás','Where to put the compass point')}</dt><dd>${tr(`a ${cm(x0+(C[0]-G.vb[0])*k)} del borde izquierdo y a ${cm(y0+(C[1]-G.vb[1])*k)} del borde de arriba del papel (la cruz roja)`,`${cm(x0+(C[0]-G.vb[0])*k)} from the left edge and ${cm(y0+(C[1]-G.vb[1])*k)} from the top edge of the sheet (the red cross)`)}</dd>`:'';
+  const CS=centrosFig(R).map(([u,v])=>[x0+(u-G.vb[0])*k,y0+(v-G.vb[1])*k]);let centro='';
+  if(CS.length){const filas=[];for(const [x,y] of CS){let f=filas.find(q=>Math.abs(q.y-y)<0.05);if(!f)filas.push(f={y,xs:[]});f.xs.push(x);}
+    filas.sort((a,b)=>a.y-b.y);const lis=filas.map(f=>`<li>${tr(`A ${cm(f.y)} del borde de arriba:`,`${cm(f.y)} from the top edge:`)} <b>${f.xs.sort((a,b)=>a-b).map(x=>cm(x).replace(' cm','')).join(' · ')} cm</b> ${tr('del borde izquierdo','from the left edge')}</li>`).join('');
+    centro=`<dt>${tr(CS.length>1?'Dónde pinchar el compás (las cruces rojas, una por módulo)':'Dónde pinchar el compás (la cruz roja)',CS.length>1?'Where to put the compass point (the red crosses, one per module)':'Where to put the compass point (the red cross)')}</dt><dd><ul class="pp-centros">${lis}</ul>${CS.length>1?`<span class="pp-nota">${tr('Mide las dos distancias desde las esquinas del papel; con la plantilla en PDF las cruces ya salen marcadas.','Measure both distances from the corners of the sheet; the PDF template already marks the crosses.')}</span>`:''}</dd>`;}
   const modTxt=hex?tr(`${cm(M.R*k)} de lado (hexágono)`,`${cm(M.R*k)} per side (hexagon)`):tr(`${cm(tam)} de lado`,`${cm(tam)} per side`);
   $('pp-res').innerHTML=base+centro+`<dt>${tr('Cada módulo','Each module')}</dt><dd>${modTxt}</dd>`+
     `<dt>${tr('Dibujo entero','Whole drawing')}</dt><dd>${num(dw/10)} × ${cm(dh)} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}</dd>`+
@@ -275,7 +282,14 @@ window.pintarImprimir=function(){$('imp-info').textContent=tr(`Se imprime el dib
 document.querySelector('#tab-imprimir .caminos').addEventListener('click',e=>{const b=e.target.closest('[data-imp]');if(!b)return;EX.modo=b.dataset.imp;exGuardar();exPintar();window.abrirDlg('dlg-exportar');});
 $('imp-ant').onclick=()=>window.tabEtapa('colorear');
 // ---- Glosario
-function pintarGlosario(f){const q=(f||'').trim().toLowerCase();$('glo-lista').innerHTML=GLOSARIO.filter(g=>!q||(g[0]+g[1]+g[2]+g[3]).toLowerCase().includes(q)).sort((x,y)=>q?((y[0]+y[1]).toLowerCase().includes(q))-((x[0]+x[1]).toLowerCase().includes(q)):0).map(g=>`<dt>${EN?g[1]:g[0]}</dt><dd>${EN?g[3]:g[2]}${EN&&g[1]!==g[0]?`<small>${tr('','Spanish: ')}${g[0]}</small>`:''}</dd>`).join('')||`<dd>${tr('No hay ningún término con esa búsqueda.','No term matches that search.')}</dd>`;}
+// Dibujo de cada figura del glosario (v2.14): la pieza resaltada en oscuro sobre un alicatado de la app, con el resto en claro
+const GLO_IMG={'Alfardón':['alfardones',[0,1],1],'Almendrilla':['jambas31',[12,13],0.5],'Candilejo':['jambas31',[8,9,10,11],0.5],'Sino':['jambas31',[0,3],0.5],'Zafate (o azafate)':['jambas31',[1,2,4,5,6],0.5],'Rueda':['jambas31',null,0.5]},GLO_CACHE={};
+function gloImg(t){const m=GLO_IMG[t];if(!m||!PATS[m[0]])return '';if(GLO_CACHE[t])return GLO_CACHE[t];const [id,ks,z]=m,P=PATS[id],v=P.vistas.mod,pal=Object.values(P.paletas)[0];
+  const w=v[2]*z,x0=v[0]+(v[2]-w)/2,y0=v[1]+(v[3]-w)/2,cols=ks?P.nombres.map((_,i)=>ks.includes(i)?'#1f5f5b':'#e6dfcf'):pal.cols;
+  const sv=renderLazo(datos(P),{x0,y0,w,h:w,cols,over:{},ribbon:'#ffffff',outline:'#555',rw:P.rw,ow:P.ow,interlace:P.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"');
+  const pie=ks?tr(`Las piezas oscuras, en ${P.nombre} (${P.lugar}).`,`The dark pieces, in ${P.nombre} (${P.lugar}).`):tr(`Una rueda de dieciséis en ${P.nombre} (${P.lugar}).`,`A wheel of sixteen in ${P.nombre} (${P.lugar}).`);
+  return GLO_CACHE[t]=`<figure class="glo-fig"><div class="glo-img">${sv}</div><figcaption>${pie}</figcaption></figure>`;}
+function pintarGlosario(f){const q=(f||'').trim().toLowerCase();$('glo-lista').innerHTML=GLOSARIO.filter(g=>!q||(g[0]+g[1]+g[2]+g[3]).toLowerCase().includes(q)).sort((x,y)=>q?((y[0]+y[1]).toLowerCase().includes(q))-((x[0]+x[1]).toLowerCase().includes(q)):0).map(g=>`<dt>${EN?g[1]:g[0]}</dt><dd>${EN?g[3]:g[2]}${EN&&g[1]!==g[0]?`<small>${tr('','Spanish: ')}${g[0]}</small>`:''}${gloImg(g[0])}</dd>`).join('')||`<dd>${tr('No hay ningún término con esa búsqueda.','No term matches that search.')}</dd>`;}
 const abrirGlo=()=>{pintarGlosario($('glo-buscar').value);window.abrirDlg('dlg-glosario');};
 $('btn-glosario').onclick=abrirGlo;$('glo-aprender').onclick=abrirGlo;
 if(EN)$('glo-buscar').placeholder='Search…';

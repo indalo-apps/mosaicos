@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.15">
+<meta name="app-version" content="2.16">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3677,28 +3677,54 @@ function svgPapel(R,G,{conCotas=true,conDibujo=true,gris=false,pagina=false}={})
   const X=x=>x0+(x-vx)*k,Y=y=>y0+(y-vy)*k;
   let dib='';if(conDibujo){dib=R.sv.replace(/<svg([^>]*?)\swidth="[^"]*"/,'<svg$1').replace('<svg ',`<svg x="${x0}" y="${y0}" width="${dw}" height="${dh}" `);if(gris)dib=`<g opacity="0.35">${dib}</g>`;}
   const flecha=`<marker id="pp-fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker><marker id="pp-flr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b5444b"/></marker>`;
-  const txt=(x,y,t,col='#1d4ed8',anc='middle')=>`<text x="${x}" y="${y}" font-size="${fs}" text-anchor="${anc}" fill="${col}" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}">${t}</text>`;
-  const cota=(x1,y1,x2,y2,t,dx,dy)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d4ed8" stroke-width="${sw}" marker-start="url(#pp-fl)" marker-end="url(#pp-fl)"/>`+txt((x1+x2)/2+dx,(y1+y2)/2+dy,t);
+  // v2.16: las medidas no se pisan. Cada texto tiene varios sitios posibles y se pone en el primero libre (cajas medidas con el tipo de letra)
+  const raya=(x1,y1,x2,y2,col='#1d4ed8',mk='pp-fl')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${sw}" marker-start="url(#${mk})" marker-end="url(#${mk})"/>`;
+  const ETQ=[],CR=[];let mc=null;try{mc=document.createElement('canvas').getContext('2d');mc.font=`${fs}px Inter,sans-serif`;}catch(e){}
+  const ancho=t=>(mc?mc.measureText(t).width:t.length*fs*0.58)*1.08+fs*0.3;
+  const caja=(t,{x,y,anc='middle',rot=0})=>{const w=ancho(t),a=fs*0.82,d=fs*0.3;
+    if(rot)return [x-a,y-w/2,x+d,y+w/2];const l=anc==='start'?x:anc==='end'?x-w:x-w/2;return [l-fs*0.12,y-a,l+w-fs*0.12,y+d];};
+  const OP=[0.5,0.3,0.7,0.15,0.85,0.05,0.95];
+  const enH=(x1,x2,y,lados=['a','b'])=>{const L=[];for(const t of OP)for(const l of lados)L.push({x:x1+(x2-x1)*t,y:l==='a'?y-fs*0.38:y+fs*1.05});
+    L.push({x:Math.min(x1,x2)-fs*0.35,y:y+fs*0.35,anc:'end'},{x:Math.max(x1,x2)+fs*0.35,y:y+fs*0.35,anc:'start'});return L;};
+  const enV=(x,y1,y2,lados=['i','d'])=>{const L=[];for(const t of OP){const y=y1+(y2-y1)*t;for(const l of lados)L.push({x:l==='i'?x-fs*0.38:x+fs*1.05,y,rot:1});
+    L.push({x:x+fs*0.45,y:y+fs*0.35,anc:'start'},{x:x-fs*0.45,y:y+fs*0.35,anc:'end'});}return L;};
+  const etq=(t,col,cands,pr=2)=>ETQ.push({t,col,cands,pr});
+  // sitios más alejados, con una rayita que lleva a la figura (cuando la figura es pequeña y cerca no cabe el texto)
+  const lejos=(x,arriba,abajo,ax,ay)=>{const L=[];for(let n=1;n<=5;n++)for(const y of [abajo+fs*(1.05+1.25*n),arriba-fs*(0.38+1.25*n)])for(const dx of [0,-1.6,1.6,-3.2,3.2])L.push({x:x+dx*fs,y,ld:[ax,ay],pen:fs*fs*(0.6+0.25*n+Math.abs(dx)*0.1)});return L;};
+  const LN=[],tramo=(x1,y1,x2,y2)=>LN.push([Math.min(x1,x2)-sw,Math.min(y1,y2)-sw,Math.max(x1,x2)+sw,Math.max(y1,y2)+sw]); // rayas que conviene no tapar
   let s=`<rect x="0" y="0" width="${PW}" height="${PH}" fill="#fff" stroke="#8a8172" stroke-width="${sw*1.5}"/>`+
     `<rect x="${m}" y="${m}" width="${PW-2*m}" height="${PH-2*m}" fill="none" stroke="#8a8172" stroke-width="${sw}" stroke-dasharray="${sw*6} ${sw*4}"/>`+dib+
     `<rect x="${x0}" y="${y0}" width="${dw}" height="${dh}" fill="none" stroke="#1d4ed8" stroke-width="${sw}"/>`;
   if(conCotas){
-    if(y0>fs*1.6)s+=cota(x0,y0-fs*0.6,x0+dw,y0-fs*0.6,cm(dw),0,-fs*0.35);
-    if(x0>fs*1.6)s+=`<g transform="rotate(-90 ${x0-fs*0.6} ${y0+dh/2})">${cota(x0-fs*0.6-dh/2,y0+dh/2,x0-fs*0.6+dh/2,y0+dh/2,cm(dh),0,-fs*0.35)}</g>`;
-    if(PH-y0-dh>sw*4)s+=cota(PW/2,y0+dh,PW/2,PH,cm(PH-y0-dh),fs*2.4,fs*0.35);
-    if(PW-x0-dw>sw*4){const yl=y0+dh*0.82;s+=cota(x0+dw,yl,PW,yl,cm(PW-x0-dw),0,-fs*0.35);}}  // v2.13: también el margen lateral
+    if(y0>fs*1.6){const yl=y0-fs*0.6;s+=raya(x0,yl,x0+dw,yl);tramo(x0,yl,x0+dw,yl);etq(cm(dw),'#1d4ed8',enH(x0,x0+dw,yl,['a']));}
+    if(x0>fs*1.6){const xl=x0-fs*0.6;s+=raya(xl,y0,xl,y0+dh);tramo(xl,y0,xl,y0+dh);etq(cm(dh),'#1d4ed8',enV(xl,y0+dh,y0,['i']));}
+    if(PH-y0-dh>sw*4){s+=raya(PW/2,y0+dh,PW/2,PH);tramo(PW/2,y0+dh,PW/2,PH);etq(cm(PH-y0-dh),'#1d4ed8',enV(PW/2,y0+dh,PH,[]).concat(enV(PW/2,y0+dh,PH)));}
+    if(PW-x0-dw>sw*4){const yl=y0+dh*0.82;s+=raya(x0+dw,yl,PW,yl);tramo(x0+dw,yl,PW,yl);etq(cm(PW-x0-dw),'#1d4ed8',enH(x0+dw,PW,yl));}}  // v2.13: también el margen lateral
   // figura de partida sobre el primer módulo, con su medida
   const C=centroFig(R);
   if(C){const cx=X(C[0]),cy=Y(C[1]),RO='#b5444b';let f='';
     for(const q of FIG[PAT.id]){
-      if(q.r){const r=q.r*kl*k;f+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}"/><line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="${RO}" stroke-width="${sw*1.2}"/><circle cx="${cx}" cy="${cy}" r="${sw*2.5}" fill="${RO}"/>`+txt(cx+r/2,cy-fs*0.35,'R '+cm(r),RO);}
-      else{const l=q.lado*kl*k;f+=`<rect x="${cx-l/2}" y="${cy-l/2}" width="${l}" height="${l}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}" stroke-dasharray="${sw*5} ${sw*2.5}" transform="rotate(${q.giro} ${cx} ${cy})"/>`+(q.giro?'':txt(cx,cy-l/2-fs*0.3,cm(l),RO));}}
+      if(q.r){const r=q.r*kl*k;f+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}"/><line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="${RO}" stroke-width="${sw*1.2}"/><circle cx="${cx}" cy="${cy}" r="${sw*2.5}" fill="${RO}"/>`;
+        etq('R '+cm(r),RO,enH(cx,cx+r,cy).concat([{x:cx,y:cy-r-fs*0.3},{x:cx,y:cy+r+fs*1.0},{x:cx+r*0.75,y:cy-r*0.75-fs*0.2,anc:'start'},{x:cx+r*0.75,y:cy+r*0.75+fs*0.9,anc:'start'}],lejos(cx+r/2,cy-r,cy+r,cx+r/2,cy)),0);}
+      else{const l=q.lado*kl*k;f+=`<rect x="${cx-l/2}" y="${cy-l/2}" width="${l}" height="${l}" fill="none" stroke="${RO}" stroke-width="${sw*1.6}" stroke-dasharray="${sw*5} ${sw*2.5}" transform="rotate(${q.giro} ${cx} ${cy})"/>`;
+        if(!q.giro){const sinPunta=L=>L.filter(c=>!c.anc);etq(cm(l),RO,sinPunta(enH(cx-l/2,cx+l/2,cy-l/2,['a'])).concat(sinPunta(enH(cx-l/2,cx+l/2,cy+l/2,['b'])),sinPunta(enV(cx-l/2,cy+l/2,cy-l/2,['i'])),sinPunta(enV(cx+l/2,cy+l/2,cy-l/2,['d'])),lejos(cx,cy-l/2,cy+l/2,cx-l/2,cy-l/2)),0);}}}
     // v2.13: dónde pinchar el compás, medido desde el borde izquierdo y el de arriba del papel
     if(conCotas){const RO2='#b5444b',d=`stroke="${RO2}" stroke-width="${sw}" stroke-dasharray="${sw*3} ${sw*2}"`;
       f+=`<line x1="0" y1="${cy}" x2="${cx}" y2="${cy}" ${d} marker-start="url(#pp-flr)"/><line x1="${cx}" y1="0" x2="${cx}" y2="${cy}" ${d} marker-start="url(#pp-flr)"/>`+
-        centrosFig(R).map(([u,v])=>{const px=X(u),py=Y(v);return `<line x1="${px-fs*0.5}" y1="${py}" x2="${px+fs*0.5}" y2="${py}" stroke="${RO2}" stroke-width="${sw*1.4}"/><line x1="${px}" y1="${py-fs*0.5}" x2="${px}" y2="${py+fs*0.5}" stroke="${RO2}" stroke-width="${sw*1.4}"/><circle cx="${px}" cy="${py}" r="${sw*2}" fill="${RO2}"/>`;}).join('')+
-        txt(Math.max(fs*1.6,cx/2),cy+fs*1.05,cm(cx),RO2)+`<g transform="rotate(-90 ${cx-fs*0.45} ${Math.max(fs*1.6,cy/2)})">${txt(cx-fs*0.45,Math.max(fs*1.6,cy/2),cm(cy),RO2)}</g>`;}
+        centrosFig(R).map(([u,v])=>{const px=X(u),py=Y(v);CR.push([px-fs*0.5,py-fs*0.5,px+fs*0.5,py+fs*0.5]);return `<line x1="${px-fs*0.5}" y1="${py}" x2="${px+fs*0.5}" y2="${py}" stroke="${RO2}" stroke-width="${sw*1.4}"/><line x1="${px}" y1="${py-fs*0.5}" x2="${px}" y2="${py+fs*0.5}" stroke="${RO2}" stroke-width="${sw*1.4}"/><circle cx="${px}" cy="${py}" r="${sw*2}" fill="${RO2}"/>`;}).join('');
+      tramo(0,cy,cx,cy);tramo(cx,0,cx,cy);etq(cm(cx),RO2,enH(0,cx,cy,['b','a']).concat(lejos(cx/2,cy,cy,cx/2,cy)),1);etq(cm(cy),RO2,enV(cx,0,cy).concat(lejos(cx,cy/2,cy/2,cx,cy/2)),1);}
     s+=f;}
+  // colocar los textos: primero el sitio sin choques; si no hay, el que menos pisa (dentro del papel o de la vista)
+  {const pie=pagina?Math.max(3,m*0.35)+Math.min(3.2,Math.max(2.2,m*0.28))*2.6:0,LIM=pagina?[0,0,PW,PH-pie]:[-fs,-fs,PW+fs,PH+fs],P=[];
+    const sol=(a,b)=>Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0]))*Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1]));
+    const fuera=b=>{const w=b[2]-b[0],h=b[3]-b[1];return w*h-sol(b,LIM);};
+    ETQ.sort((a,b)=>a.pr-b.pr); // primero lo de la figura, luego dónde pinchar y al final las cotas del papel, que tienen más sitios donde ir
+    for(const e of ETQ){let mejor=null,mp=Infinity;
+      for(const c of e.cands){const b=caja(e.t,c),p=(c.pen||0)+fuera(b)*1000+P.reduce((z,q)=>z+sol(b,q),0)*1000+CR.reduce((z,q)=>z+sol(b,q),0)+LN.reduce((z,q)=>z+sol(b,q),0)*2;
+        if(p<mp-1e-6){mp=p;mejor=c;if(p===0)break;}}
+      if(!mejor)continue;const bx=caja(e.t,mejor);P.push(bx);const {x,y,anc='middle',rot,ld}=mejor;
+      if(ld){const px=Math.max(bx[0],Math.min(ld[0],bx[2])),py=Math.max(bx[1],Math.min(ld[1],bx[3]));s+=`<line x1="${px}" y1="${py}" x2="${ld[0]}" y2="${ld[1]}" stroke="${e.col}" stroke-width="${sw*0.9}"/><circle cx="${ld[0]}" cy="${ld[1]}" r="${sw*1.6}" fill="${e.col}"/>`;}
+      s+=`<text x="${x}" y="${y}" font-size="${fs}" text-anchor="${anc}" fill="${e.col}" font-family="Inter,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${fs/4}"${rot?` transform="rotate(-90 ${x} ${y})"`:''}>${e.t}</text>`;}}
   if(pagina){ // plantilla para imprimir: pie con las medidas y una raya de 5 cm para comprobar la escala
     const t=Math.min(3.2,Math.max(2.2,m*0.28)),yb=PH-Math.max(3,m*0.35),med=medidasPapel(G).map(([a,b])=>a+': '+b).join(' · ');
     const linea=(x,y,str,anc='start',col='#555')=>`<text x="${x}" y="${y}" font-size="${t}" text-anchor="${anc}" fill="${col}" font-family="Inter,sans-serif">${str}</text>`;
@@ -3913,6 +3939,7 @@ colocar();setTimeout(todo,300);
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.16",["📏 On paper: the measurements no longer overlap; each one goes where it fits and, if the figure is very small, a short line points to it"]],
     ["2.15",["📱 Phone: the drawing that stays at the top takes about a third of the screen, so the step text and the Next button are always in view","↕️ After Next, the screen moves to the new step’s text","🧭 Opening a tile pattern now shows the stages and the drawing straight away: a compact card and the introduction folded («Read more»)","🎨 Color: Undo sits on the drawing next to the zoom; Export, Other colors and Start over are with the controls","📂 My drawings only lists what you have actually colored or traced","📏 On paper comes first in Print; the header fits in one line and nothing is hidden behind the install notice"]],
     ["2.14",["✚ On paper: a red cross at the center of every module, not only the first, with the list of where to put the compass point in each one (distance from the top and left edges)","📄 The actual-size PDF template marks all the crosses, so you can transfer them to your sheet","📖 Glossary: alfardón, almendrilla, candilejo, sino, zafate and rueda now come with a drawing of the piece, highlighted on one of the app’s tile patterns"]],
     ["2.13",["📏 On paper: the starting measurement is now in whole or half centimeters (6 cm, 4.5 cm…), and whenever possible the others too; what is left over goes to the margins","🔢 Fine grids, with squares under 2 cm, are given in whole millimeters","✚ Where to put the compass point: a red cross on the sheet, with its distance from the left and top edges","↔️ The side and bottom margins are always marked on the sheet"]],
@@ -3950,6 +3977,7 @@ colocar();setTimeout(todo,300);
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.16",["📏 «En papel»: las medidas ya no se montan unas sobre otras; cada una va donde cabe y, si la figura es muy pequeña, una rayita la señala"]],
     ["2.15",["📱 Móvil: el dibujo que se queda fijo arriba ocupa un tercio de la pantalla, así que el texto del paso y «Siguiente» se ven siempre","↕️ Al pulsar «Siguiente», la pantalla va al texto del paso nuevo","🧭 Al abrir un alicatado se ven enseguida las etapas y el dibujo: ficha compacta y presentación plegada («Seguir leyendo»)","🎨 Colorear: Deshacer va sobre el dibujo, junto al zoom; Exportar, Otro color y Reiniciar, con los controles","📂 «Mis dibujos» solo muestra lo que has coloreado o repasado de verdad","📏 «En papel» sale primero en Imprimir; la cabecera cabe en una línea y el aviso de instalar ya no tapa nada"]],
     ["2.14",["✚ En papel: una cruz roja en el centro de cada módulo, no solo del primero, y la lista de dónde pinchar el compás en cada uno (distancia al borde de arriba y al izquierdo)","📄 La plantilla en PDF a tamaño real marca todas las cruces, para pasarlas a tu papel","📖 Glosario: alfardón, almendrilla, candilejo, sino, zafate y rueda llevan ahora un dibujo de la pieza, resaltada sobre uno de los alicatados de la app"]],
     ["2.13",["📏 En papel: la medida de partida va ahora en centímetros o medios centímetros (6 cm, 4,5 cm…) y, cuando se puede, también las demás; lo que sobra va a los márgenes","🔢 En las cuadrículas finas, con cuadros de menos de 2 cm, en milímetros exactos","✚ Dónde pinchar el compás: una cruz roja en el papel, con su distancia al borde izquierdo y al de arriba","↔️ Los márgenes lateral e inferior salen siempre marcados en el papel"]],

@@ -81,6 +81,7 @@ Después de cambiar algo en `src/`:
 node herramientas/construir.js        # junta las partes en index.html
 node pruebas/geometria.js             # más de 1.000 comprobaciones de los alicatados con las medidas del libro
 node pruebas/con-servidor.js pruebas/navegador.js   # todas las pantallas, accesibilidad y errores (necesita Playwright y axe-core)
+node pruebas/con-servidor.js pruebas/cotas.js       # cotas de «En papel» (desde 2.16): ningún texto de medida pisa a otro ni se sale
 node pruebas/con-servidor.js pruebas/usabilidad.js  # usabilidad en el móvil (desde 2.15): lo fijo arriba, Siguiente, cabecera, 44 px, desbordes, Mis dibujos…
 ```
 

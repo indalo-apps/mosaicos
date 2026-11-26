@@ -2,11 +2,11 @@
   <div class="cab-top">
     <a class="btn-volver" id="volver" href="#inicio" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span id="volver-txt">Inicio</span></a>
     <h1 id="titulo">Mosaicos<span class="sub">Lacería con regla y compás</span></h1>
-    <span class="hueco" aria-hidden="true"></span><a class="btn-redondo btn-casa" id="casa" href="#inicio" aria-label="Inicio" title="Inicio" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5L12 4l8.5 7.5"/><path d="M6 9.8V20h4.5v-5.5h3V20H18V9.8"/></svg></a><button class="btn-pill" id="btn-glosario">Glosario</button>
+    <span class="hueco" aria-hidden="true"></span><a class="btn-redondo btn-casa" id="casa" href="#inicio" aria-label="Inicio" title="Inicio" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5L12 4l8.5 7.5"/><path d="M6 9.8V20h4.5v-5.5h3V20H18V9.8"/></svg></a><button class="btn-pill btn-glo" id="btn-glosario" title="Glosario"><svg class="ic solo glo-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5c2.5-1 5.5-1 8 .5 2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg><span class="glo-txt">Glosario</span></button>
     <button class="btn-redondo btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
   </div>
   <div id="ficha" class="ficha" hidden></div>
-  <p id="intro" hidden></p>
+  <p id="intro" hidden></p><button type="button" class="linkbtn intro-mas" id="intro-mas" aria-expanded="false" aria-controls="intro" hidden>Seguir leyendo</button>
 </header>
 <main id="app">
 <section id="v-inicio" class="vista" aria-labelledby="titulo" hidden>
@@ -43,8 +43,7 @@
     <div class="tzside">
       <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
-      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="medpapel" id="stepm" hidden></div>
-        <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div>
+      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div><div class="medpapel" id="stepm" hidden></div>
         <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
         <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
       </div>
@@ -63,9 +62,10 @@
     </div>
     <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
     <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
-    <div class="acciones"><button id="deshacer" disabled>↶ Deshacer</button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button><button id="reiniciar">↺ Reiniciar</button></div>
+    <div class="acciones" id="acciones"><button id="deshacer" disabled>↶ <span class="etq">Deshacer</span></button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button><button id="reiniciar">↺ Reiniciar</button></div>
   </section>
   <aside>
+    <div class="acciones acciones-mas" id="acciones-mas" hidden></div>
     <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div>
       <h3 class="sub-h" id="h-casa">Pinturas de la casa</h3>
       <div class="ops" id="cartas" role="group" aria-labelledby="h-casa"><button data-cv="">Ninguna</button><button data-cv="vg">Van Gogh</button><button data-cv="ds">Daniel Smith</button><button data-cv="wn">Cotman (W&amp;N)</button></div>
@@ -100,6 +100,7 @@
     <div class="stage"><p class="paso-chip" id="ts-chip" aria-hidden="true"></p><div id="tssvg" role="img" aria-label="El módulo repetido"></div></div>
     <div class="tzside"><div class="card">
       <h2 class="steph">Teselar</h2>
+      <p class="tip ts-nota" id="ts-nota" hidden></p>
       <p>El módulo es la pieza mínima del dibujo. Repitiéndolo, desplazado sin girarlo ni voltearlo (por traslación), cubre la pared sin dejar huecos: eso es teselar.</p>
       <div class="ex-rep">
         <div><span id="ts-cl">Columnas</span><div class="paso"><button data-ts="c" data-d="-1" aria-label="Una columna menos">−</button><output id="ts-c" aria-labelledby="ts-cl" aria-live="polite"></output><button data-ts="c" data-d="1" aria-label="Una columna más">+</button></div></div>
@@ -115,13 +116,6 @@
 </section>
 <section id="tab-imprimir" class="tab" role="tabpanel" aria-labelledby="t-imprimir">
   <div class="vista-imp">
-    <div class="caminos">
-      <button class="camino" data-imp="lamina"><h2>📄 Lámina para pintar</h2><p>PDF en A5, A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.</p></button>
-      <button class="camino" data-imp="png"><h2>🖼️ Imagen</h2><p>PNG en alta resolución, para fondos de pantalla, redes o imprimir.</p></button>
-      <button class="camino" data-imp="svg"><h2>🎨 Vector en color</h2><p>SVG en milímetros, para imprimir a cualquier tamaño o cortar vinilo.</p></button>
-      <button class="camino" data-imp="piezas"><h2>✂️ Corte láser</h2><p>Las piezas del mosaico o la celosía de la cinta, en líneas de corte.</p></button>
-    </div>
-    <p class="hint" id="imp-info"></p>
       <section class="card papel" id="ts-papel" aria-labelledby="pp-tit">
         <h2 id="pp-tit">📏 En papel <small>· medidas para dibujarlo a mano</small></h2>
         <p class="hint" style="margin:0 0 8px">Elige los módulos y el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
@@ -142,6 +136,13 @@
         <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
         <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
       </section>
+    <div class="caminos">
+      <button class="camino" data-imp="lamina"><h2>📄 Lámina para pintar</h2><p>PDF en A5, A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.</p></button>
+      <button class="camino" data-imp="png"><h2>🖼️ Imagen</h2><p>PNG en alta resolución, para fondos de pantalla, redes o imprimir.</p></button>
+      <button class="camino" data-imp="svg"><h2>🎨 Vector en color</h2><p>SVG en milímetros, para imprimir a cualquier tamaño o cortar vinilo.</p></button>
+      <button class="camino" data-imp="piezas"><h2>✂️ Corte láser</h2><p>Las piezas del mosaico o la celosía de la cinta, en líneas de corte.</p></button>
+    </div>
+    <p class="hint" id="imp-info"></p>
     <div class="row" style="justify-content:flex-start;gap:8px"><button id="imp-ant">← Colorear</button></div>
   </div>
 </section>

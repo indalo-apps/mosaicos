@@ -5,11 +5,17 @@ const ULT='laceria-ultimo-v1',store={get(k,d){try{const v=localStorage.getItem(k
 const ETAPAS=['trazado','teselar','colorear','imprimir'];
 const pasoGuardado=c=>{try{const v=localStorage.getItem('laceria-paso-c-'+c.id);return v===null?null:+v;}catch(e){return null;}};
 const mini=c=>consSvg(c,0,true).replace('width="100%"','aria-hidden="true" focusable="false"');
+const VCORTO={'#aprender':['Aprender','Learn']}; // v2.15: el nombre corto cabe con la casa, el glosario y los ajustes en una línea
 const VOLVER={'#inicio':['Inicio','Home'],'#aprender':['Aprender a trazar','Learn to draw'],'#alicatados':['Alcázar','Alcázar'],'#alhambra':['Alhambra','Alhambra']};
 function cab(t,sub,volver,intro){$('titulo').innerHTML=t+(sub?`<span class="sub">${sub}</span>`:'');
-  if(volver){const n=lt(VOLVER[volver]||VOLVER['#inicio']);$('volver-txt').textContent=n;$('volver').setAttribute('aria-label',tr('Volver a ','Back to ')+n);}
+  if(volver){const n=lt(VOLVER[volver]||VOLVER['#inicio']),corto=lt(VCORTO[volver]||n);$('volver-txt').textContent=corto;$('volver').setAttribute('aria-label',tr('Volver a ','Back to ')+n);}
   document.querySelector('.cab-top').classList.toggle('con-volver',!!volver);document.querySelector('.cab-top').classList.toggle('en-inicio',t==='Mosaicos'&&!volver);document.title=(t==='Mosaicos'?'':t.replace(/<[^>]+>/g,'')+' · ')+'Mosaicos';
-  $('volver').hidden=!volver;$('casa').hidden=t==='Mosaicos'&&!volver;if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';$('ficha').hidden=true;}
+  $('volver').hidden=!volver;$('casa').hidden=(t==='Mosaicos'&&!volver)||volver==='#inicio';if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';$('ficha').hidden=true;plegarIntro(false);}
+// v2.15: en el móvil, la presentación de cada alicatado sale plegada (dos líneas y «Seguir leyendo») para que se vean las etapas y el dibujo
+function plegarIntro(si){const p=$('intro'),b=$('intro-mas');p.classList.toggle('plegado',!!si);b.hidden=true;b.setAttribute('aria-expanded','false');
+  if(si)requestAnimationFrame(()=>{b.hidden=!(p.scrollHeight>p.clientHeight+2);b.textContent=tr('Seguir leyendo','Read more');});}
+$('intro-mas').onclick=()=>{const p=$('intro'),b=$('intro-mas'),abrir=p.classList.contains('plegado');p.classList.toggle('plegado',!abrir);
+  b.setAttribute('aria-expanded',abrir);b.textContent=abrir?tr('Leer menos','Read less'):tr('Seguir leyendo','Read more');};
 // ---- Portada de cada alicatado (v2.7): el muro en color, el libro, el lugar, los pasos y las piezas
 function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const img=renderLazo(datos(p),{x0:p.W*0.25,y0:p.H*0.25,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');
@@ -17,8 +23,8 @@ function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const ref=alh?tr(`alicatado n.º ${p.num}`,`tile pattern no. ${p.num}`)+(p.pags?tr(`, págs. ${p.pags}`,`, pp. ${String(p.pags).replace(/ (a|y) /,'–')}`):''):tr(`págs. ${p.pags}`,`pp. ${String(p.pags).replace(/ a /,'–')}`);
   const n=(p.pasos||[]).length,nB=(p.pasosB||[]).length,tipos=p.nombres.length;
   const pasos=p.id==='lazo8'?tr('Paso a paso','Step by step'):tr(`${n} pasos`,`${n} steps`)+(nB?tr(' · también con cuadrícula',' · also with a grid'):'');
-  const fila=(ic,t)=>`<li>${icono(ic)}<span>${t}</span></li>`;
-  $('ficha').innerHTML=`<div class="ficha-img">${img}</div><ul class="ficha-datos">`+fila('libro',`${libro} · ${ref}`)+fila('lugar',`${p.lugar}`)+fila('pasos',pasos)+fila('piezas',tr(`${tipos} tipos de pieza`,`${tipos} kinds of piece`))+'</ul>';
+  const fila=(ic,t,cl)=>`<li${cl?` class="${cl}"`:''}>${icono(ic)}<span>${t}</span></li>`;
+  $('ficha').innerHTML=`<div class="ficha-img">${img}</div><ul class="ficha-datos">`+fila('libro',`${libro} · ${ref}`)+fila('lugar',`${p.lugar}`,'f-lugar')+fila('pasos',pasos)+fila('piezas',tr(`${tipos} tipos de pieza`,`${tipos} kinds of piece`))+'</ul>';
   $('ficha').hidden=false;}
 // Tono de cada monumento (v2.9): verde para el Alcázar y azul para la Alhambra, siempre acompañado de su nombre
 const tono=col=>{if(col)document.documentElement.dataset.monu=col;else delete document.documentElement.dataset.monu;};
@@ -69,12 +75,15 @@ function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}i
   const antes=MODO.c;MODO.c=null;mostrar('a');tono(PATS[id].coleccion||'alcazar');
   if(PAT.id!==id)cambiarPatron(id);else if(antes||!$('dots').children.length)window.trazadoCambio();
   cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',etapa==='trazado'?PAT.intro:''); // el texto largo, solo al empezar: en las demás etapas el dibujo queda más arriba
-  document.querySelector('footer #pie').hidden=etapa!=='trazado';if(etapa==='trazado')ficha(PAT);
+  document.querySelector('footer #pie').hidden=etapa!=='trazado';if(etapa==='trazado'){ficha(PAT);plegarIntro(matchMedia('(max-width:760px)').matches);}
   window.tabEtapa(etapa,true);if(etapa==='colorear')draw();store.set(ULT,'a/'+id+'/'+etapa);}
 // ---- Mis dibujos
+// v2.15: abrir un alicatado guarda su estado (vista, paso…); «Coloreado» solo si los colores no son los de partida
+function pintado(p,g){if(!g)return false;const f=fresh(p);
+  return Object.keys(g.over||{}).length>0||JSON.stringify(g.cols||f.cols)!==JSON.stringify(f.cols)||(g.ribbon||f.ribbon)!==f.ribbon||(g.outline||f.outline)!==f.outline;}
 function misDibujos(){const out=[];let E={};try{E=JSON.parse(localStorage.getItem('laceria-estado-v2')||'{}').p||{};}catch(e){}
   let PRr={};try{PRr=JSON.parse(localStorage.getItem('laceria-practica-v1')||'{}')||{};}catch(e){}
-  for(const p of Object.values(PATS)){const col=!!E[p.id],rep=(PRr[p.id]||[]).length>0;if(col||rep)out.push({p,col,rep});}
+  for(const p of Object.values(PATS)){const col=pintado(p,E[p.id]),rep=(PRr[p.id]||[]).length>0;if(col||rep)out.push({p,col,rep});}
   for(const c of CONS.L)if((PRr['c-'+c.id]||[]).length)out.push({c,rep:true});return out;}
 function mis(){mostrar('mis');cab(tr('Mis dibujos','My drawings'),tr('Guardados en este dispositivo','Saved on this device'),'#inicio','');const L=misDibujos();
   let E={};try{E=JSON.parse(localStorage.getItem('laceria-estado-v2')||'{}').p||{};}catch(e){}
@@ -270,7 +279,11 @@ window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');
   if(M&&M.tipo==='hex')document.querySelectorAll('#ts-forma [data-forma]').forEach(b=>{const on=b.dataset.forma===(TS.forma||'hex');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   const R=tsConstruir(EX.c,EX.r,TS.marcar,TS.color);TS.red=R.red;TS.vb=R.vb;
-  $('tssvg').innerHTML=R.sv;$('ts-chip').textContent=R.chip;};
+  $('tssvg').innerHTML=R.sv;
+  // v2.15: en el móvil el rótulo fijo encima del dibujo se queda en una línea y la nota del módulo baja al texto
+  const P=R.chip.split(' · '),a=P.slice(0,2).join(' · '),n=P.slice(2).join(' · ');
+  $('ts-chip').innerHTML='';$('ts-chip').append(a);if(n){const s=document.createElement('span');s.className='ch-nota';s.textContent=' · '+n;$('ts-chip').append(s);}
+  $('ts-nota').hidden=!n;$('ts-nota').textContent=n?n.charAt(0).toUpperCase()+n.slice(1)+'.':'';};
 
 document.querySelector('#tab-teselar .ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const k=b.dataset.ts;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();pintarTeselar();});
 $('ts-marcar').addEventListener('change',e=>{TS.marcar=e.target.checked;pintarTeselar();});
@@ -305,6 +318,8 @@ function ruta(){let h=decodeURIComponent(location.hash.slice(1));
   let m=h.match(/^c\/([\w-]+)$/);if(m)return construccion(m[1]);
   m=h.match(/^a\/([\w-]+)(?:\/(\w+))?$/);if(m)return alicatado(m[1],m[2]||'trazado');
   inicio();}
-addEventListener('hashchange',()=>{document.querySelectorAll('.dlg:not([hidden])').forEach(d=>window.cerrarDlg&&window.cerrarDlg(d.id));ruta();scrollTo(0,0);});
+const pantalla=()=>decodeURIComponent(location.hash.slice(1)).replace(/^(a\/[\w-]+)\/\w+$/,'$1')||'inicio';let PANT=pantalla();
+addEventListener('hashchange',()=>{document.querySelectorAll('.dlg:not([hidden])').forEach(d=>window.cerrarDlg&&window.cerrarDlg(d.id));ruta();scrollTo(0,0);
+  const n=pantalla();if(n!==PANT){PANT=n;const t=$('titulo');t.tabIndex=-1;try{t.focus({preventScroll:true});}catch(e){t.focus();}}});
 ruta();
 })();

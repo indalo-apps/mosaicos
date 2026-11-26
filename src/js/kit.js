@@ -117,12 +117,20 @@ const IK = (function(){
       <div class="ik-nav">${deferred ? `<button class="ik-btn" data-ik="ya">${tr("Instalar ahora", "Install now")}</button>` : `<button class="ik-btn" data-ik="cerrar">${tr("Entendido", "Got it")}</button>`}</div>`, tr("Instalar en el móvil", "Install on your phone"));
   }
 
+  // El aviso amarillo va fijo abajo: la página deja su alto libre al final para que no tape nada (v2.15)
+  let roAviso = null;
+  function sitioAviso(b){
+    const poner = () => document.documentElement.style.setProperty("--ik-alto", b && b.isConnected ? (b.offsetHeight + 24) + "px" : "0px");
+    if (roAviso) { roAviso.disconnect(); roAviso = null; }
+    if (b && window.ResizeObserver) { roAviso = new ResizeObserver(poner); roAviso.observe(b); }
+    poner();
+  }
   // Aviso amarillo «Instálala en tu móvil» (solo en móvil o tablet, si no está instalada y no se ha cerrado)
   function pintarAviso(){
     const viejo = document.getElementById("ik-banner");
     const toca = !instalada() && !st.get(cfg.clave + "-install-hide", 0) && (IS_IOS || IS_ANDROID || deferred)
       && (!cfg.esInicio || cfg.esInicio());
-    if (!toca){ if (viejo) viejo.remove(); return; }
+    if (!toca){ if (viejo) viejo.remove(); sitioAviso(null); return; }
     if (viejo) return;
     const b = document.createElement("div");
     b.id = "ik-banner"; b.className = "ik-banner"; b.setAttribute("role", "region"); b.setAttribute("aria-label", tr("Instalar la app", "Install the app"));
@@ -131,9 +139,9 @@ const IK = (function(){
     b.addEventListener("click", ev => {
       const t = ev.target.closest("[data-b]"); if (!t) return;
       if (t.dataset.b === "ver") abrirInstalar();
-      else { st.set(cfg.clave + "-install-hide", 1); b.remove(); }
+      else { st.set(cfg.clave + "-install-hide", 1); b.remove(); sitioAviso(null); }
     });
-    document.body.appendChild(b);
+    document.body.appendChild(b); sitioAviso(b);
   }
 
   // Comprueba la versión publicada leyendo el <meta name="app-version"> de la página

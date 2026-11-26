@@ -79,11 +79,12 @@ Después de cambiar algo en `src/`:
 
 ```
 node herramientas/construir.js        # junta las partes en index.html
-node pruebas/geometria.js             # 400 comprobaciones de los alicatados con las medidas del libro
+node pruebas/geometria.js             # más de 1.000 comprobaciones de los alicatados con las medidas del libro
 node pruebas/con-servidor.js pruebas/navegador.js   # todas las pantallas, accesibilidad y errores (necesita Playwright y axe-core)
+node pruebas/con-servidor.js pruebas/usabilidad.js  # usabilidad en el móvil (desde 2.15): lo fijo arriba, Siguiente, cabecera, 44 px, desbordes, Mis dibujos…
 ```
 
-`npm test` hace las tres cosas y además avisa si `index.html` no está al día con `src/`.
+`npm test` hace todo eso y además avisa si `index.html` no está al día con `src/`. En el móvil, `src/js/movil.js` mide lo que se queda fijo arriba y coloca los botones de Colorear (v2.15).
 
 ## Fuentes
 

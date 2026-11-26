@@ -37,6 +37,7 @@ const ES_EN={
  "Dibuja sobre el dibujo y tu trazo se repite en todos los módulos.":"Draw on the design and your stroke repeats in every module.",
  "✏️ Dibujar":"✏️ Draw",
  "↶ Deshacer":"↶ Undo",
+ "Deshacer":"Undo",
  "Borrar":"Clear",
  "Color y grosor del trazo":"Stroke color and width",
  "Azul":"Blue",

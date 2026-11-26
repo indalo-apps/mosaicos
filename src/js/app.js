@@ -581,7 +581,7 @@ function medPaso(){const el=document.getElementById('stepm');if(!el)return;
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
-  const obj={h:tr('El objetivo','The goal'),t:MODO.c?tr('Esta es la figura que vas a construir. Pulsa «Empezar» para ver el primer paso.','This is the figure you are going to construct. Tap “Start” to see the first step.'):tr(`Este es el mosaico que vas a dibujar, con los colores de ${PAT.coleccion==='alhambra'?'la Alhambra':'el Alcázar'}. Pulsa «Empezar» para ver el primer paso.`,`This is the mosaic you are going to draw, in the ${PAT.coleccion==='alhambra'?'Alhambra':'Alcázar'} colors. Tap “Start” to see the first step.`),c:tr('También puedes deslizar el dibujo para cambiar de paso.','You can also swipe the drawing to change step.')};
+  const obj={h:tr('El objetivo','The goal'),t:MODO.c?tr('Esta es la figura que vas a construir. Pulsa «Empezar» para ver el primer paso.','This is the figure you are going to construct. Tap “Start” to see the first step.'):tr(`Este es el mosaico que vas a dibujar, con los colores de ${PAT.coleccion==='alhambra'?'la Alhambra':'el Alcázar'}. Pulsa «Empezar» para ver el primer paso.`,`This is the mosaic you are going to draw, in the ${PAT.coleccion==='alhambra'?'Alhambra':'Alcázar'} colors. Tap “Start” to see the first step.`),c:matchMedia('(pointer:coarse)').matches?tr('También puedes deslizar el dibujo para cambiar de paso.','You can also swipe the drawing to change step.'):''} // v2.15: con ratón no se desliza; ahí ya está el aviso de las flechas del teclado;
   const s=step===0?obj:PS[step-1];
   const etq=step===0?tr('Objetivo','Goal'):tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
   document.getElementById('stepn').textContent=etq;
@@ -651,7 +651,7 @@ let tx=null;
 tz.addEventListener('touchstart',e=>{tx=(!practicando&&!tz.dataset.zoom&&e.touches.length===1)?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
 tz.addEventListener('touchend',e=>{if(!tx)return;const t=e.changedTouches[0],dx=t.clientX-tx[0],dy=t.clientY-tx[1];tx=null;
   if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*0.6)return;
-  if(dx<0&&step<pasos().length){step++;show();}else if(dx>0&&step>0){step--;show();}},{passive:true});
+  if(dx<0&&step<pasos().length){step++;show();window.verPaso&&verPaso();}else if(dx>0&&step>0){step--;show();window.verPaso&&verPaso();}},{passive:true});
 let borrarArmado=0;
 $pr('pr-on').onclick=()=>prModo(!practicando);
 $pr('pr-undo').onclick=()=>{trazos().pop();prGuardar();pintarTrazos();};
@@ -660,9 +660,9 @@ $pr('pr-clear').onclick=()=>{const b=$pr('pr-clear');
     setTimeout(()=>{if(Date.now()-borrarArmado>=3900){b.classList.remove('peligro');b.textContent=tr('Borrar mi dibujo','Clear my drawing');}},4000);return;}
   borrarArmado=0;PR[prK()]=[];prGuardar();b.classList.remove('peligro');b.textContent=tr('Borrar mi dibujo','Clear my drawing');pintarTrazos();};
 document.addEventListener('click',e=>{const t=e.target;
-  if(t.dataset.step){step=+t.dataset.step;show();}
-  else if(t.id==='prev'&&step>0){step--;show();}
-  else if(t.id==='next'&&step<pasos().length){step++;show();}
+  if(t.dataset.step){step=+t.dataset.step;show();window.verPaso&&verPaso();}
+  else if(t.id==='prev'&&step>0){step--;show();window.verPaso&&verPaso();}
+  else if(t.id==='next'&&step<pasos().length){step++;show();window.verPaso&&verPaso();}
   else if(t.id==='replay'){show();}
   else if(t.closest&&t.closest('#gocolor')){
     if(MODO.c){const sig=CONS.L[CONS.L.indexOf(MODO.c)+1];location.hash=sig?'#c/'+sig.id:'#aprender';}

@@ -111,7 +111,7 @@ section.tab.show{display:block}
 .tz{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;padding:12px 28px 28px;align-items:start}
 @media (max-width:760px){.tz{grid-template-columns:1fr}}
 .tzside{display:flex;flex-direction:column;gap:12px}
-.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots{display:flex;gap:4px;flex-wrap:wrap}
 .dots button{width:30px;height:30px;padding:0;border-radius:50%;font-size:12px}
 .stepn{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .card h3,.card h2.steph{font:600 calc(23px * var(--esc))/1.15 "Cormorant Garamond",Georgia,serif;margin:4px 0 8px;text-transform:none;letter-spacing:0;color:var(--ink)}
@@ -320,3 +320,62 @@ button.enlace{background:none;border:0;padding:0 2px;min-height:0;color:var(--ac
 
 /* v2.14: dibujo de las figuras en el glosario */
 .glo-fig{margin:8px 0 4px;display:flex;align-items:center;gap:12px}.glo-img{flex:none;width:112px;height:112px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}.glo-img svg{display:block;width:100%;height:100%}.glo-fig figcaption{font-size:calc(13.5px * var(--esc,1));color:var(--muted)}
+/* ===== v2.15: usabilidad en el móvil (revisión del 26-11-2026) ===== */
+/* El aviso de instalar deja sitio debajo: nada queda tapado al final de la página */
+body{padding-bottom:calc(env(safe-area-inset-bottom) + var(--ik-alto,0px))}
+/* Lo que se queda fijo arriba no tapa el elemento con el foco (WCAG 2.4.11) */
+html{scroll-padding-top:var(--fijo,0px)}
+#titulo:focus{outline:none}
+/* Cabecera: el botón de volver se acorta con «…» en lugar de empujar los demás a otra línea */
+.btn-volver{flex:0 1 auto;min-width:0;max-width:none}
+.btn-glo .glo-ic{display:none}
+@media (max-width:520px){
+  .cab-top{gap:8px}
+  .cab-top.con-volver .btn-glo{width:44px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .cab-top.con-volver .btn-glo .glo-ic{display:block;width:22px;height:22px}
+  .cab-top.con-volver .btn-glo .glo-txt{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .etapas button{font-size:min(calc(13px * var(--esc)),16px)}}
+/* Portada del alicatado compacta en el móvil: miniatura al lado de los datos y la presentación plegada */
+.intro-mas{display:block;padding:8px 0}.intro-mas[hidden]{display:none}
+#intro.plegado{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (max-width:699px){
+  .ficha{grid-template-columns:96px minmax(0,1fr);margin:6px 0 6px}
+  .ficha-img svg{height:100%;min-height:92px}
+  .ficha-datos{padding:8px 12px;gap:3px;font-size:calc(13px * var(--esc,1));align-content:center}
+  .ficha-datos li.f-lugar{display:none}
+  #intro{margin-top:4px}}
+/* Dibujo fijo arriba: como mucho algo más de un tercio de la pantalla, en Trazar, Teselar y Colorear */
+@media (max-width:760px){
+  .stage{top:var(--alto-tabs,62px);padding:8px;z-index:5}
+  #tab-trazado .stage,#tab-teselar .stage{box-shadow:0 6px 10px -8px rgba(0,0,0,.25)}
+  #tab-trazado .paso-chip{display:none}
+  #tzsvg svg{max-height:calc(36vh - 48px)}
+  .leyenda-paso{margin-top:4px}
+  #tab-teselar .paso-chip{margin-bottom:4px}
+  #tab-teselar .stage svg{max-height:calc(36vh - 50px)}
+  /* En Colorear, al bajar, la fila de vistas se esconde bajo las pestañas y solo queda fijo el dibujo */
+  #tab-colorear>.stage{top:calc(var(--alto-tabs,62px) - var(--alto-vb,60px))}
+  #tab-colorear>.stage svg{max-height:calc(36vh - 20px)}
+  #tab-colorear .viewbar{margin-bottom:8px}
+  .zoom-ui #deshacer{margin-right:auto;width:44px;min-width:44px;padding:0}
+  .zoom-ui #deshacer .etq{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .zoom-ui #deshacer svg.ic{margin:0;width:20px;height:20px}
+  #acciones:not(:has(button)){display:none}
+  .acciones-mas{margin:0}}
+.acciones-mas[hidden]{display:none}
+/* Filas que se deslizan: se difuminan por el lado en que hay más botones */
+.viewbar.mas-dcha{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent)}
+.viewbar.mas-izq{-webkit-mask-image:linear-gradient(to right,transparent,#000 40px);mask-image:linear-gradient(to right,transparent,#000 40px)}
+.viewbar.mas-izq.mas-dcha{-webkit-mask-image:linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+/* Campos de «En papel» de 44 px */
+.pp-campos input{min-height:44px}
+/* Teselar en el móvil: rótulo de una línea encima del dibujo; la nota del módulo, en el texto */
+.ts-nota{display:none}
+@media (max-width:760px){#ts-chip .ch-nota{display:none}#ts-chip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ts-nota:not([hidden]){display:block}}
+/* Sin desbordes con letra grande: las columnas no crecen con lo que no cabe (minmax(0,1fr)) y los datos de cada tarjeta pueden partirse */
+@media (max-width:760px){.cz,.tz{grid-template-columns:minmax(0,1fr)}.cz>*,.tz>*{min-width:0}}
+#v-alicatados .pat{min-width:0}#v-alicatados .pat b{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.pat-datos>span{white-space:normal}
+.presets{grid-template-columns:repeat(2,minmax(0,1fr))}.preset{min-width:0;overflow-wrap:anywhere}
+/* Ordenador: la portada del alicatado algo más baja, para que «Empezar» quede a la vista en una pantalla de 800 px */
+@media (min-width:700px){.ficha{margin-bottom:10px}.ficha-img svg{min-height:118px}.ficha-datos{padding:10px 18px;gap:4px}}

@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.14">
+<meta name="app-version" content="2.15">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -147,7 +147,7 @@ section.tab.show{display:block}
 .tz{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;padding:12px 28px 28px;align-items:start}
 @media (max-width:760px){.tz{grid-template-columns:1fr}}
 .tzside{display:flex;flex-direction:column;gap:12px}
-.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots{display:flex;gap:4px;flex-wrap:wrap}
 .dots button{width:30px;height:30px;padding:0;border-radius:50%;font-size:12px}
 .stepn{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .card h3,.card h2.steph{font:600 calc(23px * var(--esc))/1.15 "Cormorant Garamond",Georgia,serif;margin:4px 0 8px;text-transform:none;letter-spacing:0;color:var(--ink)}
@@ -356,6 +356,65 @@ button.enlace{background:none;border:0;padding:0 2px;min-height:0;color:var(--ac
 
 /* v2.14: dibujo de las figuras en el glosario */
 .glo-fig{margin:8px 0 4px;display:flex;align-items:center;gap:12px}.glo-img{flex:none;width:112px;height:112px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}.glo-img svg{display:block;width:100%;height:100%}.glo-fig figcaption{font-size:calc(13.5px * var(--esc,1));color:var(--muted)}
+/* ===== v2.15: usabilidad en el móvil (revisión del 26-11-2026) ===== */
+/* El aviso de instalar deja sitio debajo: nada queda tapado al final de la página */
+body{padding-bottom:calc(env(safe-area-inset-bottom) + var(--ik-alto,0px))}
+/* Lo que se queda fijo arriba no tapa el elemento con el foco (WCAG 2.4.11) */
+html{scroll-padding-top:var(--fijo,0px)}
+#titulo:focus{outline:none}
+/* Cabecera: el botón de volver se acorta con «…» en lugar de empujar los demás a otra línea */
+.btn-volver{flex:0 1 auto;min-width:0;max-width:none}
+.btn-glo .glo-ic{display:none}
+@media (max-width:520px){
+  .cab-top{gap:8px}
+  .cab-top.con-volver .btn-glo{width:44px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .cab-top.con-volver .btn-glo .glo-ic{display:block;width:22px;height:22px}
+  .cab-top.con-volver .btn-glo .glo-txt{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .etapas button{font-size:min(calc(13px * var(--esc)),16px)}}
+/* Portada del alicatado compacta en el móvil: miniatura al lado de los datos y la presentación plegada */
+.intro-mas{display:block;padding:8px 0}.intro-mas[hidden]{display:none}
+#intro.plegado{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (max-width:699px){
+  .ficha{grid-template-columns:96px minmax(0,1fr);margin:6px 0 6px}
+  .ficha-img svg{height:100%;min-height:92px}
+  .ficha-datos{padding:8px 12px;gap:3px;font-size:calc(13px * var(--esc,1));align-content:center}
+  .ficha-datos li.f-lugar{display:none}
+  #intro{margin-top:4px}}
+/* Dibujo fijo arriba: como mucho algo más de un tercio de la pantalla, en Trazar, Teselar y Colorear */
+@media (max-width:760px){
+  .stage{top:var(--alto-tabs,62px);padding:8px;z-index:5}
+  #tab-trazado .stage,#tab-teselar .stage{box-shadow:0 6px 10px -8px rgba(0,0,0,.25)}
+  #tab-trazado .paso-chip{display:none}
+  #tzsvg svg{max-height:calc(36vh - 48px)}
+  .leyenda-paso{margin-top:4px}
+  #tab-teselar .paso-chip{margin-bottom:4px}
+  #tab-teselar .stage svg{max-height:calc(36vh - 50px)}
+  /* En Colorear, al bajar, la fila de vistas se esconde bajo las pestañas y solo queda fijo el dibujo */
+  #tab-colorear>.stage{top:calc(var(--alto-tabs,62px) - var(--alto-vb,60px))}
+  #tab-colorear>.stage svg{max-height:calc(36vh - 20px)}
+  #tab-colorear .viewbar{margin-bottom:8px}
+  .zoom-ui #deshacer{margin-right:auto;width:44px;min-width:44px;padding:0}
+  .zoom-ui #deshacer .etq{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .zoom-ui #deshacer svg.ic{margin:0;width:20px;height:20px}
+  #acciones:not(:has(button)){display:none}
+  .acciones-mas{margin:0}}
+.acciones-mas[hidden]{display:none}
+/* Filas que se deslizan: se difuminan por el lado en que hay más botones */
+.viewbar.mas-dcha{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent)}
+.viewbar.mas-izq{-webkit-mask-image:linear-gradient(to right,transparent,#000 40px);mask-image:linear-gradient(to right,transparent,#000 40px)}
+.viewbar.mas-izq.mas-dcha{-webkit-mask-image:linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+/* Campos de «En papel» de 44 px */
+.pp-campos input{min-height:44px}
+/* Teselar en el móvil: rótulo de una línea encima del dibujo; la nota del módulo, en el texto */
+.ts-nota{display:none}
+@media (max-width:760px){#ts-chip .ch-nota{display:none}#ts-chip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ts-nota:not([hidden]){display:block}}
+/* Sin desbordes con letra grande: las columnas no crecen con lo que no cabe (minmax(0,1fr)) y los datos de cada tarjeta pueden partirse */
+@media (max-width:760px){.cz,.tz{grid-template-columns:minmax(0,1fr)}.cz>*,.tz>*{min-width:0}}
+#v-alicatados .pat{min-width:0}#v-alicatados .pat b{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+.pat-datos>span{white-space:normal}
+.presets{grid-template-columns:repeat(2,minmax(0,1fr))}.preset{min-width:0;overflow-wrap:anywhere}
+/* Ordenador: la portada del alicatado algo más baja, para que «Empezar» quede a la vista en una pantalla de 800 px */
+@media (min-width:700px){.ficha{margin-bottom:10px}.ficha-img svg{min-height:118px}.ficha-datos{padding:10px 18px;gap:4px}}
 </style>
 <style>:root{--ik-accent:#1f5f5b}</style>
 <style>
@@ -388,7 +447,7 @@ button.enlace{background:none;border:0;padding:0 2px;min-height:0;color:var(--ac
 .ik-banner img{width:36px;height:36px;border-radius:9px;flex:none}
 .ik-banner div{flex:1;min-width:0}
 .ik-banner b{display:block;font-size:15px}
-.ik-banner .ik-btn{background:#2b2100;color:#ffe066;min-height:40px;padding:8px 12px;font-size:14px}
+.ik-banner .ik-btn{background:#2b2100;color:#ffe066;min-height:44px;padding:8px 12px;font-size:14px}
 .ik-bx{flex:none;width:44px;height:44px;border:0;background:none;color:#5c4a00;font-size:22px;cursor:pointer}
 @media (prefers-color-scheme:dark){:root:not([data-tema="claro"]) .ik-sheet{background:#1c2430;color:#e8edf3}:root:not([data-tema="claro"]) .ik-muted{color:#a9b4c2}:root:not([data-tema="claro"]) .ik-nota{background:#26313f}:root:not([data-tema="claro"]) .ik-steps li{border-color:#2d3846}:root:not([data-tema="claro"]) .ik-x{background:#2a3442;color:#e8edf3}:root:not([data-tema="claro"]) .ik-ghost{background:#26313f}:root:not([data-tema="claro"]) .ik-kbd{border-color:#4a5666}}
 :root[data-tema="oscuro"] .ik-sheet{background:#1c2430;color:#e8edf3}:root[data-tema="oscuro"] .ik-muted{color:#a9b4c2}:root[data-tema="oscuro"] .ik-nota{background:#26313f}:root[data-tema="oscuro"] .ik-steps li{border-color:#2d3846}:root[data-tema="oscuro"] .ik-x{background:#2a3442;color:#e8edf3}:root[data-tema="oscuro"] .ik-ghost{background:#26313f}:root[data-tema="oscuro"] .ik-kbd{border-color:#4a5666}
@@ -521,12 +580,20 @@ const IK = (function(){
       <div class="ik-nav">${deferred ? `<button class="ik-btn" data-ik="ya">${tr("Instalar ahora", "Install now")}</button>` : `<button class="ik-btn" data-ik="cerrar">${tr("Entendido", "Got it")}</button>`}</div>`, tr("Instalar en el móvil", "Install on your phone"));
   }
 
+  // El aviso amarillo va fijo abajo: la página deja su alto libre al final para que no tape nada (v2.15)
+  let roAviso = null;
+  function sitioAviso(b){
+    const poner = () => document.documentElement.style.setProperty("--ik-alto", b && b.isConnected ? (b.offsetHeight + 24) + "px" : "0px");
+    if (roAviso) { roAviso.disconnect(); roAviso = null; }
+    if (b && window.ResizeObserver) { roAviso = new ResizeObserver(poner); roAviso.observe(b); }
+    poner();
+  }
   // Aviso amarillo «Instálala en tu móvil» (solo en móvil o tablet, si no está instalada y no se ha cerrado)
   function pintarAviso(){
     const viejo = document.getElementById("ik-banner");
     const toca = !instalada() && !st.get(cfg.clave + "-install-hide", 0) && (IS_IOS || IS_ANDROID || deferred)
       && (!cfg.esInicio || cfg.esInicio());
-    if (!toca){ if (viejo) viejo.remove(); return; }
+    if (!toca){ if (viejo) viejo.remove(); sitioAviso(null); return; }
     if (viejo) return;
     const b = document.createElement("div");
     b.id = "ik-banner"; b.className = "ik-banner"; b.setAttribute("role", "region"); b.setAttribute("aria-label", tr("Instalar la app", "Install the app"));
@@ -535,9 +602,9 @@ const IK = (function(){
     b.addEventListener("click", ev => {
       const t = ev.target.closest("[data-b]"); if (!t) return;
       if (t.dataset.b === "ver") abrirInstalar();
-      else { st.set(cfg.clave + "-install-hide", 1); b.remove(); }
+      else { st.set(cfg.clave + "-install-hide", 1); b.remove(); sitioAviso(null); }
     });
-    document.body.appendChild(b);
+    document.body.appendChild(b); sitioAviso(b);
   }
 
   // Comprueba la versión publicada leyendo el <meta name="app-version"> de la página
@@ -585,11 +652,11 @@ const IK = (function(){
   <div class="cab-top">
     <a class="btn-volver" id="volver" href="#inicio" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span id="volver-txt">Inicio</span></a>
     <h1 id="titulo">Mosaicos<span class="sub">Lacería con regla y compás</span></h1>
-    <span class="hueco" aria-hidden="true"></span><a class="btn-redondo btn-casa" id="casa" href="#inicio" aria-label="Inicio" title="Inicio" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5L12 4l8.5 7.5"/><path d="M6 9.8V20h4.5v-5.5h3V20H18V9.8"/></svg></a><button class="btn-pill" id="btn-glosario">Glosario</button>
+    <span class="hueco" aria-hidden="true"></span><a class="btn-redondo btn-casa" id="casa" href="#inicio" aria-label="Inicio" title="Inicio" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5L12 4l8.5 7.5"/><path d="M6 9.8V20h4.5v-5.5h3V20H18V9.8"/></svg></a><button class="btn-pill btn-glo" id="btn-glosario" title="Glosario"><svg class="ic solo glo-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.5c2.5-1 5.5-1 8 .5 2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg><span class="glo-txt">Glosario</span></button>
     <button class="btn-redondo btn-ajustes" id="btn-ajustes" aria-label="Ajustes" title="Ajustes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
   </div>
   <div id="ficha" class="ficha" hidden></div>
-  <p id="intro" hidden></p>
+  <p id="intro" hidden></p><button type="button" class="linkbtn intro-mas" id="intro-mas" aria-expanded="false" aria-controls="intro" hidden>Seguir leyendo</button>
 </header>
 <main id="app">
 <section id="v-inicio" class="vista" aria-labelledby="titulo" hidden>
@@ -626,8 +693,7 @@ const IK = (function(){
     <div class="tzside">
       <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
-      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="medpapel" id="stepm" hidden></div>
-        <div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div>
+      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div><div class="medpapel" id="stepm" hidden></div>
         <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
         <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
       </div>
@@ -646,9 +712,10 @@ const IK = (function(){
     </div>
     <div id="svg" tabindex="0" role="group" aria-roledescription="dibujo" aria-label="Dibujo para colorear. Usa las flechas para elegir una pieza e Intro para pintarla."></div>
     <p class="sr" id="pieza-anuncio" aria-live="polite"></p>
-    <div class="acciones"><button id="deshacer" disabled>↶ Deshacer</button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button><button id="reiniciar">↺ Reiniciar</button></div>
+    <div class="acciones" id="acciones"><button id="deshacer" disabled>↶ <span class="etq">Deshacer</span></button><button id="exportar">⬇️ Exportar…</button><button id="comparar">🎨 Otro color</button><button id="reiniciar">↺ Reiniciar</button></div>
   </section>
   <aside>
+    <div class="acciones acciones-mas" id="acciones-mas" hidden></div>
     <div class="card"><h2>Paletas</h2><div class="presets" id="presets"></div>
       <h3 class="sub-h" id="h-casa">Pinturas de la casa</h3>
       <div class="ops" id="cartas" role="group" aria-labelledby="h-casa"><button data-cv="">Ninguna</button><button data-cv="vg">Van Gogh</button><button data-cv="ds">Daniel Smith</button><button data-cv="wn">Cotman (W&amp;N)</button></div>
@@ -683,6 +750,7 @@ const IK = (function(){
     <div class="stage"><p class="paso-chip" id="ts-chip" aria-hidden="true"></p><div id="tssvg" role="img" aria-label="El módulo repetido"></div></div>
     <div class="tzside"><div class="card">
       <h2 class="steph">Teselar</h2>
+      <p class="tip ts-nota" id="ts-nota" hidden></p>
       <p>El módulo es la pieza mínima del dibujo. Repitiéndolo, desplazado sin girarlo ni voltearlo (por traslación), cubre la pared sin dejar huecos: eso es teselar.</p>
       <div class="ex-rep">
         <div><span id="ts-cl">Columnas</span><div class="paso"><button data-ts="c" data-d="-1" aria-label="Una columna menos">−</button><output id="ts-c" aria-labelledby="ts-cl" aria-live="polite"></output><button data-ts="c" data-d="1" aria-label="Una columna más">+</button></div></div>
@@ -698,13 +766,6 @@ const IK = (function(){
 </section>
 <section id="tab-imprimir" class="tab" role="tabpanel" aria-labelledby="t-imprimir">
   <div class="vista-imp">
-    <div class="caminos">
-      <button class="camino" data-imp="lamina"><h2>📄 Lámina para pintar</h2><p>PDF en A5, A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.</p></button>
-      <button class="camino" data-imp="png"><h2>🖼️ Imagen</h2><p>PNG en alta resolución, para fondos de pantalla, redes o imprimir.</p></button>
-      <button class="camino" data-imp="svg"><h2>🎨 Vector en color</h2><p>SVG en milímetros, para imprimir a cualquier tamaño o cortar vinilo.</p></button>
-      <button class="camino" data-imp="piezas"><h2>✂️ Corte láser</h2><p>Las piezas del mosaico o la celosía de la cinta, en líneas de corte.</p></button>
-    </div>
-    <p class="hint" id="imp-info"></p>
       <section class="card papel" id="ts-papel" aria-labelledby="pp-tit">
         <h2 id="pp-tit">📏 En papel <small>· medidas para dibujarlo a mano</small></h2>
         <p class="hint" style="margin:0 0 8px">Elige los módulos y el papel y verás cuánto mide cada módulo y la figura de partida para que el dibujo de columnas × filas quepa con sus márgenes.</p>
@@ -725,6 +786,13 @@ const IK = (function(){
         <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
         <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
       </section>
+    <div class="caminos">
+      <button class="camino" data-imp="lamina"><h2>📄 Lámina para pintar</h2><p>PDF en A5, A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.</p></button>
+      <button class="camino" data-imp="png"><h2>🖼️ Imagen</h2><p>PNG en alta resolución, para fondos de pantalla, redes o imprimir.</p></button>
+      <button class="camino" data-imp="svg"><h2>🎨 Vector en color</h2><p>SVG en milímetros, para imprimir a cualquier tamaño o cortar vinilo.</p></button>
+      <button class="camino" data-imp="piezas"><h2>✂️ Corte láser</h2><p>Las piezas del mosaico o la celosía de la cinta, en líneas de corte.</p></button>
+    </div>
+    <p class="hint" id="imp-info"></p>
     <div class="row" style="justify-content:flex-start;gap:8px"><button id="imp-ant">← Colorear</button></div>
   </div>
 </section>
@@ -873,6 +941,7 @@ const ES_EN={
  "Dibuja sobre el dibujo y tu trazo se repite en todos los módulos.":"Draw on the design and your stroke repeats in every module.",
  "✏️ Dibujar":"✏️ Draw",
  "↶ Deshacer":"↶ Undo",
+ "Deshacer":"Undo",
  "Borrar":"Clear",
  "Color y grosor del trazo":"Stroke color and width",
  "Azul":"Blue",
@@ -3307,7 +3376,7 @@ function medPaso(){const el=document.getElementById('stepm');if(!el)return;
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
-  const obj={h:tr('El objetivo','The goal'),t:MODO.c?tr('Esta es la figura que vas a construir. Pulsa «Empezar» para ver el primer paso.','This is the figure you are going to construct. Tap “Start” to see the first step.'):tr(`Este es el mosaico que vas a dibujar, con los colores de ${PAT.coleccion==='alhambra'?'la Alhambra':'el Alcázar'}. Pulsa «Empezar» para ver el primer paso.`,`This is the mosaic you are going to draw, in the ${PAT.coleccion==='alhambra'?'Alhambra':'Alcázar'} colors. Tap “Start” to see the first step.`),c:tr('También puedes deslizar el dibujo para cambiar de paso.','You can also swipe the drawing to change step.')};
+  const obj={h:tr('El objetivo','The goal'),t:MODO.c?tr('Esta es la figura que vas a construir. Pulsa «Empezar» para ver el primer paso.','This is the figure you are going to construct. Tap “Start” to see the first step.'):tr(`Este es el mosaico que vas a dibujar, con los colores de ${PAT.coleccion==='alhambra'?'la Alhambra':'el Alcázar'}. Pulsa «Empezar» para ver el primer paso.`,`This is the mosaic you are going to draw, in the ${PAT.coleccion==='alhambra'?'Alhambra':'Alcázar'} colors. Tap “Start” to see the first step.`),c:matchMedia('(pointer:coarse)').matches?tr('También puedes deslizar el dibujo para cambiar de paso.','You can also swipe the drawing to change step.'):''} // v2.15: con ratón no se desliza; ahí ya está el aviso de las flechas del teclado;
   const s=step===0?obj:PS[step-1];
   const etq=step===0?tr('Objetivo','Goal'):tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
   document.getElementById('stepn').textContent=etq;
@@ -3377,7 +3446,7 @@ let tx=null;
 tz.addEventListener('touchstart',e=>{tx=(!practicando&&!tz.dataset.zoom&&e.touches.length===1)?[e.touches[0].clientX,e.touches[0].clientY]:null;},{passive:true});
 tz.addEventListener('touchend',e=>{if(!tx)return;const t=e.changedTouches[0],dx=t.clientX-tx[0],dy=t.clientY-tx[1];tx=null;
   if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*0.6)return;
-  if(dx<0&&step<pasos().length){step++;show();}else if(dx>0&&step>0){step--;show();}},{passive:true});
+  if(dx<0&&step<pasos().length){step++;show();window.verPaso&&verPaso();}else if(dx>0&&step>0){step--;show();window.verPaso&&verPaso();}},{passive:true});
 let borrarArmado=0;
 $pr('pr-on').onclick=()=>prModo(!practicando);
 $pr('pr-undo').onclick=()=>{trazos().pop();prGuardar();pintarTrazos();};
@@ -3386,9 +3455,9 @@ $pr('pr-clear').onclick=()=>{const b=$pr('pr-clear');
     setTimeout(()=>{if(Date.now()-borrarArmado>=3900){b.classList.remove('peligro');b.textContent=tr('Borrar mi dibujo','Clear my drawing');}},4000);return;}
   borrarArmado=0;PR[prK()]=[];prGuardar();b.classList.remove('peligro');b.textContent=tr('Borrar mi dibujo','Clear my drawing');pintarTrazos();};
 document.addEventListener('click',e=>{const t=e.target;
-  if(t.dataset.step){step=+t.dataset.step;show();}
-  else if(t.id==='prev'&&step>0){step--;show();}
-  else if(t.id==='next'&&step<pasos().length){step++;show();}
+  if(t.dataset.step){step=+t.dataset.step;show();window.verPaso&&verPaso();}
+  else if(t.id==='prev'&&step>0){step--;show();window.verPaso&&verPaso();}
+  else if(t.id==='next'&&step<pasos().length){step++;show();window.verPaso&&verPaso();}
   else if(t.id==='replay'){show();}
   else if(t.closest&&t.closest('#gocolor')){
     if(MODO.c){const sig=CONS.L[CONS.L.indexOf(MODO.c)+1];location.hash=sig?'#c/'+sig.id:'#aprender';}
@@ -3420,11 +3489,17 @@ const ULT='laceria-ultimo-v1',store={get(k,d){try{const v=localStorage.getItem(k
 const ETAPAS=['trazado','teselar','colorear','imprimir'];
 const pasoGuardado=c=>{try{const v=localStorage.getItem('laceria-paso-c-'+c.id);return v===null?null:+v;}catch(e){return null;}};
 const mini=c=>consSvg(c,0,true).replace('width="100%"','aria-hidden="true" focusable="false"');
+const VCORTO={'#aprender':['Aprender','Learn']}; // v2.15: el nombre corto cabe con la casa, el glosario y los ajustes en una línea
 const VOLVER={'#inicio':['Inicio','Home'],'#aprender':['Aprender a trazar','Learn to draw'],'#alicatados':['Alcázar','Alcázar'],'#alhambra':['Alhambra','Alhambra']};
 function cab(t,sub,volver,intro){$('titulo').innerHTML=t+(sub?`<span class="sub">${sub}</span>`:'');
-  if(volver){const n=lt(VOLVER[volver]||VOLVER['#inicio']);$('volver-txt').textContent=n;$('volver').setAttribute('aria-label',tr('Volver a ','Back to ')+n);}
+  if(volver){const n=lt(VOLVER[volver]||VOLVER['#inicio']),corto=lt(VCORTO[volver]||n);$('volver-txt').textContent=corto;$('volver').setAttribute('aria-label',tr('Volver a ','Back to ')+n);}
   document.querySelector('.cab-top').classList.toggle('con-volver',!!volver);document.querySelector('.cab-top').classList.toggle('en-inicio',t==='Mosaicos'&&!volver);document.title=(t==='Mosaicos'?'':t.replace(/<[^>]+>/g,'')+' · ')+'Mosaicos';
-  $('volver').hidden=!volver;$('casa').hidden=t==='Mosaicos'&&!volver;if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';$('ficha').hidden=true;}
+  $('volver').hidden=!volver;$('casa').hidden=(t==='Mosaicos'&&!volver)||volver==='#inicio';if(volver)$('volver').href=volver;$('intro').hidden=!intro;$('intro').innerHTML=intro||'';$('ficha').hidden=true;plegarIntro(false);}
+// v2.15: en el móvil, la presentación de cada alicatado sale plegada (dos líneas y «Seguir leyendo») para que se vean las etapas y el dibujo
+function plegarIntro(si){const p=$('intro'),b=$('intro-mas');p.classList.toggle('plegado',!!si);b.hidden=true;b.setAttribute('aria-expanded','false');
+  if(si)requestAnimationFrame(()=>{b.hidden=!(p.scrollHeight>p.clientHeight+2);b.textContent=tr('Seguir leyendo','Read more');});}
+$('intro-mas').onclick=()=>{const p=$('intro'),b=$('intro-mas'),abrir=p.classList.contains('plegado');p.classList.toggle('plegado',!abrir);
+  b.setAttribute('aria-expanded',abrir);b.textContent=abrir?tr('Leer menos','Read less'):tr('Seguir leyendo','Read more');};
 // ---- Portada de cada alicatado (v2.7): el muro en color, el libro, el lugar, los pasos y las piezas
 function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const img=renderLazo(datos(p),{x0:p.W*0.25,y0:p.H*0.25,w,h,cols:pal.cols,over:{},ribbon:pal.ribbon,outline:pal.outline,rw:p.rw,ow:p.ow,interlace:p.tipo!=='mosaico'}).replace('width="100%"','width="100%" aria-hidden="true" focusable="false"').replace('xMidYMid meet','xMidYMid slice');
@@ -3432,8 +3507,8 @@ function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const ref=alh?tr(`alicatado n.º ${p.num}`,`tile pattern no. ${p.num}`)+(p.pags?tr(`, págs. ${p.pags}`,`, pp. ${String(p.pags).replace(/ (a|y) /,'–')}`):''):tr(`págs. ${p.pags}`,`pp. ${String(p.pags).replace(/ a /,'–')}`);
   const n=(p.pasos||[]).length,nB=(p.pasosB||[]).length,tipos=p.nombres.length;
   const pasos=p.id==='lazo8'?tr('Paso a paso','Step by step'):tr(`${n} pasos`,`${n} steps`)+(nB?tr(' · también con cuadrícula',' · also with a grid'):'');
-  const fila=(ic,t)=>`<li>${icono(ic)}<span>${t}</span></li>`;
-  $('ficha').innerHTML=`<div class="ficha-img">${img}</div><ul class="ficha-datos">`+fila('libro',`${libro} · ${ref}`)+fila('lugar',`${p.lugar}`)+fila('pasos',pasos)+fila('piezas',tr(`${tipos} tipos de pieza`,`${tipos} kinds of piece`))+'</ul>';
+  const fila=(ic,t,cl)=>`<li${cl?` class="${cl}"`:''}>${icono(ic)}<span>${t}</span></li>`;
+  $('ficha').innerHTML=`<div class="ficha-img">${img}</div><ul class="ficha-datos">`+fila('libro',`${libro} · ${ref}`)+fila('lugar',`${p.lugar}`,'f-lugar')+fila('pasos',pasos)+fila('piezas',tr(`${tipos} tipos de pieza`,`${tipos} kinds of piece`))+'</ul>';
   $('ficha').hidden=false;}
 // Tono de cada monumento (v2.9): verde para el Alcázar y azul para la Alhambra, siempre acompañado de su nombre
 const tono=col=>{if(col)document.documentElement.dataset.monu=col;else delete document.documentElement.dataset.monu;};
@@ -3484,12 +3559,15 @@ function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}i
   const antes=MODO.c;MODO.c=null;mostrar('a');tono(PATS[id].coleccion||'alcazar');
   if(PAT.id!==id)cambiarPatron(id);else if(antes||!$('dots').children.length)window.trazadoCambio();
   cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',etapa==='trazado'?PAT.intro:''); // el texto largo, solo al empezar: en las demás etapas el dibujo queda más arriba
-  document.querySelector('footer #pie').hidden=etapa!=='trazado';if(etapa==='trazado')ficha(PAT);
+  document.querySelector('footer #pie').hidden=etapa!=='trazado';if(etapa==='trazado'){ficha(PAT);plegarIntro(matchMedia('(max-width:760px)').matches);}
   window.tabEtapa(etapa,true);if(etapa==='colorear')draw();store.set(ULT,'a/'+id+'/'+etapa);}
 // ---- Mis dibujos
+// v2.15: abrir un alicatado guarda su estado (vista, paso…); «Coloreado» solo si los colores no son los de partida
+function pintado(p,g){if(!g)return false;const f=fresh(p);
+  return Object.keys(g.over||{}).length>0||JSON.stringify(g.cols||f.cols)!==JSON.stringify(f.cols)||(g.ribbon||f.ribbon)!==f.ribbon||(g.outline||f.outline)!==f.outline;}
 function misDibujos(){const out=[];let E={};try{E=JSON.parse(localStorage.getItem('laceria-estado-v2')||'{}').p||{};}catch(e){}
   let PRr={};try{PRr=JSON.parse(localStorage.getItem('laceria-practica-v1')||'{}')||{};}catch(e){}
-  for(const p of Object.values(PATS)){const col=!!E[p.id],rep=(PRr[p.id]||[]).length>0;if(col||rep)out.push({p,col,rep});}
+  for(const p of Object.values(PATS)){const col=pintado(p,E[p.id]),rep=(PRr[p.id]||[]).length>0;if(col||rep)out.push({p,col,rep});}
   for(const c of CONS.L)if((PRr['c-'+c.id]||[]).length)out.push({c,rep:true});return out;}
 function mis(){mostrar('mis');cab(tr('Mis dibujos','My drawings'),tr('Guardados en este dispositivo','Saved on this device'),'#inicio','');const L=misDibujos();
   let E={};try{E=JSON.parse(localStorage.getItem('laceria-estado-v2')||'{}').p||{};}catch(e){}
@@ -3685,7 +3763,11 @@ window.pintarTeselar=function(){$('ts-c').textContent=EX.c;$('ts-r').textContent
   const M=PAT.modulo;$('ts-forma').hidden=!(M&&M.tipo==='hex');
   if(M&&M.tipo==='hex')document.querySelectorAll('#ts-forma [data-forma]').forEach(b=>{const on=b.dataset.forma===(TS.forma||'hex');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   const R=tsConstruir(EX.c,EX.r,TS.marcar,TS.color);TS.red=R.red;TS.vb=R.vb;
-  $('tssvg').innerHTML=R.sv;$('ts-chip').textContent=R.chip;};
+  $('tssvg').innerHTML=R.sv;
+  // v2.15: en el móvil el rótulo fijo encima del dibujo se queda en una línea y la nota del módulo baja al texto
+  const P=R.chip.split(' · '),a=P.slice(0,2).join(' · '),n=P.slice(2).join(' · ');
+  $('ts-chip').innerHTML='';$('ts-chip').append(a);if(n){const s=document.createElement('span');s.className='ch-nota';s.textContent=' · '+n;$('ts-chip').append(s);}
+  $('ts-nota').hidden=!n;$('ts-nota').textContent=n?n.charAt(0).toUpperCase()+n.slice(1)+'.':'';};
 
 document.querySelector('#tab-teselar .ex-rep').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const k=b.dataset.ts;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();pintarTeselar();});
 $('ts-marcar').addEventListener('change',e=>{TS.marcar=e.target.checked;pintarTeselar();});
@@ -3720,7 +3802,9 @@ function ruta(){let h=decodeURIComponent(location.hash.slice(1));
   let m=h.match(/^c\/([\w-]+)$/);if(m)return construccion(m[1]);
   m=h.match(/^a\/([\w-]+)(?:\/(\w+))?$/);if(m)return alicatado(m[1],m[2]||'trazado');
   inicio();}
-addEventListener('hashchange',()=>{document.querySelectorAll('.dlg:not([hidden])').forEach(d=>window.cerrarDlg&&window.cerrarDlg(d.id));ruta();scrollTo(0,0);});
+const pantalla=()=>decodeURIComponent(location.hash.slice(1)).replace(/^(a\/[\w-]+)\/\w+$/,'$1')||'inicio';let PANT=pantalla();
+addEventListener('hashchange',()=>{document.querySelectorAll('.dlg:not([hidden])').forEach(d=>window.cerrarDlg&&window.cerrarDlg(d.id));ruta();scrollTo(0,0);
+  const n=pantalla();if(n!==PANT){PANT=n;const t=$('titulo');t.tabIndex=-1;try{t.focus({preventScroll:true});}catch(e){t.focus();}}});
 ruta();
 })();
 // ---------- Zoom (v2.8): ampliar el dibujo de Trazar y Colorear con dos dedos, la rueda (Ctrl o pellizco en el panel táctil) o los botones ----------
@@ -3776,6 +3860,50 @@ if(cz)Z.push(zoomable(cz));
 addEventListener('hashchange',()=>Z.forEach(z=>z.reset()));
 document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data-met]'))Z.forEach(z=>z.reset());});
 })();
+// ---------- v2.15: usabilidad en el móvil ----------
+// · Mide lo que se queda fijo arriba (pestañas y dibujo) para que no tape el foco (scroll-padding-top: --fijo)
+//   y para que en Colorear la fila de vistas se esconda bajo las pestañas al bajar (--alto-vb).
+// · En el móvil, Deshacer va sobre el dibujo (junto al zoom) y Exportar, Otro color y Reiniciar bajan a los controles.
+// · Las filas que se deslizan (vistas de Colorear) se difuminan por el lado en que hay más botones.
+// · Al cambiar de paso en Trazar, si el texto del paso ha quedado bajo el dibujo, la pantalla baja o sube hasta él.
+(function(){
+const $=id=>document.getElementById(id),raiz=document.documentElement;
+const MQ=matchMedia('(max-width:760px)');
+const tabsVis=()=>{const b=$('barra-etapas');return b&&!b.hidden&&b.offsetParent!==null;};
+const etapa=()=>['trazado','teselar','colorear','imprimir'].find(n=>{const t=$('tab-'+n);return t&&t.classList.contains('show');});
+function medir(){
+  const tabs=tabsVis()?$('barra-etapas').offsetHeight:0;if(tabs)raiz.style.setProperty('--alto-tabs',tabs+'px');
+  let vb=0;const cz=document.querySelector('#tab-colorear>.stage'),bar=cz&&cz.querySelector('.viewbar');
+  if(cz&&bar&&bar.offsetParent!==null){const a=cz.getBoundingClientRect(),b=bar.getBoundingClientRect();vb=Math.round(b.bottom-a.top+parseFloat(getComputedStyle(bar).marginBottom||0));
+    raiz.style.setProperty('--alto-vb',vb+'px');}
+  let fijo=tabs;const e=tabs&&etapa();
+  if(e&&MQ.matches&&e!=='imprimir'){const st=e==='colorear'?cz:document.querySelector('#tab-'+e+' .stage');if(st)fijo+=st.offsetHeight-(e==='colorear'?vb:0);}
+  raiz.style.setProperty('--fijo',(fijo?fijo+8:0)+'px');}
+// Botones de Colorear: en el móvil, Deshacer sobre el dibujo y el resto abajo, con los controles
+function colocar(){const ui=$('svg')&&$('svg').nextElementSibling,mas=$('acciones-mas'),ac=$('acciones');if(!ui||!ui.classList.contains('zoom-ui')||!mas||!ac)return;
+  const otros=['exportar','comparar','reiniciar'].map($);
+  if(MQ.matches){ui.insertBefore($('deshacer'),ui.firstChild);otros.forEach(b=>mas.appendChild(b));mas.hidden=false;}
+  else{ac.insertBefore($('deshacer'),ac.firstChild);otros.forEach(b=>ac.appendChild(b));mas.hidden=true;}
+  medir();}
+// Filas que se deslizan
+function pista(el){const izq=el.scrollLeft>2,dcha=el.scrollLeft+el.clientWidth<el.scrollWidth-2;el.classList.toggle('mas-izq',izq);el.classList.toggle('mas-dcha',dcha);}
+document.querySelectorAll('.viewbar').forEach(el=>{el.addEventListener('scroll',()=>pista(el),{passive:true});
+  // la vista elegida se centra en la fila
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&el.scrollWidth>el.clientWidth)b.scrollIntoView({block:'nearest',inline:'center'});});
+  // con el teclado, si la fila está escondida bajo las pestañas, la pantalla sube hasta ella
+  el.addEventListener('focusin',()=>{const r=el.getBoundingClientRect(),t=parseFloat(getComputedStyle(raiz).getPropertyValue('--alto-tabs'))||0;if(MQ.matches&&r.top<t){const st=el.closest('.stage');scrollTo(0,Math.max(0,scrollY+st.parentElement.getBoundingClientRect().top-t-12));}});});
+// Trazar: que se vea el texto del paso nuevo
+window.verPaso=()=>{if(!MQ.matches)return;requestAnimationFrame(()=>{const st=document.querySelector('#tab-trazado .stage'),c=$('stepn')&&$('stepn').closest('.card');if(!st||!c||!c.offsetParent)return;
+  const a=st.getBoundingClientRect().bottom+8,r=c.getBoundingClientRect();if(r.top<a||r.top>innerHeight-120)scrollBy(0,r.top-a);});};
+const todo=()=>{medir();document.querySelectorAll('.viewbar').forEach(pista);};
+const ro=new ResizeObserver(todo);
+['barra-etapas','tab-trazado','tab-teselar','tab-colorear'].forEach(id=>{const e=$(id);if(e)ro.observe(e);});
+document.querySelectorAll('.stage,.viewbar').forEach(e=>ro.observe(e));
+MQ.addEventListener('change',colocar);addEventListener('resize',todo);addEventListener('hashchange',()=>setTimeout(todo,60));
+// al cambiar de vista se ocultan o aparecen botones (Panel): se vuelve a mirar la pista
+new MutationObserver(todo).observe(document.querySelector('.viewbar')||document.body,{attributes:true,subtree:true,attributeFilter:['hidden','class']});
+colocar();setTimeout(todo,300);
+})();
 </script>
 
 <script>
@@ -3785,6 +3913,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.15",["📱 Phone: the drawing that stays at the top takes about a third of the screen, so the step text and the Next button are always in view","↕️ After Next, the screen moves to the new step’s text","🧭 Opening a tile pattern now shows the stages and the drawing straight away: a compact card and the introduction folded («Read more»)","🎨 Color: Undo sits on the drawing next to the zoom; Export, Other colors and Start over are with the controls","📂 My drawings only lists what you have actually colored or traced","📏 On paper comes first in Print; the header fits in one line and nothing is hidden behind the install notice"]],
     ["2.14",["✚ On paper: a red cross at the center of every module, not only the first, with the list of where to put the compass point in each one (distance from the top and left edges)","📄 The actual-size PDF template marks all the crosses, so you can transfer them to your sheet","📖 Glossary: alfardón, almendrilla, candilejo, sino, zafate and rueda now come with a drawing of the piece, highlighted on one of the app’s tile patterns"]],
     ["2.13",["📏 On paper: the starting measurement is now in whole or half centimeters (6 cm, 4.5 cm…), and whenever possible the others too; what is left over goes to the margins","🔢 Fine grids, with squares under 2 cm, are given in whole millimeters","✚ Where to put the compass point: a red cross on the sheet, with its distance from the left and top edges","↔️ The side and bottom margins are always marked on the sheet"]],
     ["2.12",["🏠 A house button at the top of every page takes you back to the home screen","↺ Color › Start over: next to Undo, Export and Other colors, it puts all the coloring back to the start (tap twice; you can undo it)","📏 On paper is now in step 4, Print, with its own columns and rows","✂️ «Your tile» has been removed from Tessellate"]],
@@ -3821,6 +3950,7 @@ document.addEventListener('click',e=>{if(e.target.closest('.viewbar button,[data
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.15",["📱 Móvil: el dibujo que se queda fijo arriba ocupa un tercio de la pantalla, así que el texto del paso y «Siguiente» se ven siempre","↕️ Al pulsar «Siguiente», la pantalla va al texto del paso nuevo","🧭 Al abrir un alicatado se ven enseguida las etapas y el dibujo: ficha compacta y presentación plegada («Seguir leyendo»)","🎨 Colorear: Deshacer va sobre el dibujo, junto al zoom; Exportar, Otro color y Reiniciar, con los controles","📂 «Mis dibujos» solo muestra lo que has coloreado o repasado de verdad","📏 «En papel» sale primero en Imprimir; la cabecera cabe en una línea y el aviso de instalar ya no tapa nada"]],
     ["2.14",["✚ En papel: una cruz roja en el centro de cada módulo, no solo del primero, y la lista de dónde pinchar el compás en cada uno (distancia al borde de arriba y al izquierdo)","📄 La plantilla en PDF a tamaño real marca todas las cruces, para pasarlas a tu papel","📖 Glosario: alfardón, almendrilla, candilejo, sino, zafate y rueda llevan ahora un dibujo de la pieza, resaltada sobre uno de los alicatados de la app"]],
     ["2.13",["📏 En papel: la medida de partida va ahora en centímetros o medios centímetros (6 cm, 4,5 cm…) y, cuando se puede, también las demás; lo que sobra va a los márgenes","🔢 En las cuadrículas finas, con cuadros de menos de 2 cm, en milímetros exactos","✚ Dónde pinchar el compás: una cruz roja en el papel, con su distancia al borde izquierdo y al de arriba","↔️ Los márgenes lateral e inferior salen siempre marcados en el papel"]],
     ["2.12",["🏠 Botón con una casa arriba en todas las páginas para volver a la portada","↺ Colorear › Reiniciar: junto a Deshacer, Exportar y Otro color, deja todo el coloreado como al principio (dos toques; se puede deshacer)","📏 «En papel» pasa a la etapa 4, Imprimir, con sus columnas y filas","✂️ Se quita «Tu tesela» de Teselar"]],

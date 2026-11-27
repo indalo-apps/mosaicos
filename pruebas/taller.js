@@ -2,6 +2,9 @@
 //  · Progreso: llegar al último paso marca «Trazado completo»; la casilla «Ya lo he dibujado en papel» se guarda,
 //    va a la par en Trazar y en Imprimir, y sale en la galería, en la portada del alicatado, en Inicio y en Mis dibujos
 //  · Pantalla encendida: la casilla solo sale si el navegador puede, y se recuerda
+//  · «Comprueba antes de seguir» (v2.18): cada comprobación escrita apunta a un paso que existe; sale en el paso y no en el objetivo
+//  · «Entintar» (v2.18): todos los alicatados enseñan la tinta (gruesa) y el lápiz (a rayas), y cambiar de paso vuelve al trazado
+//  · «Recorrido para empezar» (v2.18): sus paradas y sus construcciones existen, y marca la siguiente
 // Uso: node pruebas/con-servidor.js pruebas/taller.js       (CAPTURAS=/tmp/capturas para guardar imágenes)
 const {chromium}=require('playwright');
 const U='http://localhost:8765/index.html',CAP=process.env.CAPTURAS;
@@ -42,5 +45,41 @@ let mal=0,bien=0;const ok=(c,msg)=>{if(c)bien++;else{mal++;console.log('  ✗',m
     if(puede){await pg.locator('#vela').uncheck();await pg.reload();await pg.waitForTimeout(300);
       ok(!(await pg.locator('#vela').isChecked()),`${loc}: se recuerda que no se quiere la pantalla encendida`);
       await pg.locator('#vela').check();}
+    // ---- Comprueba antes de seguir
+    const malas=await pg.evaluate(()=>{const M=[];for(const [T,met] of [[COMPROBAR,'pasos'],[COMPROBAR_B,'pasosB']])for(const id in T){const p=PATS[id];
+        if(!p){M.push(id+': no existe');continue;}const PS=id==='lazo8'?Array(LAZO_PASOS).fill({}):p[met];
+        for(const k in T[id]){const s=PS&&PS[k-1];if(!s)M.push(id+' paso '+k+': no existe');else if(s.tipo)M.push(id+' paso '+k+': es de tipo '+s.tipo+', no de construcción');
+          if(T[id][k].length!==2||T[id][k].some(t=>!t||t.length<20))M.push(id+' paso '+k+': falta un idioma');}}
+      for(const p of Object.values(PATS))for(const PS of [p.pasos,p.pasosB])if(PS)for(let i=1;i<=PS.length;i++){try{comprobaciones(p,i,PS,PS===p.pasosB,'1 cm');}catch(e){M.push(p.id+' paso '+i+': '+e.message);}}
+      return M;});
+    ok(!malas.length,`${loc}: comprobaciones mal puestas: ${malas.join('; ')}`);
+    await ir('#a/taca/trazado');await pg.evaluate(()=>document.querySelector('[data-step="0"]').click());await pg.waitForTimeout(150);
+    ok(await pg.locator('#stepok').isHidden(),`${loc}: en el objetivo no hay nada que comprobar`);
+    await pg.evaluate(()=>document.querySelector('[data-step="1"]').click());await pg.waitForTimeout(200);
+    ok((await pg.locator('#stepok').innerText()).includes(EN?'Check before you go on':'Comprueba antes de seguir'),`${loc}: el paso 1 de la taca trae su comprobación`);
+    if(CAP)await pg.screenshot({path:`${CAP}/taller_${loc}_comprueba.png`,fullPage:true});
+    for(const [id,paso,txt] of [['barca',8,EN?'equally wide':'mismo ancho'],['barca',9,EN?'alternating':'alternando'],['taca',6,'×'],['lazo8',8,EN?'alternating':'alternando']]){
+      await ir(`#a/${id}/trazado`);await pg.evaluate(n=>document.querySelector(`[data-step="${n}"]`).click(),paso);await pg.waitForTimeout(200);
+      ok((await pg.locator('#stepok').innerText().catch(()=>'')).includes(txt),`${loc}: ${id} paso ${paso} debería comprobar «${txt}»`);}
+    await ir('#c/tri-lado');ok(await pg.locator('#stepok').isHidden()&&await pg.locator('#tinta-on').isHidden(),`${loc}: las construcciones de Aprender no llevan comprobación ni tinta`);
+    // ---- Entintar
+    const pats=await pg.evaluate(()=>Object.keys(PATS));
+    for(const id of pats){await ir(`#a/${id}/trazado`);await pg.evaluate(()=>document.querySelector('[data-step="1"]').click());await pg.locator('#tinta-on').click();await pg.waitForTimeout(150);
+      const t=await pg.evaluate(()=>{const sv=document.querySelector('#tzsvg svg'),lz=sv&&sv.querySelector('.tinta-lapiz');
+        return {lapiz:lz?lz.querySelectorAll('line,circle,path,polygon,polyline').length:0,tinta:sv?sv.querySelectorAll('.tinta-tinta line, path, polygon').length:0,panel:!document.getElementById('tinta-panel').hidden,ap:document.getElementById('tinta-on').getAttribute('aria-pressed')};});
+      ok(t.lapiz>0&&t.tinta>0&&t.panel&&t.ap==='true',`${loc}: ${id} · Entintar debe enseñar lápiz (${t.lapiz}) y tinta (${t.tinta})`);
+      if(CAP&&!EN&&['taca','barca','lazo8','felipe','toledanos','arrayanes','jambas31'].includes(id))await pg.locator('#tzsvg').screenshot({path:`${CAP}/tinta_${id}.png`});
+      await pg.locator('#next').click();await pg.waitForTimeout(120);
+      ok(await pg.locator('#tinta-panel').isHidden()&&await pg.locator('#tinta-on').getAttribute('aria-pressed')==='false',`${loc}: ${id} · al cambiar de paso se vuelve al trazado`);}
+    if(CAP){await ir('#a/barca/trazado');await pg.locator('#tinta-on').click();await pg.waitForTimeout(400);await pg.screenshot({path:`${CAP}/taller_${loc}_tinta.png`,fullPage:true});}
+    // ---- Recorrido
+    await pg.evaluate(()=>localStorage.removeItem('mosaicos-hecho-v1'));await ir('#inicio');await pg.reload();await pg.waitForTimeout(300);
+    ok(await pg.locator('a[href="#recorrido"]').isVisible(),`${loc}: Inicio lleva al recorrido`);
+    await ir('#recorrido');
+    const reco=await pg.evaluate(()=>({n:document.querySelectorAll('#lista-recorrido>li').length,sig:[...document.querySelectorAll('#lista-recorrido>li')].findIndex(l=>l.classList.contains('sig')),
+      rotos:[...document.querySelectorAll('#lista-recorrido a')].map(a=>a.getAttribute('href')).filter(h=>{const m=h.match(/^#a\/([\w-]+)\//),c=h.match(/^#c\/([\w-]+)$/);return !(m&&PATS[m[1]])&&!(c&&CONS.L.some(x=>x.id===c[1]));})}));
+    ok(reco.n===7&&reco.sig===0&&!reco.rotos.length,`${loc}: el recorrido tiene 7 paradas, marca la primera como siguiente y no tiene enlaces rotos (${JSON.stringify(reco)})`);
+    ok((await pg.locator('#lista-recorrido>li.sig').innerText()).includes(EN?'Next':'Siguiente'),`${loc}: la parada siguiente lo dice con texto`);
+    if(CAP)await pg.screenshot({path:`${CAP}/taller_${loc}_recorrido.png`,fullPage:true});
     await pg.close();}
   await b.close();console.log(`${mal?'✗':'✓'} taller: ${bien} bien, ${mal} mal`);process.exit(mal?1:0);})();

@@ -867,5 +867,24 @@ function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt
     g+=`<g class="actual">`+(giro?`<g transform="rotate(${giro.join(' ')})">${animar(L,'#1b1b1b',0.17)}</g>`:animar(L,'#1b1b1b',0.17))+'</g>';}
   const fz=Math.max(w,h)/24;if(Math.abs(fz-1)>0.2){g=g.replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(v*fz).toFixed(3)}"`).replace(/stroke-dasharray="([\d. ]+)"/g,(m,v)=>`stroke-dasharray="${v.split(' ').map(n=>+(n*fz).toFixed(3)).join(' ')}"`);}
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${y0-pad} ${w+2*pad} ${h+2*pad}" width="100%"><rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#fffefa"/><defs><clipPath id="tzclip2"><rect x="${x0}" y="${y0}" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#tzclip2)">${g}</g>${marco}</svg>`;}
-return {P,recta,redTriangulos,poligono,contorno,dibujarPaso};
+// v2.18: qué se repasa con tinta. El dibujo definitivo va en trazo grueso y continuo; el lápiz de la construcción
+// (lo que se borra al final), fino, gris y a rayas. Se distinguen por el grosor y la raya, no por el color.
+// Usa el encuadre del paso de remarcar, que es donde las guías y el dibujo final coinciden.
+function lapiz(g,fz){return g.replace(/ class="[^"]*"/g,'').replace(/ style="animation-delay:[^"]*"/g,'').replace(/ pathLength="1"/g,'').replace(/ stroke-dasharray="[^"]*"/g,'')
+  .replace(/stroke="#[0-9a-fA-F]{3,8}"/g,'stroke="#6f6f6f"').replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(Math.min(+v,0.07)*fz).toFixed(3)}"`);}
+function dibujarTinta(p,render,lista){const PS=lista||p.pasos;let n=0;PS.forEach((q,i)=>{if(q.tipo==='remarcar')n=i+1;});
+  if(!n)PS.forEach((q,i)=>{if(q.guia&&!q.tipo)n=i+1;});
+  const s=PS[n-1]||{},vt=s.vt||p.vt,[x0,y0,w,h]=vt,pad=w*0.03,fz=Math.max(w,h)/24,cinta=p.tipo==='cinta';
+  const giro=p.giro&&!s.sinGiro?[p.giro,x0+w/2,y0+h/2]:null;
+  let g='';PS.slice(0,n).forEach(q=>{if(q.guia&&!q.tipo)g+=lapiz(q.guia(p,vt),fz);});
+  const borrar=`<g class="tinta-lapiz" stroke-dasharray="${+(0.22*fz).toFixed(3)} ${+(0.16*fz).toFixed(3)}" clip-path="url(#tzclip3)">${g}</g>`;
+  const defs=`<defs><clipPath id="tzclip3"><rect x="${x0}" y="${y0}" width="${w}" height="${h}"/></clipPath></defs>`;
+  if(cinta){const o={x0,y0,w,h,cols:Array(p.nombres.length).fill('#ffffff'),over:{},ribbon:'#ffffff',outline:'#111111',rw:p.rw,ow:0.11,interlace:true,frame:true,giro};
+    return render(p.D,o).replace('<svg ','<svg style="pointer-events:none" ').replace(/<\/svg>\s*$/,defs+borrar+'</svg>');}
+  const L=[];for(const [cl,pts] of p.D.S)for(let k=0;k+2<pts.length+(cl?2:0);k+=2){const a=k,b=(k+2)%pts.length;
+    const sg=[pts[a],pts[a+1],pts[b],pts[b+1]],mg=giro?w*0.25:1;if(Math.max(sg[0],sg[2])<x0-mg||Math.min(sg[0],sg[2])>x0+w+mg||Math.max(sg[1],sg[3])<y0-mg||Math.min(sg[1],sg[3])>y0+h+mg)continue;L.push(sg);}
+  const lin=L.map(q=>`<line x1="${+q[0].toFixed(3)}" y1="${+q[1].toFixed(3)}" x2="${+q[2].toFixed(3)}" y2="${+q[3].toFixed(3)}"/>`).join('');
+  const tinta=`<g class="tinta-tinta" stroke="#111111" stroke-width="${+(0.19*fz).toFixed(3)}" stroke-linecap="round" fill="none" clip-path="url(#tzclip3)"${giro?` transform="rotate(${giro.join(' ')})"`:''}>${lin}</g>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${y0-pad} ${w+2*pad} ${h+2*pad}" width="100%"><rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#fffefa"/>${defs}${borrar}${tinta}<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="#2b2b2b" stroke-width="0.08"/></svg>`;}
+return {P,recta,redTriangulos,poligono,contorno,dibujarPaso,dibujarTinta,lapiz};
 })();

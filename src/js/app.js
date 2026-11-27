@@ -578,7 +578,9 @@ function medPaso(){const el=document.getElementById('stepm');if(!el)return;
   el.innerHTML=`<p class="mp-t">${icono('regla')}<b>${tr('En papel','On paper')}</b> <span>· ${P.desc}</span> <button type="button" class="enlace" id="mp-cambiar">${tr('Cambiar','Change')}</button></p><ul>`+L.map(([t,v])=>`<li>${t}: <b>${v}</b></li>`).join('')+'</ul>';
   el.hidden=false;
   document.getElementById('mp-cambiar').onclick=()=>{location.hash='#a/'+PAT.id+'/imprimir';setTimeout(()=>{const d=document.getElementById('ts-papel');if(d){d.scrollIntoView({block:'start',behavior:'smooth'});}},350);};}
+let tinta=false; // v2.18: «Entintar» enseña qué se repasa con tinta; cualquier cambio de paso vuelve al trazado
 function show(){
+  tinta=false;pintarTintaUI();
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
   if(!MODO.c&&step===N)HECHO.marca(PAT.id,'t');pintarHecho(!MODO.c&&step===N);
@@ -587,7 +589,7 @@ function show(){
   const etq=step===0?tr('Objetivo','Goal'):tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
   document.getElementById('stepn').textContent=etq;
   document.getElementById('paso-chip').textContent=step===0?tr('La figura terminada','The finished figure'):etq+' · '+s.h;
-  document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c||'';try{medPaso();}catch(e){}
+  document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c||'';try{medPaso();}catch(e){}try{pintarComprobar(PS);}catch(e){}
   let svg;
   if(step===0){
     if(MODO.c)svg=consSvg(MODO.c,0,true);
@@ -618,6 +620,35 @@ function show(){
   if(ult&&foco==='next')document.getElementById('gocolor').focus();
   if(typeof pintarTrazos==='function')pintarTrazos();
 }
+// «Comprueba antes de seguir» (v2.18): lo que se puede mirar con la regla o el compás antes de pasar de paso
+function pintarComprobar(PS){const el=document.getElementById('stepok');if(!el)return;
+  if(MODO.c||step===0){el.hidden=true;return;}
+  let ancho=null;try{const P=window.papelActual&&window.papelActual();if(P&&PAT.tipo==='cinta')ancho=window.cmPapel(PAT.rw*P.G.k);}catch(e){}
+  const L=comprobaciones(PAT,step,PS,!!metB(),ancho);if(!L.length){el.hidden=true;return;}
+  el.innerHTML=`<p class="ok-t">${icono('hecho')}<b>${tr('Comprueba antes de seguir','Check before you go on')}</b></p><ul>`+L.map(t=>`<li>${t}</li>`).join('')+'</ul>';el.hidden=false;}
+// «Entintar» (v2.18)
+function svgTinta(){
+  if(PAT.id==='lazo8'){const o={x0:-2.5,y0:-2.5,w:29,h:29,...white,outline:'#111111',ow:0.11,interlace:true,frame:true};
+    const g=PATRONES.lapiz(layers(3).replace(/ clip-path="[^"]*"/g,''),1);
+    return renderLazo(D_LAZO,o).replace('<svg ','<svg style="pointer-events:none" ').replace(/<\/svg>\s*$/,`<defs><clipPath id="tzclip3"><rect x="-2.5" y="-2.5" width="29" height="29"/></clipPath></defs><g class="tinta-lapiz" stroke-dasharray="0.22 0.16" clip-path="url(#tzclip3)">${g}</g></svg>`);}
+  return PATRONES.dibujarTinta(PAT,renderLazo,pasos());}
+function pintarTintaUI(){const b=document.getElementById('tinta-on'),p=document.getElementById('tinta-panel');if(!b)return;
+  b.hidden=!!MODO.c;b.setAttribute('aria-pressed',tinta);b.classList.toggle('on',tinta);p.hidden=!tinta;
+  document.querySelector('#tab-trazado .tzside').classList.toggle('entintando',tinta);}
+function verTinta(){tinta=true;pintarTintaUI();const cinta=PAT.tipo==='cinta';
+  let ancho=null;try{const P=window.papelActual&&window.papelActual();if(P&&cinta)ancho=window.cmPapel(PAT.rw*P.G.k);}catch(e){}
+  const el=document.getElementById('tzsvg');el.innerHTML=`<div class="fade">${svgTinta()}</div>`;
+  el.setAttribute('aria-label',tr('Qué se repasa con tinta: el dibujo final, en trazo grueso; el lápiz de la construcción, fino y a rayas','What to ink: the final drawing in a thick line; the construction pencil, thin and dashed'));
+  document.getElementById('paso-chip').textContent=tr('Entintar','Inking');document.getElementById('leyenda-paso').hidden=true;
+  const m=(d,w)=>`<svg class="tinta-m" viewBox="0 0 34 10" width="34" height="10" aria-hidden="true" focusable="false"><line x1="2" y1="5" x2="32" y2="5" stroke="currentColor" stroke-width="${w}" stroke-linecap="round"${d?' stroke-dasharray="4 3"':''}/></svg>`;
+  const L=[tr('Repasa con tinta solo las líneas gruesas y continuas: son el dibujo definitivo.','Go over only the thick, solid lines in ink: they are the final drawing.'),
+    cinta?tr('En cada cruce, la cinta que pasa por debajo se corta a los dos lados de la que pasa por encima: levanta la pluma al llegar y sigue al otro lado.','At every crossing, the strap that goes under stops on both sides of the one that goes over: lift the pen when you reach it and carry on at the other side.')+(ancho?tr(` La cinta mide ${ancho} de ancho en tu papel.`,` The strap is ${ancho} wide on your paper.`):'')
+      :tr('Repasa cada pieza entera, de vértice a vértice: todas quedan cerradas.','Go over each whole piece, from vertex to vertex: they all end up closed.'),
+    tr('Deja secar la tinta y borra el lápiz: la cuadrícula, las circunferencias y las líneas prolongadas.','Let the ink dry and rub out the pencil: the grid, the circles and the extended lines.')];
+  document.getElementById('tinta-panel').innerHTML=`<p class="mp-t"><b>🖋 ${tr('Entintar','Inking')}</b></p><p class="tinta-ley"><span>${m(false,3.2)}${tr('Con tinta','In ink')}</span><span>${m(true,1.2)}${tr('Lápiz: se borra','Pencil: rub it out')}</span></p><ol>`+L.map(t=>`<li>${t}</li>`).join('')+`</ol><div class="ops"><button type="button" id="tinta-off">${tr('Volver al paso','Back to the step')}</button></div>`;
+  document.getElementById('tinta-off').onclick=()=>{show();document.getElementById('tinta-on').focus();};
+  if(typeof pintarTrazos==='function')pintarTrazos();}
+document.getElementById('tinta-on').onclick=()=>{if(tinta)show();else{verTinta();const p=document.getElementById('tinta-panel');if(matchMedia('(max-width:760px)').matches)p.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});}};
 // ---------- Repasar a mano (v1.5): trazos guardados por patrón, en las coordenadas del dibujo ----------
 const PR_KEY='laceria-practica-v1';let PR={},practicando=false,lapiz=false,actual=null;
 try{PR=JSON.parse(localStorage.getItem(PR_KEY)||'{}')||{};}catch(e){PR={};}

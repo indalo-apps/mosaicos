@@ -28,7 +28,7 @@ function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   $('ficha').hidden=false;}
 // Tono de cada monumento (v2.9): verde para el Alcázar y azul para la Alhambra, siempre acompañado de su nombre
 const tono=col=>{if(col)document.documentElement.dataset.monu=col;else delete document.documentElement.dataset.monu;};
-function mostrar(v){tono(null);['inicio','aprender','alicatados','mis'].forEach(n=>$('v-'+n).hidden=n!==v);
+function mostrar(v){tono(null);['inicio','aprender','alicatados','mis','recorrido'].forEach(n=>$('v-'+n).hidden=n!==v);
   const ali=v==='a',con=v==='c';$('barra-etapas').hidden=!ali;
   if(!ali&&!con)document.querySelectorAll('.tab').forEach(x=>x.classList.remove('show'));
   document.querySelector('footer #pie').hidden=!ali;}
@@ -53,6 +53,8 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y comp
   $('n-alcazar').textContent=tr(`${na} alicatados`,`${na} tile patterns`)+enPapel('alcazar');
   $('n-alhambra').textContent=tr(`${nh} ${nh===1?'alicatado':'alicatados'}`,`${nh} tile ${nh===1?'pattern':'patterns'}`)+(enPapel('alhambra')||tr(' · se irán añadiendo más',' · more coming'));
   $('n-aprender').textContent=tr(`${CONS.L.length} construcciones`,`${CONS.L.length} constructions`);
+  {const k=recoHechos(),N=RECORRIDO.length;$('n-recorrido').textContent=k?tr(`${k} de ${N} con el trazado completo`,`${k} of ${N} with all steps done`):tr(`${N} alicatados, del más fácil al más difícil`,`${N} tile patterns, from easiest to hardest`);
+   $('ic-recorrido').innerHTML=`<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="#1f5f5b"/><path d="M8 31h8v-7h8v-7h8v-7" fill="none" stroke="#fbf4e2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="10" r="2.6" fill="#e2a93b"/></svg>`;}
   const n=misDibujos().length;$('n-mis').textContent=n?tr(`${n} ${n===1?'guardado':'guardados'}`,`${n} saved`):tr('Aún no hay ninguno','None yet');}
 // ---- Aprender a trazar
 function aprender(){mostrar('aprender');cab(tr('Aprender a trazar','Learn to draw'),tr('Construcciones básicas · págs. 164 a 175','Basic constructions · pp. 164–175'),'#inicio',tr('Las construcciones con regla y compás del libro: la base de todos los alicatados. Cada una empieza por la figura terminada.','The ruler-and-compass constructions from the book: the basis of every tile pattern. Each one starts with the finished figure.'));
@@ -78,6 +80,22 @@ function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}i
   cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',etapa==='trazado'?PAT.intro:''); // el texto largo, solo al empezar: en las demás etapas el dibujo queda más arriba
   document.querySelector('footer #pie').hidden=etapa!=='trazado';if(etapa==='trazado'){ficha(PAT);plegarIntro(matchMedia('(max-width:760px)').matches);}
   window.tabEtapa(etapa,true);if(etapa==='colorear')draw();store.set(ULT,'a/'+id+'/'+etapa);}
+// ---- Recorrido para empezar (v2.18): siete alicatados del más fácil al más difícil; cada uno enseña algo nuevo
+// y dice qué construcciones de «Aprender a trazar» conviene practicar antes
+const RECORRIDO=[
+  ['toledanos',['La red de triángulos: con ella salen los hexágonos sin medir nada.','The triangle grid: it gives you the hexagons without measuring anything.'],['tri-lado','tri-hex']],
+  ['octogonos',['La circunferencia inscrita en cada cuadro y el octógono regular.','The circle inscribed in each square, and the regular octagon.'],['oct-cuad']],
+  ['munecas17',['Dividir un cuadrado en 3 × 3 y repetir una baldosa girándola.','Dividing a square into 3 × 3 and repeating a tile by turning it.'],['div-3','movimientos']],
+  ['alargadas',['La estrella de ocho puntas con dos cuadrados, y prolongar sus lados.','The eight-pointed star made of two squares, and extending its sides.'],['cuad-oct-circ','estrellas']],
+  ['taca',['Los octógonos estrellados, uno dentro de otro, y el módulo que se repite por simetría.','Star octagons, one inside another, and a module repeated by reflection.'],['oct-cuad','estrellas']],
+  ['arrayanes',['Dividir la circunferencia en doce, el hexágono y la estrella de doce; la primera cinta.','Dividing the circle into twelve, the hexagon and the twelve-pointed star; your first strap.'],['tri-hex','estrellas']],
+  ['felipe',['Una rueda completa: construcción larga, cinta con su ancho y cruces por encima y por debajo.','A complete wheel: a long construction, a strap with its width, and over-and-under crossings.'],['cuad-oct-circ','movimientos']]];
+const recoHechos=()=>RECORRIDO.filter(([id])=>PATS[id]&&hechoDe(PATS[id]).t).length;
+function recorrido(){mostrar('recorrido');cab(tr('Recorrido para empezar','A path to get started'),tr('Siete alicatados, del más fácil al más difícil','Seven tile patterns, from easiest to hardest'),'#inicio',tr('Si no sabes por dónde empezar, sigue este orden. Cada alicatado enseña algo que usarás en el siguiente.','If you do not know where to start, follow this order. Each tile pattern teaches something you will use in the next one.'));
+  const L=RECORRIDO.filter(([id])=>PATS[id]);let sig=L.findIndex(([id])=>!hechoDe(PATS[id]).t);
+  $('lista-recorrido').innerHTML=L.map(([id,que,cons],i)=>{const p=PATS[id],C=cons.map(c=>CONS.L.find(x=>x.id===c)).filter(Boolean);
+    return `<li class="reco${i===sig?' sig':''}"><a class="reco-a" href="#a/${id}/trazado">${miniatura(p).replace('width="48" height="48"','width="64" height="64"')}<span class="reco-txt"><small>${i===sig?`<b class="reco-sig">${tr('Siguiente','Next')} · </b>`:''}${tr('Parada','Stop')} ${i+1} · ${monu(p)}</small><b>${p.nombre}</b><span class="reco-que">${lt(que)}</span>${datosPat(p)}${chipsHecho(p)}</span></a>`
+      +(C.length?`<p class="reco-antes">${tr('Antes, practica en Aprender:','First, practice in Learn:')} `+C.map(c=>`<a href="#c/${c.id}">${lt(c.nombre)}</a>`).join('')+'</p>':'')+'</li>';}).join('');}
 // ---- Mis dibujos
 // v2.15: abrir un alicatado guarda su estado (vista, paso…); «Coloreado» solo si los colores no son los de partida
 const pintado=pintadoPat; // v2.17: la misma regla sirve para el progreso de la galería (progreso.js)
@@ -340,7 +358,7 @@ function ruta(){let h=decodeURIComponent(location.hash.slice(1));
   if(!h&&q&&PATS[q]){location.replace('#a/'+q+'/trazado');return;}
   if(h==='trazado'||h==='colorear'){location.replace('#a/'+PAT.id+'/'+h);return;}
   if(!h||h==='inicio')return inicio();
-  if(h==='aprender')return aprender();if(h==='alicatados')return alicatados('alcazar');if(h==='alhambra')return alicatados('alhambra');if(h==='mis')return mis();
+  if(h==='aprender')return aprender();if(h==='alicatados')return alicatados('alcazar');if(h==='alhambra')return alicatados('alhambra');if(h==='mis')return mis();if(h==='recorrido')return recorrido();
   let m=h.match(/^c\/([\w-]+)$/);if(m)return construccion(m[1]);
   m=h.match(/^a\/([\w-]+)(?:\/(\w+))?$/);if(m)return alicatado(m[1],m[2]||'trazado');
   inicio();}

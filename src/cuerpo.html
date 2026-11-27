@@ -17,6 +17,7 @@
     <a class="monu" href="#alhambra"><span class="monu-img" id="im-alhambra" aria-hidden="true"></span><span class="monu-txt"><h2>La Alhambra de Granada</h2><small id="n-alhambra"></small></span></a>
   </div>
   <div class="accesos">
+    <a class="acceso acceso-ancho" href="#recorrido"><span class="acc-ic" id="ic-recorrido" aria-hidden="true"></span><span><b>Recorrido para empezar</b><small id="n-recorrido"></small></span></a>
     <a class="acceso" href="#aprender"><span class="acc-ic" id="ic-aprender" aria-hidden="true"></span><span><b>Aprender a trazar</b><small id="n-aprender"></small></span></a>
     <a class="acceso" href="#mis"><span class="acc-ic" id="ic-mis" aria-hidden="true"></span><span><b>Mis dibujos</b><small id="n-mis"></small></span></a>
   </div>
@@ -28,6 +29,9 @@
 </section>
 <section id="v-alicatados" class="vista" aria-labelledby="titulo" hidden>
   <nav class="galeria" id="galeria" aria-label="Elige el alicatado"></nav>
+</section>
+<section id="v-recorrido" class="vista" aria-labelledby="titulo" hidden>
+  <ol class="recorrido" id="lista-recorrido"></ol>
 </section>
 <section id="v-mis" class="vista" aria-labelledby="titulo" hidden>
   <div id="lista-mis"></div>
@@ -43,9 +47,10 @@
     <div class="tzside">
       <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
-      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div><div class="medpapel" id="stepm" hidden></div>
+      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div><div class="comprueba" id="stepok" hidden></div><div class="medpapel" id="stepm" hidden></div>
         <div class="row hecho-fila" id="tz-hecho-fila" hidden><label for="tz-hecho">Ya lo he dibujado en papel</label><input type="checkbox" id="tz-hecho"></div>
-        <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
+        <div class="practica"><button id="tinta-on" aria-pressed="false" hidden>🖋 Entintar</button><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
+        <div class="medpapel tinta-panel" id="tinta-panel" hidden></div>
         <div class="row vela-fila" id="vela-fila" hidden><label for="vela">Mantener la pantalla encendida mientras trazo</label><input type="checkbox" id="vela" checked></div>
         <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
       </div>

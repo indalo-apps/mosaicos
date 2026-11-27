@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.17">
+<meta name="app-version" content="2.18">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -423,6 +423,33 @@ html{scroll-padding-top:var(--fijo,0px)}
 .pat.on .pat-hecho{color:inherit}
 .hecho-fila,.vela-fila{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);min-height:44px}
 .hecho-fila label{font-weight:600}
+
+/* v2.18: «Comprueba antes de seguir» y «Entintar» */
+.comprueba{margin:10px 0 0;padding:10px 12px;border:2px solid var(--ink);border-radius:10px;background:var(--paper);font-size:calc(14px * var(--esc,1))}
+.comprueba[hidden]{display:none}
+.comprueba .ok-t{margin:0 0 4px;display:flex;align-items:center;gap:6px}.comprueba .ok-t svg.ic{margin:0;stroke-width:2.6}
+.comprueba ul{margin:0;padding-left:1.1em}.comprueba li{margin:3px 0}
+.tinta-panel ol{margin:6px 0 8px;padding-left:1.3em}.tinta-panel li{margin:4px 0}
+.tinta-ley{display:flex;flex-wrap:wrap;gap:6px 16px;margin:4px 0 0}.tinta-ley span{display:inline-flex;align-items:center;gap:6px}
+.tinta-m{color:var(--ink);flex:none}
+#tzsvg .tinta-lapiz{opacity:.8}
+
+/* v2.18: recorrido para empezar */
+.acceso-ancho{grid-column:1/-1}
+.recorrido{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.reco{border:1px solid var(--line);border-radius:14px;background:var(--card,var(--paper));overflow:hidden}
+.reco.sig{border:2px solid var(--ink)}
+.reco-a{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;color:inherit;text-decoration:none;min-height:64px}
+.reco-a>svg{width:64px;height:64px;border-radius:8px;flex:none;background:#fff}
+.reco-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.reco-txt>small{color:var(--muted);font-size:calc(12.5px * var(--esc,1))}.reco-sig{color:var(--ink)}
+.reco-txt>b{font:600 calc(20px * var(--esc,1))/1.15 "Cormorant Garamond",Georgia,serif}
+.reco-que{font-size:calc(14px * var(--esc,1))}
+.reco .pat-datos svg.ic,.reco .pat-hecho svg.ic{width:1.1em;height:1.1em;margin:0;flex:none}
+.reco-antes{margin:0;padding:8px 12px 10px;border-top:1px solid var(--line);font-size:calc(13.5px * var(--esc,1));color:var(--muted)}
+.reco-antes a{color:var(--accent);font-weight:600;display:inline-block;padding:6px 0}
+@media (pointer:coarse){.reco-antes a{padding:12px 0}}
+.reco-antes a{display:block}
 </style>
 <style>:root{--ik-accent:#1f5f5b}</style>
 <style>
@@ -675,6 +702,7 @@ const IK = (function(){
     <a class="monu" href="#alhambra"><span class="monu-img" id="im-alhambra" aria-hidden="true"></span><span class="monu-txt"><h2>La Alhambra de Granada</h2><small id="n-alhambra"></small></span></a>
   </div>
   <div class="accesos">
+    <a class="acceso acceso-ancho" href="#recorrido"><span class="acc-ic" id="ic-recorrido" aria-hidden="true"></span><span><b>Recorrido para empezar</b><small id="n-recorrido"></small></span></a>
     <a class="acceso" href="#aprender"><span class="acc-ic" id="ic-aprender" aria-hidden="true"></span><span><b>Aprender a trazar</b><small id="n-aprender"></small></span></a>
     <a class="acceso" href="#mis"><span class="acc-ic" id="ic-mis" aria-hidden="true"></span><span><b>Mis dibujos</b><small id="n-mis"></small></span></a>
   </div>
@@ -686,6 +714,9 @@ const IK = (function(){
 </section>
 <section id="v-alicatados" class="vista" aria-labelledby="titulo" hidden>
   <nav class="galeria" id="galeria" aria-label="Elige el alicatado"></nav>
+</section>
+<section id="v-recorrido" class="vista" aria-labelledby="titulo" hidden>
+  <ol class="recorrido" id="lista-recorrido"></ol>
 </section>
 <section id="v-mis" class="vista" aria-labelledby="titulo" hidden>
   <div id="lista-mis"></div>
@@ -701,9 +732,10 @@ const IK = (function(){
     <div class="tzside">
       <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
-      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div><div class="medpapel" id="stepm" hidden></div>
+      <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div><div class="comprueba" id="stepok" hidden></div><div class="medpapel" id="stepm" hidden></div>
         <div class="row hecho-fila" id="tz-hecho-fila" hidden><label for="tz-hecho">Ya lo he dibujado en papel</label><input type="checkbox" id="tz-hecho"></div>
-        <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
+        <div class="practica"><button id="tinta-on" aria-pressed="false" hidden>🖋 Entintar</button><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
+        <div class="medpapel tinta-panel" id="tinta-panel" hidden></div>
         <div class="row vela-fila" id="vela-fila" hidden><label for="vela">Mantener la pantalla encendida mientras trazo</label><input type="checkbox" id="vela" checked></div>
         <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
       </div>
@@ -1053,6 +1085,7 @@ const ES_EN={
  'Elige la marca de acuarela: la paleta se pasa a sus colores, con el nombre y la referencia de cada uno para comprarlos. El pincel mostrará su carta. Los colores en pantalla son aproximados.':'Choose a watercolor brand: the palette switches to its colors, with the name and reference of each one so you can buy them. The brush will show its chart. On-screen colors are approximate.','Ninguna':'None','Con qué pintar':'What to paint with',
  'Elige tu caja de acuarelas: el pincel mostrará sus colores con su nombre y verás con qué pintura va cada pieza. Los colores en pantalla son aproximados.':'Choose your watercolor set: the brush will show its colors with their names and you will see which paint goes on each piece. On-screen colors are approximate.',
  '🎨 Pasar mis colores a la carta':'🎨 Switch my colors to the chart','Añadir la lista de pinturas de la carta':'Add the list of paints from the chart','⬇️ Descargar':'⬇️ Download','Copiar SVG':'Copy SVG','Actualizando a la versión nueva…':'Updating to the new version…',
+ 'Recorrido para empezar':'A path to get started','🖋 Entintar':'🖋 Inking',
  'Ya lo he dibujado en papel':'I have drawn it on paper','Mantener la pantalla encendida mientras trazo':'Keep the screen on while I draw'
 };
 function traducirPagina(){
@@ -2513,7 +2546,26 @@ function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt
     g+=`<g class="actual">`+(giro?`<g transform="rotate(${giro.join(' ')})">${animar(L,'#1b1b1b',0.17)}</g>`:animar(L,'#1b1b1b',0.17))+'</g>';}
   const fz=Math.max(w,h)/24;if(Math.abs(fz-1)>0.2){g=g.replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(v*fz).toFixed(3)}"`).replace(/stroke-dasharray="([\d. ]+)"/g,(m,v)=>`stroke-dasharray="${v.split(' ').map(n=>+(n*fz).toFixed(3)).join(' ')}"`);}
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${y0-pad} ${w+2*pad} ${h+2*pad}" width="100%"><rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#fffefa"/><defs><clipPath id="tzclip2"><rect x="${x0}" y="${y0}" width="${w}" height="${h}"/></clipPath></defs><g clip-path="url(#tzclip2)">${g}</g>${marco}</svg>`;}
-return {P,recta,redTriangulos,poligono,contorno,dibujarPaso};
+// v2.18: qué se repasa con tinta. El dibujo definitivo va en trazo grueso y continuo; el lápiz de la construcción
+// (lo que se borra al final), fino, gris y a rayas. Se distinguen por el grosor y la raya, no por el color.
+// Usa el encuadre del paso de remarcar, que es donde las guías y el dibujo final coinciden.
+function lapiz(g,fz){return g.replace(/ class="[^"]*"/g,'').replace(/ style="animation-delay:[^"]*"/g,'').replace(/ pathLength="1"/g,'').replace(/ stroke-dasharray="[^"]*"/g,'')
+  .replace(/stroke="#[0-9a-fA-F]{3,8}"/g,'stroke="#6f6f6f"').replace(/stroke-width="([\d.]+)"/g,(m,v)=>`stroke-width="${+(Math.min(+v,0.07)*fz).toFixed(3)}"`);}
+function dibujarTinta(p,render,lista){const PS=lista||p.pasos;let n=0;PS.forEach((q,i)=>{if(q.tipo==='remarcar')n=i+1;});
+  if(!n)PS.forEach((q,i)=>{if(q.guia&&!q.tipo)n=i+1;});
+  const s=PS[n-1]||{},vt=s.vt||p.vt,[x0,y0,w,h]=vt,pad=w*0.03,fz=Math.max(w,h)/24,cinta=p.tipo==='cinta';
+  const giro=p.giro&&!s.sinGiro?[p.giro,x0+w/2,y0+h/2]:null;
+  let g='';PS.slice(0,n).forEach(q=>{if(q.guia&&!q.tipo)g+=lapiz(q.guia(p,vt),fz);});
+  const borrar=`<g class="tinta-lapiz" stroke-dasharray="${+(0.22*fz).toFixed(3)} ${+(0.16*fz).toFixed(3)}" clip-path="url(#tzclip3)">${g}</g>`;
+  const defs=`<defs><clipPath id="tzclip3"><rect x="${x0}" y="${y0}" width="${w}" height="${h}"/></clipPath></defs>`;
+  if(cinta){const o={x0,y0,w,h,cols:Array(p.nombres.length).fill('#ffffff'),over:{},ribbon:'#ffffff',outline:'#111111',rw:p.rw,ow:0.11,interlace:true,frame:true,giro};
+    return render(p.D,o).replace('<svg ','<svg style="pointer-events:none" ').replace(/<\/svg>\s*$/,defs+borrar+'</svg>');}
+  const L=[];for(const [cl,pts] of p.D.S)for(let k=0;k+2<pts.length+(cl?2:0);k+=2){const a=k,b=(k+2)%pts.length;
+    const sg=[pts[a],pts[a+1],pts[b],pts[b+1]],mg=giro?w*0.25:1;if(Math.max(sg[0],sg[2])<x0-mg||Math.min(sg[0],sg[2])>x0+w+mg||Math.max(sg[1],sg[3])<y0-mg||Math.min(sg[1],sg[3])>y0+h+mg)continue;L.push(sg);}
+  const lin=L.map(q=>`<line x1="${+q[0].toFixed(3)}" y1="${+q[1].toFixed(3)}" x2="${+q[2].toFixed(3)}" y2="${+q[3].toFixed(3)}"/>`).join('');
+  const tinta=`<g class="tinta-tinta" stroke="#111111" stroke-width="${+(0.19*fz).toFixed(3)}" stroke-linecap="round" fill="none" clip-path="url(#tzclip3)"${giro?` transform="rotate(${giro.join(' ')})"`:''}>${lin}</g>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-pad} ${y0-pad} ${w+2*pad} ${h+2*pad}" width="100%"><rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="#fffefa"/>${defs}${borrar}${tinta}<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="#2b2b2b" stroke-width="0.08"/></svg>`;}
+return {P,recta,redTriangulos,poligono,contorno,dibujarPaso,dibujarTinta,lapiz};
 })();
 
 const NAMES=['Estrella de las esquinas','Pieza pequeña junto a la estrella','Alfardón (hexágono alargado)','Pieza en V de los lados','Triángulo junto al alfardón','Triángulo junto a la estrella central','Estrella de los bordes','Pieza en V del centro','Estrella central'];
@@ -2805,6 +2857,75 @@ if(EN){
 }
 const palNombre=n=>EN?(PAL_EN[n]||n):n;
 
+// ---------- «Comprueba antes de seguir» (v2.18) ----------
+// En papel, un fallo del paso 3 se descubre en el paso 9. Cada comprobación es algo que se puede mirar con la regla o el compás
+// antes de pasar al paso siguiente. No vienen de los libros: salen de la propia construcción (lo que tiene que cumplirse si está bien hecha).
+// COMPROBAR[id][paso] = [español, inglés]; COMPROBAR_B, para el segundo método (con cuadrícula).
+const COMPROBAR={
+  lazo8:{1:['5 + 7 + 5 + 7 + 5 suman 29 cuadros por lado, y los nueve cuadrados de 5 × 5 quedan alineados en tres filas y tres columnas.','5 + 7 + 5 + 7 + 5 add up to 29 squares per side, and the nine 5 × 5 squares line up in three rows and three columns.'],
+    2:['Cada punta del rombo sobresale un cuadro del cuadrado, justo en mitad de su lado.','Each tip of the rhombus sticks out one square beyond the square, right at the middle of its side.'],
+    3:['Cada diagonal, al prolongarla, pasa justo por la punta de un rombo vecino.','Each diagonal, once extended, passes exactly through the tip of a neighboring rhombus.'],
+    6:['Sigue cada línea con el dedo: todas forman caminos cerrados, sin cabos sueltos.','Follow each line with your finger: they all form closed paths, with no loose ends.']},
+  zaguan:{1:['Pon la regla sobre los cruces: quedan alineados en horizontal y en vertical, todos a la misma distancia.','Lay the ruler across the crossings: they line up horizontally and vertically, all the same distance apart.']},
+  toledanos:{1:['En cada cruce se encuentran seis triángulos y pasan tres rectas. Con el compás abierto a un lado, todos los lados miden lo mismo.','Six triangles meet and three lines cross at every crossing. With the compass set to one side, every side measures the same.']},
+  cenador6:{1:['En cada cruce se encuentran seis triángulos y pasan tres rectas. Con el compás abierto a un lado, todos los lados miden lo mismo.','Six triangles meet and three lines cross at every crossing. With the compass set to one side, every side measures the same.']},
+  munecas17:{1:['Las dos diagonales del cuadrado grande miden lo mismo y pasan por las esquinas del cuadro del centro.','The two diagonals of the big square are equal and pass through the corners of the middle square.'],
+    2:['Los cuatro lados inclinados del octógono miden lo mismo que la diagonal de un cuadro, y los otros cuatro, lo mismo que su lado. Las tres franjas tienen el mismo ancho.','The four slanted sides of the octagon measure the same as the diagonal of a square, and the other four the same as its side. The three bands are equally wide.']},
+  cubos:{1:['Las diagonales se continúan de un cuadro al siguiente en línea recta, y todas son paralelas.','The diagonals carry on from one square to the next in a straight line, and they are all parallel.']},
+  alargadas:{1:['Cada circunferencia toca a sus cuatro vecinas sin cortarlas, justo en un cruce de la cuadrícula.','Each circle touches its four neighbors without cutting them, right on a crossing of the grid.'],
+    2:['Los ocho vértices de cada estrella están sobre su circunferencia, repartidos por igual: cuatro en las líneas de la cuadrícula y cuatro en las diagonales.','The eight vertices of each star lie on its circle, evenly spaced: four on the grid lines and four on the diagonals.']},
+  alfardones:{1:['Cada grupo de 3,5 + 5 + 3,5 mide 12 cuadros de lado.','Each group of 3.5 + 5 + 3.5 measures 12 squares per side.'],
+    2:['Las estrellas vecinas se tocan justo por las puntas, y cada estrella queda igual si giras el papel un cuarto de vuelta.','Neighboring stars touch exactly at their tips, and each star looks the same if you turn the paper a quarter turn.']},
+  octogonos:{1:['Cada circunferencia toca los cuatro lados de su cuadro en el punto medio, y a sus vecinas sin cortarlas.','Each circle touches the four sides of its square at the midpoint, and its neighbors without cutting them.']},
+  zaguan2:{1:['La circunferencia del centro toca a las cuatro semicircunferencias sin cortarlas.','The center circle touches the four semicircles without cutting them.'],
+    2:['Los doce puntos quedan a la misma distancia unos de otros (compruébalo con el compás) y los cuatro triángulos son iguales.','The twelve points are the same distance apart (check with the compass) and the four triangles are equal.'],
+    3:['Las rectas nuevas salen iguales en los cuatro lados: si giras el papel un cuarto de vuelta, el dibujo no cambia.','The new lines come out the same on all four sides: turn the paper a quarter turn and the drawing does not change.'],
+    4:['Cada arco pasa por la esquina opuesta del cuadro de su esquina.','Each arc passes through the opposite corner of its corner square.']},
+  felipe:{1:['Los dos cuadrados son iguales y sus ocho vértices reparten la circunferencia en partes iguales.','The two squares are equal and their eight vertices divide the circle into equal parts.'],
+    2:['Los ocho puntos de corte están a la misma distancia del centro: pasa el compás por ellos.','The eight crossing points are the same distance from the center: run the compass through them.'],
+    3:['Las ocho rectas quedan a la misma distancia del centro y ninguna pasa por él.','The eight lines are the same distance from the center and none of them passes through it.'],
+    4:['Las nueve circunferencias tienen el mismo radio, y las ocho de fuera quedan repartidas por igual alrededor del centro.','The nine circles have the same radius, and the eight outer ones are evenly spaced around the center.']},
+  barca:{1:['La circunferencia pasa por los cuatro cruces de la cuadrícula más cercanos al centro.','The circle passes through the four grid crossings nearest the center.'],
+    2:['Las cuatro rectas forman un cuadrado de pico con los vértices en los ejes, a un cuadro del centro.','The four lines form a square standing on a corner, with its vertices on the axes, one square from the center.'],
+    3:['Con las del paso anterior forman una estrella de ocho puntas: los dos cuadrados son iguales y sus vértices están en la circunferencia.','Together with those of the previous step they form an eight-pointed star: the two squares are equal and their vertices lie on the circle.']},
+  arrayanes:{1:['Los cuatro arcos pasan por el centro de la circunferencia.','The four arcs pass through the center of the circle.'],
+    2:['El lado del hexágono mide lo mismo que el radio: compruébalo con el compás.','The side of the hexagon measures the same as the radius: check it with the compass.'],
+    3:['La circunferencia nueva toca cada lado del hexágono en su punto medio, sin cortarlo.','The new circle touches each side of the hexagon at its midpoint, without cutting it.'],
+    4:['Las seis puntas de la estrella tocan la circunferencia del paso 3.','The six points of the star touch the circle from step 3.'],
+    5:['Los dos triángulos nuevos son iguales a los del paso 4, girados 30°: sus puntas también están en la circunferencia interior.','The two new triangles are equal to those of step 4, turned 30°: their tips also lie on the inner circle.']},
+  taca:{1:['La circunferencia toca los cuatro lados del cuadrado en su punto medio.','The circle touches the four sides of the square at their midpoints.'],
+    2:['Los dos cuadrados son iguales: mide un lado de cada uno.','The two squares are equal: measure one side of each.'],
+    3:['Las ocho puntas del octógono estrellado son los vértices del octógono del paso 2, y el octógono nuevo del centro tiene los ocho lados iguales.','The eight points of the star octagon are the vertices of the octagon from step 2, and the new octagon in the center has eight equal sides.']},
+  reyes28:{1:['La circunferencia toca los cuatro lados del cuadrado en su punto medio.','The circle touches the four sides of the square at their midpoints.'],
+    2:['Cada arco pasa por los puntos medios de los dos lados que salen de su vértice.','Each arc passes through the midpoints of the two sides that start at its vertex.'],
+    3:['Los ocho lados del octógono miden lo mismo.','The eight sides of the octagon measure the same.']},
+  reyes29:{1:['Los arcos pasan por el centro, y los doce puntos quedan a la misma distancia unos de otros.','The arcs pass through the center, and the twelve points are the same distance apart.'],
+    2:['El lado del hexágono mide lo mismo que el radio.','The side of the hexagon measures the same as the radius.'],
+    3:['El segundo hexágono es igual al primero, girado 30°.','The second hexagon is equal to the first, turned 30°.'],
+    4:['Los dos triángulos son iguales y sus lados se cortan formando un hexágono pequeño en el centro.','The two triangles are equal and their sides cross to form a small hexagon in the center.'],
+    5:['Esta estrella es igual a la del paso 4, girada 30°.','This star is equal to the one from step 4, turned 30°.']},
+  jambas31:{1:['Los dos cuadrados son iguales y sus ocho vértices reparten la circunferencia en partes iguales.','The two squares are equal and their eight vertices divide the circle into equal parts.'],
+    7:['Cada estrella y cada octógono tienen sus ocho vértices sobre su circunferencia.','Each star and each octagon has its eight vertices on its circle.']}};
+const COMPROBAR_B={
+  felipe:{1:['Cada lado del módulo mide 28 cuadros: 5 + 9 + 9 + 5.','Each side of the module measures 28 squares: 5 + 9 + 9 + 5.'],
+    2:['La circunferencia pasa por un vértice de cada una de las cuatro estrellas; si no, el centro no está bien puesto.','The circle passes through one vertex of each of the four stars; if it does not, the center is misplaced.'],
+    3:['Los ocho radios quedan repartidos por igual, cada 45°.','The eight radii are evenly spaced, every 45°.']}};
+// Cuántas piezas de cada tipo hay en el trozo que se repite, reducido a la proporción más pequeña (2 : 4 : 8 → 1 : 2 : 4)
+function proporcionPiezas(p){if(p.propPiezas)return p.propPiezas;const n=Array(p.nombres.length).fill(0),d=datos(p);
+  if(p.prep&&p.prep.piezas)for(const [k] of p.prep.piezas)n[k]++;
+  else for(const [k,q] of d.F){let cx=0,cy=0;for(let i=0;i<q.length;i+=2){cx+=q[i];cy+=q[i+1];}cx/=q.length/2;cy/=q.length/2;if(cx>=0&&cx<p.W&&cy>=0&&cy<p.H)n[k]++;}
+  const mcd=(a,b)=>b?mcd(b,a%b):a,g=n.filter(Boolean).reduce(mcd,0)||1;
+  return p.propPiezas=n.map((v,k)=>[p.nombres[k],v/g]).filter(x=>x[1]>0);}
+// Las comprobaciones del paso: la escrita a mano y las que salen del tipo de paso (piezas, cinta, cruces)
+function comprobaciones(p,paso,PS,segundo,anchoCinta){const L=[],s=PS[paso-1];if(!s)return L;
+  const T=((segundo?COMPROBAR_B:COMPROBAR)[p.id]||{})[paso];if(T)L.push(EN?T[1]:T[0]);
+  const tipo=p.id==='lazo8'?({7:'cinta',8:'cruces'})[paso]:s.tipo,cinta=p.tipo==='cinta';
+  if(tipo==='remarcar')L.push(tr('Todas las líneas remarcadas acaban en otra línea: no queda ningún trazo suelto ni ninguna pieza abierta.','Every line you have gone over ends on another line: no loose strokes and no open pieces.'));
+  if(tipo==='piezas'){const P=proporcionPiezas(p);
+    if(P.length>1&&P.length<=8)L.push(tr('Cuenta las piezas. En el dibujo se repite esta proporción: ','Count the pieces. The drawing repeats this proportion: ')+P.map(([n,v])=>`${v} × ${n}`).join(' · ')+'.');}
+  if(tipo==='cinta')L.push(tr('La cinta tiene el mismo ancho en todo el dibujo','The strap is equally wide all over the drawing')+(anchoCinta?tr(`: ${anchoCinta} en tu papel. Mídela en dos o tres sitios.`,`: ${anchoCinta} on your paper. Measure it in two or three places.`):tr(': mídela en dos o tres sitios.',': measure it in two or three places.')));
+  if(tipo==='cruces'||(cinta&&(s.entrelazar||(s.tipo==='color'&&!PS.some(q=>q.entrelazar)))))L.push(tr('Sigue una cinta con el dedo: pasa una vez por encima y otra por debajo, alternando, en todos sus cruces.','Follow one strap with your finger: it goes over once and under once, alternating, at every crossing.'));
+  return L;}
 // Las piezas y cintas de los patrones nuevos se calculan la primera vez que se abren
 function datos(p){if(!p.D){p.prep=MOTOR.preparar(p);const mx=p.W*0.1,my=p.H*0.1;p.D=MOTOR.zona(p,p.prep,-mx,-my,4*p.W+mx,3*p.H+my);}return p.D;}
 let PAT=PATS.lazo8,D=D_LAZO,st,CELDA=null;
@@ -3385,7 +3506,9 @@ function medPaso(){const el=document.getElementById('stepm');if(!el)return;
   el.innerHTML=`<p class="mp-t">${icono('regla')}<b>${tr('En papel','On paper')}</b> <span>· ${P.desc}</span> <button type="button" class="enlace" id="mp-cambiar">${tr('Cambiar','Change')}</button></p><ul>`+L.map(([t,v])=>`<li>${t}: <b>${v}</b></li>`).join('')+'</ul>';
   el.hidden=false;
   document.getElementById('mp-cambiar').onclick=()=>{location.hash='#a/'+PAT.id+'/imprimir';setTimeout(()=>{const d=document.getElementById('ts-papel');if(d){d.scrollIntoView({block:'start',behavior:'smooth'});}},350);};}
+let tinta=false; // v2.18: «Entintar» enseña qué se repasa con tinta; cualquier cambio de paso vuelve al trazado
 function show(){
+  tinta=false;pintarTintaUI();
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
   if(!MODO.c&&step===N)HECHO.marca(PAT.id,'t');pintarHecho(!MODO.c&&step===N);
@@ -3394,7 +3517,7 @@ function show(){
   const etq=step===0?tr('Objetivo','Goal'):tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);
   document.getElementById('stepn').textContent=etq;
   document.getElementById('paso-chip').textContent=step===0?tr('La figura terminada','The finished figure'):etq+' · '+s.h;
-  document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c||'';try{medPaso();}catch(e){}
+  document.getElementById('steph').textContent=s.h;document.getElementById('stept').textContent=s.t;document.getElementById('stepc').textContent=s.c||'';try{medPaso();}catch(e){}try{pintarComprobar(PS);}catch(e){}
   let svg;
   if(step===0){
     if(MODO.c)svg=consSvg(MODO.c,0,true);
@@ -3425,6 +3548,35 @@ function show(){
   if(ult&&foco==='next')document.getElementById('gocolor').focus();
   if(typeof pintarTrazos==='function')pintarTrazos();
 }
+// «Comprueba antes de seguir» (v2.18): lo que se puede mirar con la regla o el compás antes de pasar de paso
+function pintarComprobar(PS){const el=document.getElementById('stepok');if(!el)return;
+  if(MODO.c||step===0){el.hidden=true;return;}
+  let ancho=null;try{const P=window.papelActual&&window.papelActual();if(P&&PAT.tipo==='cinta')ancho=window.cmPapel(PAT.rw*P.G.k);}catch(e){}
+  const L=comprobaciones(PAT,step,PS,!!metB(),ancho);if(!L.length){el.hidden=true;return;}
+  el.innerHTML=`<p class="ok-t">${icono('hecho')}<b>${tr('Comprueba antes de seguir','Check before you go on')}</b></p><ul>`+L.map(t=>`<li>${t}</li>`).join('')+'</ul>';el.hidden=false;}
+// «Entintar» (v2.18)
+function svgTinta(){
+  if(PAT.id==='lazo8'){const o={x0:-2.5,y0:-2.5,w:29,h:29,...white,outline:'#111111',ow:0.11,interlace:true,frame:true};
+    const g=PATRONES.lapiz(layers(3).replace(/ clip-path="[^"]*"/g,''),1);
+    return renderLazo(D_LAZO,o).replace('<svg ','<svg style="pointer-events:none" ').replace(/<\/svg>\s*$/,`<defs><clipPath id="tzclip3"><rect x="-2.5" y="-2.5" width="29" height="29"/></clipPath></defs><g class="tinta-lapiz" stroke-dasharray="0.22 0.16" clip-path="url(#tzclip3)">${g}</g></svg>`);}
+  return PATRONES.dibujarTinta(PAT,renderLazo,pasos());}
+function pintarTintaUI(){const b=document.getElementById('tinta-on'),p=document.getElementById('tinta-panel');if(!b)return;
+  b.hidden=!!MODO.c;b.setAttribute('aria-pressed',tinta);b.classList.toggle('on',tinta);p.hidden=!tinta;
+  document.querySelector('#tab-trazado .tzside').classList.toggle('entintando',tinta);}
+function verTinta(){tinta=true;pintarTintaUI();const cinta=PAT.tipo==='cinta';
+  let ancho=null;try{const P=window.papelActual&&window.papelActual();if(P&&cinta)ancho=window.cmPapel(PAT.rw*P.G.k);}catch(e){}
+  const el=document.getElementById('tzsvg');el.innerHTML=`<div class="fade">${svgTinta()}</div>`;
+  el.setAttribute('aria-label',tr('Qué se repasa con tinta: el dibujo final, en trazo grueso; el lápiz de la construcción, fino y a rayas','What to ink: the final drawing in a thick line; the construction pencil, thin and dashed'));
+  document.getElementById('paso-chip').textContent=tr('Entintar','Inking');document.getElementById('leyenda-paso').hidden=true;
+  const m=(d,w)=>`<svg class="tinta-m" viewBox="0 0 34 10" width="34" height="10" aria-hidden="true" focusable="false"><line x1="2" y1="5" x2="32" y2="5" stroke="currentColor" stroke-width="${w}" stroke-linecap="round"${d?' stroke-dasharray="4 3"':''}/></svg>`;
+  const L=[tr('Repasa con tinta solo las líneas gruesas y continuas: son el dibujo definitivo.','Go over only the thick, solid lines in ink: they are the final drawing.'),
+    cinta?tr('En cada cruce, la cinta que pasa por debajo se corta a los dos lados de la que pasa por encima: levanta la pluma al llegar y sigue al otro lado.','At every crossing, the strap that goes under stops on both sides of the one that goes over: lift the pen when you reach it and carry on at the other side.')+(ancho?tr(` La cinta mide ${ancho} de ancho en tu papel.`,` The strap is ${ancho} wide on your paper.`):'')
+      :tr('Repasa cada pieza entera, de vértice a vértice: todas quedan cerradas.','Go over each whole piece, from vertex to vertex: they all end up closed.'),
+    tr('Deja secar la tinta y borra el lápiz: la cuadrícula, las circunferencias y las líneas prolongadas.','Let the ink dry and rub out the pencil: the grid, the circles and the extended lines.')];
+  document.getElementById('tinta-panel').innerHTML=`<p class="mp-t"><b>🖋 ${tr('Entintar','Inking')}</b></p><p class="tinta-ley"><span>${m(false,3.2)}${tr('Con tinta','In ink')}</span><span>${m(true,1.2)}${tr('Lápiz: se borra','Pencil: rub it out')}</span></p><ol>`+L.map(t=>`<li>${t}</li>`).join('')+`</ol><div class="ops"><button type="button" id="tinta-off">${tr('Volver al paso','Back to the step')}</button></div>`;
+  document.getElementById('tinta-off').onclick=()=>{show();document.getElementById('tinta-on').focus();};
+  if(typeof pintarTrazos==='function')pintarTrazos();}
+document.getElementById('tinta-on').onclick=()=>{if(tinta)show();else{verTinta();const p=document.getElementById('tinta-panel');if(matchMedia('(max-width:760px)').matches)p.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});}};
 // ---------- Repasar a mano (v1.5): trazos guardados por patrón, en las coordenadas del dibujo ----------
 const PR_KEY='laceria-practica-v1';let PR={},practicando=false,lapiz=false,actual=null;
 try{PR=JSON.parse(localStorage.getItem(PR_KEY)||'{}')||{};}catch(e){PR={};}
@@ -3542,7 +3694,7 @@ function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   $('ficha').hidden=false;}
 // Tono de cada monumento (v2.9): verde para el Alcázar y azul para la Alhambra, siempre acompañado de su nombre
 const tono=col=>{if(col)document.documentElement.dataset.monu=col;else delete document.documentElement.dataset.monu;};
-function mostrar(v){tono(null);['inicio','aprender','alicatados','mis'].forEach(n=>$('v-'+n).hidden=n!==v);
+function mostrar(v){tono(null);['inicio','aprender','alicatados','mis','recorrido'].forEach(n=>$('v-'+n).hidden=n!==v);
   const ali=v==='a',con=v==='c';$('barra-etapas').hidden=!ali;
   if(!ali&&!con)document.querySelectorAll('.tab').forEach(x=>x.classList.remove('show'));
   document.querySelector('footer #pie').hidden=!ali;}
@@ -3567,6 +3719,8 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y comp
   $('n-alcazar').textContent=tr(`${na} alicatados`,`${na} tile patterns`)+enPapel('alcazar');
   $('n-alhambra').textContent=tr(`${nh} ${nh===1?'alicatado':'alicatados'}`,`${nh} tile ${nh===1?'pattern':'patterns'}`)+(enPapel('alhambra')||tr(' · se irán añadiendo más',' · more coming'));
   $('n-aprender').textContent=tr(`${CONS.L.length} construcciones`,`${CONS.L.length} constructions`);
+  {const k=recoHechos(),N=RECORRIDO.length;$('n-recorrido').textContent=k?tr(`${k} de ${N} con el trazado completo`,`${k} of ${N} with all steps done`):tr(`${N} alicatados, del más fácil al más difícil`,`${N} tile patterns, from easiest to hardest`);
+   $('ic-recorrido').innerHTML=`<svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="#1f5f5b"/><path d="M8 31h8v-7h8v-7h8v-7" fill="none" stroke="#fbf4e2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="10" r="2.6" fill="#e2a93b"/></svg>`;}
   const n=misDibujos().length;$('n-mis').textContent=n?tr(`${n} ${n===1?'guardado':'guardados'}`,`${n} saved`):tr('Aún no hay ninguno','None yet');}
 // ---- Aprender a trazar
 function aprender(){mostrar('aprender');cab(tr('Aprender a trazar','Learn to draw'),tr('Construcciones básicas · págs. 164 a 175','Basic constructions · pp. 164–175'),'#inicio',tr('Las construcciones con regla y compás del libro: la base de todos los alicatados. Cada una empieza por la figura terminada.','The ruler-and-compass constructions from the book: the basis of every tile pattern. Each one starts with the finished figure.'));
@@ -3592,6 +3746,22 @@ function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}i
   cab(PAT.nombre,`${PAT.lugar} · ${monu(PAT)}`,PAT.coleccion==='alhambra'?'#alhambra':'#alicatados',etapa==='trazado'?PAT.intro:''); // el texto largo, solo al empezar: en las demás etapas el dibujo queda más arriba
   document.querySelector('footer #pie').hidden=etapa!=='trazado';if(etapa==='trazado'){ficha(PAT);plegarIntro(matchMedia('(max-width:760px)').matches);}
   window.tabEtapa(etapa,true);if(etapa==='colorear')draw();store.set(ULT,'a/'+id+'/'+etapa);}
+// ---- Recorrido para empezar (v2.18): siete alicatados del más fácil al más difícil; cada uno enseña algo nuevo
+// y dice qué construcciones de «Aprender a trazar» conviene practicar antes
+const RECORRIDO=[
+  ['toledanos',['La red de triángulos: con ella salen los hexágonos sin medir nada.','The triangle grid: it gives you the hexagons without measuring anything.'],['tri-lado','tri-hex']],
+  ['octogonos',['La circunferencia inscrita en cada cuadro y el octógono regular.','The circle inscribed in each square, and the regular octagon.'],['oct-cuad']],
+  ['munecas17',['Dividir un cuadrado en 3 × 3 y repetir una baldosa girándola.','Dividing a square into 3 × 3 and repeating a tile by turning it.'],['div-3','movimientos']],
+  ['alargadas',['La estrella de ocho puntas con dos cuadrados, y prolongar sus lados.','The eight-pointed star made of two squares, and extending its sides.'],['cuad-oct-circ','estrellas']],
+  ['taca',['Los octógonos estrellados, uno dentro de otro, y el módulo que se repite por simetría.','Star octagons, one inside another, and a module repeated by reflection.'],['oct-cuad','estrellas']],
+  ['arrayanes',['Dividir la circunferencia en doce, el hexágono y la estrella de doce; la primera cinta.','Dividing the circle into twelve, the hexagon and the twelve-pointed star; your first strap.'],['tri-hex','estrellas']],
+  ['felipe',['Una rueda completa: construcción larga, cinta con su ancho y cruces por encima y por debajo.','A complete wheel: a long construction, a strap with its width, and over-and-under crossings.'],['cuad-oct-circ','movimientos']]];
+const recoHechos=()=>RECORRIDO.filter(([id])=>PATS[id]&&hechoDe(PATS[id]).t).length;
+function recorrido(){mostrar('recorrido');cab(tr('Recorrido para empezar','A path to get started'),tr('Siete alicatados, del más fácil al más difícil','Seven tile patterns, from easiest to hardest'),'#inicio',tr('Si no sabes por dónde empezar, sigue este orden. Cada alicatado enseña algo que usarás en el siguiente.','If you do not know where to start, follow this order. Each tile pattern teaches something you will use in the next one.'));
+  const L=RECORRIDO.filter(([id])=>PATS[id]);let sig=L.findIndex(([id])=>!hechoDe(PATS[id]).t);
+  $('lista-recorrido').innerHTML=L.map(([id,que,cons],i)=>{const p=PATS[id],C=cons.map(c=>CONS.L.find(x=>x.id===c)).filter(Boolean);
+    return `<li class="reco${i===sig?' sig':''}"><a class="reco-a" href="#a/${id}/trazado">${miniatura(p).replace('width="48" height="48"','width="64" height="64"')}<span class="reco-txt"><small>${i===sig?`<b class="reco-sig">${tr('Siguiente','Next')} · </b>`:''}${tr('Parada','Stop')} ${i+1} · ${monu(p)}</small><b>${p.nombre}</b><span class="reco-que">${lt(que)}</span>${datosPat(p)}${chipsHecho(p)}</span></a>`
+      +(C.length?`<p class="reco-antes">${tr('Antes, practica en Aprender:','First, practice in Learn:')} `+C.map(c=>`<a href="#c/${c.id}">${lt(c.nombre)}</a>`).join('')+'</p>':'')+'</li>';}).join('');}
 // ---- Mis dibujos
 // v2.15: abrir un alicatado guarda su estado (vista, paso…); «Coloreado» solo si los colores no son los de partida
 const pintado=pintadoPat; // v2.17: la misma regla sirve para el progreso de la galería (progreso.js)
@@ -3854,7 +4024,7 @@ function ruta(){let h=decodeURIComponent(location.hash.slice(1));
   if(!h&&q&&PATS[q]){location.replace('#a/'+q+'/trazado');return;}
   if(h==='trazado'||h==='colorear'){location.replace('#a/'+PAT.id+'/'+h);return;}
   if(!h||h==='inicio')return inicio();
-  if(h==='aprender')return aprender();if(h==='alicatados')return alicatados('alcazar');if(h==='alhambra')return alicatados('alhambra');if(h==='mis')return mis();
+  if(h==='aprender')return aprender();if(h==='alicatados')return alicatados('alcazar');if(h==='alhambra')return alicatados('alhambra');if(h==='mis')return mis();if(h==='recorrido')return recorrido();
   let m=h.match(/^c\/([\w-]+)$/);if(m)return construccion(m[1]);
   m=h.match(/^a\/([\w-]+)(?:\/(\w+))?$/);if(m)return alicatado(m[1],m[2]||'trazado');
   inicio();}
@@ -3990,6 +4160,7 @@ velar();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.18",["✔️ Draw: “Check before you go on” in the construction steps, something you can verify with ruler or compass before moving on; also the piece count, the strap width and the crossings","🖋 Draw › Inking: which lines to go over in ink (thick, solid) and which pencil to rub out (thin, dashed); for straps, how to stop the one that goes under","🪜 A path to get started: seven tile patterns from easiest to hardest, with what each one teaches and the Learn constructions worth practicing first"]],
     ["2.17",["🔆 Draw: the screen no longer turns off while you draw (untick “Keep the screen on” to change it)","✅ Progress for every tile pattern: the gallery and its cover show “All steps done”, “Colored” and “Drawn on paper”, with icon and text","✍️ “I have drawn it on paper”: a checkbox on the last Draw step and in On paper; Home counts them and they show up in My drawings"]],
     ["2.16",["📏 On paper: the measurements no longer overlap; each one goes where it fits and, if the figure is very small, a short line points to it"]],
     ["2.15",["📱 Phone: the drawing that stays at the top takes about a third of the screen, so the step text and the Next button are always in view","↕️ After Next, the screen moves to the new step’s text","🧭 Opening a tile pattern now shows the stages and the drawing straight away: a compact card and the introduction folded («Read more»)","🎨 Color: Undo sits on the drawing next to the zoom; Export, Other colors and Start over are with the controls","📂 My drawings only lists what you have actually colored or traced","📏 On paper comes first in Print; the header fits in one line and nothing is hidden behind the install notice"]],
@@ -4029,6 +4200,7 @@ velar();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.18",["✔️ Trazar: «Comprueba antes de seguir» en los pasos de construcción, con algo que se puede mirar con la regla o el compás antes de avanzar; también el recuento de piezas, el ancho de la cinta y los cruces","🖋 Trazar › Entintar: qué líneas se repasan con tinta (gruesas y continuas) y qué lápiz se borra (fino y a rayas); en los de cinta, cómo cortar la que pasa por debajo","🪜 Recorrido para empezar: siete alicatados del más fácil al más difícil, con lo que enseña cada uno y las construcciones de Aprender que conviene practicar antes"]],
     ["2.17",["🔆 Trazar: la pantalla ya no se apaga mientras dibujas (se puede quitar con la casilla «Mantener la pantalla encendida»)","✅ Progreso de cada alicatado: la galería y su portada marcan «Trazado completo», «Coloreado» y «Dibujado en papel», con icono y texto","✍️ «Ya lo he dibujado en papel»: una casilla en el último paso de Trazar y en «En papel»; Inicio cuenta cuántos llevas y salen en Mis dibujos"]],
     ["2.16",["📏 «En papel»: las medidas ya no se montan unas sobre otras; cada una va donde cabe y, si la figura es muy pequeña, una rayita la señala"]],
     ["2.15",["📱 Móvil: el dibujo que se queda fijo arriba ocupa un tercio de la pantalla, así que el texto del paso y «Siguiente» se ven siempre","↕️ Al pulsar «Siguiente», la pantalla va al texto del paso nuevo","🧭 Al abrir un alicatado se ven enseguida las etapas y el dibujo: ficha compacta y presentación plegada («Seguir leyendo»)","🎨 Colorear: Deshacer va sobre el dibujo, junto al zoom; Exportar, Otro color y Reiniciar, con los controles","📂 «Mis dibujos» solo muestra lo que has coloreado o repasado de verdad","📏 «En papel» sale primero en Imprimir; la cabecera cabe en una línea y el aviso de instalar ya no tapa nada"]],

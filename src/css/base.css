@@ -387,3 +387,30 @@ html{scroll-padding-top:var(--fijo,0px)}
 .pat.on .pat-hecho{color:inherit}
 .hecho-fila,.vela-fila{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);min-height:44px}
 .hecho-fila label{font-weight:600}
+
+/* v2.18: «Comprueba antes de seguir» y «Entintar» */
+.comprueba{margin:10px 0 0;padding:10px 12px;border:2px solid var(--ink);border-radius:10px;background:var(--paper);font-size:calc(14px * var(--esc,1))}
+.comprueba[hidden]{display:none}
+.comprueba .ok-t{margin:0 0 4px;display:flex;align-items:center;gap:6px}.comprueba .ok-t svg.ic{margin:0;stroke-width:2.6}
+.comprueba ul{margin:0;padding-left:1.1em}.comprueba li{margin:3px 0}
+.tinta-panel ol{margin:6px 0 8px;padding-left:1.3em}.tinta-panel li{margin:4px 0}
+.tinta-ley{display:flex;flex-wrap:wrap;gap:6px 16px;margin:4px 0 0}.tinta-ley span{display:inline-flex;align-items:center;gap:6px}
+.tinta-m{color:var(--ink);flex:none}
+#tzsvg .tinta-lapiz{opacity:.8}
+
+/* v2.18: recorrido para empezar */
+.acceso-ancho{grid-column:1/-1}
+.recorrido{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.reco{border:1px solid var(--line);border-radius:14px;background:var(--card,var(--paper));overflow:hidden}
+.reco.sig{border:2px solid var(--ink)}
+.reco-a{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;color:inherit;text-decoration:none;min-height:64px}
+.reco-a>svg{width:64px;height:64px;border-radius:8px;flex:none;background:#fff}
+.reco-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.reco-txt>small{color:var(--muted);font-size:calc(12.5px * var(--esc,1))}.reco-sig{color:var(--ink)}
+.reco-txt>b{font:600 calc(20px * var(--esc,1))/1.15 "Cormorant Garamond",Georgia,serif}
+.reco-que{font-size:calc(14px * var(--esc,1))}
+.reco .pat-datos svg.ic,.reco .pat-hecho svg.ic{width:1.1em;height:1.1em;margin:0;flex:none}
+.reco-antes{margin:0;padding:8px 12px 10px;border-top:1px solid var(--line);font-size:calc(13.5px * var(--esc,1));color:var(--muted)}
+.reco-antes a{color:var(--accent);font-weight:600;display:inline-block;padding:6px 0}
+@media (pointer:coarse){.reco-antes a{padding:12px 0}}
+.reco-antes a{display:block}

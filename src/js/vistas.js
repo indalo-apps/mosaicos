@@ -326,6 +326,38 @@ function medidasPapel(G){const kl=PAT.k||1;return (BASE[PAT.id]||[]).map(([t,te,
 let PAC=null;
 window.papelActual=()=>{const key=JSON.stringify([PAT.id,EX.c,EX.r,TS.forma,PP]);if(PAC&&PAC.key===key)return PAC.v;const R=tsConstruir(EX.c,EX.r,false,false),G=calcPapel(R);PAC={key,v:null};return PAC.v=G.ok?{R,G,med:medidasPapel(G),desc:`${PP.p==='med'?tr('papel a medida','custom paper'):PP.p} ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}`}:null;};
 window.cmPapel=cm;
+// v2.20: «¿En qué papel vas a dibujar?» en el objetivo de Trazar, para saber la medida de partida antes del primer paso
+window.papelRapido=function(el){
+  const pres=(on)=>`class="${on?'on':''}" aria-pressed="${on}"`;
+  el.innerHTML=`<p class="mp-t">${icono('regla')}<b id="mpr-tit">${tr('¿En qué papel vas a dibujar?','What paper will you draw on?')}</b></p>
+  <p class="mp-ayuda">${tr('Elige el papel y cuántos módulos quieres: la app te da el radio o el lado con el que empezar para que el dibujo quepa en la hoja.','Choose the paper and how many modules you want: the app gives you the radius or side to start with so the drawing fits on the sheet.')}</p>
+  <div class="ops" id="mpr-papel" role="group" aria-labelledby="mpr-tit">${['A5','A4','A3'].map(x=>`<button type="button" data-mpp="${x}">${x}</button>`).join('')}<button type="button" data-mpp="med">${tr('A medida','Custom')}</button></div>
+  <div class="pp-campos" id="mpr-medidas" hidden><label>${tr('Ancho (cm)','Width (cm)')} <input type="number" id="mpr-w" min="5" max="300" step="0.1" inputmode="decimal"></label><label>${tr('Alto (cm)','Height (cm)')} <input type="number" id="mpr-h" min="5" max="300" step="0.1" inputmode="decimal"></label></div>
+  <div class="ops" id="mpr-ori" role="group" aria-label="${tr('Orientación','Orientation')}" style="margin-top:8px"><button type="button" data-mpo="v">${tr('Vertical','Portrait')}</button><button type="button" data-mpo="h">${tr('Horizontal','Landscape')}</button></div>
+  <div class="ex-rep" style="margin-top:8px">
+    <div><span id="mpr-cl">${tr('Columnas','Columns')}</span><div class="paso"><button type="button" data-mpm="c" data-d="-1" aria-label="${tr('Una columna menos','One column fewer')}">−</button><output id="mpr-c" aria-labelledby="mpr-cl" aria-live="polite"></output><button type="button" data-mpm="c" data-d="1" aria-label="${tr('Una columna más','One more column')}">+</button></div></div>
+    <div><span id="mpr-rl">${tr('Filas','Rows')}</span><div class="paso"><button type="button" data-mpm="r" data-d="-1" aria-label="${tr('Una fila menos','One row fewer')}">−</button><output id="mpr-r" aria-labelledby="mpr-rl" aria-live="polite"></output><button type="button" data-mpm="r" data-d="1" aria-label="${tr('Una fila más','One more row')}">+</button></div></div>
+  </div>
+  <div id="mpr-res" aria-live="polite"></div>
+  <p class="mp-mas"><button type="button" class="enlace" id="mpr-mas">${tr('Margen, plantilla en PDF y dónde pinchar el compás','Margin, PDF template and where to put the compass')}</button></p>`;
+  const q=s=>el.querySelector(s),gp=()=>store.set(PPK,PP);
+  const pintar=()=>{q('#mpr-c').textContent=EX.c;q('#mpr-r').textContent=EX.r;
+    el.querySelectorAll('[data-mpp]').forEach(b=>{const on=b.dataset.mpp===PP.p;b.className=on?'on':'';b.setAttribute('aria-pressed',on);});
+    q('#mpr-medidas').hidden=PP.p!=='med';
+    if(PP.p==='med'){if(document.activeElement!==q('#mpr-w'))q('#mpr-w').value=num(PP.w/10).replace(',','.');if(document.activeElement!==q('#mpr-h'))q('#mpr-h').value=num(PP.h/10).replace(',','.');}
+    const P=window.papelActual(),ori=P?P.G.ori:PP.ori;
+    el.querySelectorAll('[data-mpo]').forEach(b=>{const on=b.dataset.mpo===ori;b.className=on?'on':'';b.setAttribute('aria-pressed',on);});
+    q('#mpr-res').innerHTML=P?`<ul>${P.med.map(([t,v],i)=>`<li${i?'':' class="mp-main"'}>${t}: <b>${v}</b></li>`).join('')}</ul><p class="mp-nota">${tr(`Con ${cm(PP.m)} de margen, el dibujo mide ${num(P.G.dw/10)} × ${cm(P.G.dh)}.`,`With a ${cm(PP.m)} margin, the drawing is ${num(P.G.dw/10)} × ${cm(P.G.dh)}.`)}</p>`
+      :`<p class="mp-nota"><b>${tr('No cabe.','It does not fit.')}</b> ${tr('Prueba un papel más grande o un margen menor.','Try a larger sheet or a smaller margin.')}</p>`;};
+  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.mpp){PP.p=b.dataset.mpp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();}
+    else if(b.dataset.mpo){PP.ori=b.dataset.mpo;gp();}
+    else if(b.dataset.mpm){const k=b.dataset.mpm;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();}
+    else if(b.id==='mpr-mas'){location.hash='#a/'+PAT.id+'/imprimir';setTimeout(()=>{const d=$('ts-papel');if(d)d.scrollIntoView({block:'start',behavior:'smooth'});},350);return;}
+    else return;
+    pintar();};
+  for(const [id,k] of [['#mpr-w','w'],['#mpr-h','h']])q(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=5))return;PP[k]=v*10;gp();pintar();});
+  pintar();};
 function pintarPapel(R){if(!$('tab-imprimir').classList.contains('show'))return;
   $('pp-c').textContent=EX.c;$('pp-r').textContent=EX.r;
   document.querySelectorAll('#pp-papel [data-pp]').forEach(b=>{const on=b.dataset.pp===PP.p;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});

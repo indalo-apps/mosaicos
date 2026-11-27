@@ -14,6 +14,27 @@ let mal=0,bien=0;const ok=(c,msg)=>{if(c)bien++;else{mal++;console.log('  ✗',m
   for(const loc of ['es-ES','en-US']){const EN=loc==='en-US';
     const pg=await b.newPage({viewport:{width:390,height:844},locale:loc});pg.on('pageerror',e=>{mal++;console.log('  ✗ error de JavaScript:',e.message);});
     const ir=async h=>{await pg.goto(U+h);await pg.waitForTimeout(300);};
+    // ---- «¿En qué papel vas a dibujar?» (v2.20): en el objetivo de Trazar, con la medida de partida antes del primer paso
+    await ir('#a/arrayanes/trazado');
+    ok(await pg.locator('#mpr-papel').isVisible(),`${loc}: el objetivo de Trazar pregunta en qué papel se va a dibujar`);
+    const r4=await pg.locator('#mpr-res .mp-main b').innerText();
+    await pg.locator('[data-mpp="A3"]').click();
+    const r3=await pg.locator('#mpr-res .mp-main b').innerText();
+    ok(parseFloat(r3.replace(',','.'))>parseFloat(r4.replace(',','.')),`${loc}: con un A3 el radio de partida crece (${r4} → ${r3})`);
+    ok(await pg.locator('[data-mpp="A3"]').getAttribute('aria-pressed')==='true',`${loc}: el papel elegido se marca también para el lector de pantalla`);
+    await pg.locator('[data-mpm="c"][data-d="1"]').click();
+    ok(await pg.locator('#mpr-c').innerText()===String(await pg.evaluate(()=>EX.c)),`${loc}: las columnas se cambian desde Trazar`);
+    await pg.locator('[data-mpp="med"]').click();await pg.locator('#mpr-w').fill('15');
+    ok(['objetivo','goal'].includes((await pg.locator('#stepn').innerText()).toLowerCase()),`${loc}: escribir en las medidas no cambia de paso`);
+    await pg.locator('#mpr-w').press('ArrowLeft');
+    ok(['objetivo','goal'].includes((await pg.locator('#stepn').innerText()).toLowerCase()),`${loc}: las flechas dentro de un campo no cambian de paso`);
+    await pg.locator('[data-mpp="A4"]').click();
+    await pg.locator('#next').click();await pg.waitForTimeout(150);
+    const m1=await pg.locator('#stepm').innerText();
+    ok(await pg.locator('#mpr-papel').count()===0&&m1.includes(EN?'On paper':'En papel'),`${loc}: en el primer paso vuelve el recuadro corto «En papel»`);
+    await ir('#a/arrayanes/imprimir');
+    ok(await pg.locator('#pp-papel [data-pp="A4"]').getAttribute('aria-pressed')==='true',`${loc}: Imprimir recoge el papel elegido en Trazar`);
+    await pg.evaluate(()=>{localStorage.removeItem('laceria-papel-v1');});
     // ---- Progreso
     await ir('#alicatados');
     ok(await pg.locator('.pat-hecho').count()===0,`${loc}: sin haber hecho nada, la galería no marca ningún progreso`);

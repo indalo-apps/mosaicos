@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.20">
+<meta name="app-version" content="2.21">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -337,6 +337,8 @@ ul.libros{margin:6px 0 8px;padding-left:1.1em}ul.libros li{margin:4px 0}
 .medpapel .mp-t svg.ic{margin:0}
 .medpapel ul{margin:0;padding-left:1.1em}.medpapel li{margin:2px 0}
 .medpapel[hidden]{display:none}
+.medpapel .mp-ayuda,.medpapel .mp-nota{margin:0 0 8px;color:var(--muted)}.medpapel .mp-nota{margin:6px 0 0}
+.medpapel #mpr-res ul{margin-top:10px}.medpapel .mp-main{font-size:calc(16px * var(--esc,1))}.medpapel .mp-mas{margin:6px 0 0}.medpapel .mp-mas .enlace{min-height:44px}
 button.enlace{background:none;border:0;padding:0 2px;min-height:0;color:var(--accent,#1f5f5b);text-decoration:underline;font:inherit;cursor:pointer}
 @media (pointer:coarse){button.enlace{min-height:44px;padding:0 6px}}
 /* ===== Tono de cada monumento (v2.9): el Alcázar en verde y la Alhambra en azul; el nombre siempre va escrito ===== */
@@ -3715,6 +3717,7 @@ const MEDPASO={
     4:[['Radio de los cuartos de circunferencia','Radius of the quarter circles',Math.SQRT2]]}};
 function medPaso(){const el=document.getElementById('stepm');if(!el)return;
   if(MODO.c||!window.papelActual){el.hidden=true;return;}
+  if(step===0&&window.papelRapido){window.papelRapido(el);el.hidden=false;return;}
   const P=window.papelActual();if(!P){el.hidden=true;return;}
   const kl=PAT.k||1,cmv=v=>window.cmPapel(v*kl*P.G.k);
   const val=v=>{if(v==='rw')return window.cmPapel(PAT.rw*P.G.k);if(typeof v==='string'&&v.startsWith('G.')){const G=PAT.G||{},n=v.slice(2);return cmv(n==='s2'?2*G.s:G[n]);}return cmv(v);};
@@ -3848,7 +3851,7 @@ document.addEventListener('click',e=>{const t=e.target;
 });
 document.querySelector('.tabs').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();
   const E=['trazado','teselar','colorear','imprimir'],i=E.findIndex(n=>document.getElementById('tab-'+n).classList.contains('show')),n=E[(i+(e.key==='ArrowRight'?1:3))%4];tab(n);document.querySelector(`[data-tab="${n}"]`).focus();});
-document.addEventListener('keydown',e=>{if(e.target.closest&&(e.target.closest('.tabs')||e.target.closest('#svg')))return;if(!document.getElementById('tab-trazado').classList.contains('show')||document.querySelector('.dlg:not([hidden])')||document.getElementById('ik-sheet'))return;
+document.addEventListener('keydown',e=>{if(e.target.closest&&(e.target.closest('.tabs')||e.target.closest('#svg')||e.target.closest('input,textarea,select')))return;if(!document.getElementById('tab-trazado').classList.contains('show')||document.querySelector('.dlg:not([hidden])')||document.getElementById('ik-sheet'))return;
   if(e.key==='ArrowRight'&&step<pasos().length){step++;show();}else if(e.key==='ArrowLeft'&&step>0){step--;show();}});
 function tab(n,sinHash){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('show',x.id==='tab-'+n));
   document.querySelectorAll('[data-tab]').forEach(b=>{const on=b.dataset.tab===n;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;});
@@ -4209,6 +4212,38 @@ function medidasPapel(G){const kl=PAT.k||1;return (BASE[PAT.id]||[]).map(([t,te,
 let PAC=null;
 window.papelActual=()=>{const key=JSON.stringify([PAT.id,EX.c,EX.r,TS.forma,PP]);if(PAC&&PAC.key===key)return PAC.v;const R=tsConstruir(EX.c,EX.r,false,false),G=calcPapel(R);PAC={key,v:null};return PAC.v=G.ok?{R,G,med:medidasPapel(G),desc:`${PP.p==='med'?tr('papel a medida','custom paper'):PP.p} ${G.ori==='h'?tr('horizontal','landscape'):tr('vertical','portrait')} · ${EX.c} × ${EX.r} ${tr('módulos','modules')}`}:null;};
 window.cmPapel=cm;
+// v2.20: «¿En qué papel vas a dibujar?» en el objetivo de Trazar, para saber la medida de partida antes del primer paso
+window.papelRapido=function(el){
+  const pres=(on)=>`class="${on?'on':''}" aria-pressed="${on}"`;
+  el.innerHTML=`<p class="mp-t">${icono('regla')}<b id="mpr-tit">${tr('¿En qué papel vas a dibujar?','What paper will you draw on?')}</b></p>
+  <p class="mp-ayuda">${tr('Elige el papel y cuántos módulos quieres: la app te da el radio o el lado con el que empezar para que el dibujo quepa en la hoja.','Choose the paper and how many modules you want: the app gives you the radius or side to start with so the drawing fits on the sheet.')}</p>
+  <div class="ops" id="mpr-papel" role="group" aria-labelledby="mpr-tit">${['A5','A4','A3'].map(x=>`<button type="button" data-mpp="${x}">${x}</button>`).join('')}<button type="button" data-mpp="med">${tr('A medida','Custom')}</button></div>
+  <div class="pp-campos" id="mpr-medidas" hidden><label>${tr('Ancho (cm)','Width (cm)')} <input type="number" id="mpr-w" min="5" max="300" step="0.1" inputmode="decimal"></label><label>${tr('Alto (cm)','Height (cm)')} <input type="number" id="mpr-h" min="5" max="300" step="0.1" inputmode="decimal"></label></div>
+  <div class="ops" id="mpr-ori" role="group" aria-label="${tr('Orientación','Orientation')}" style="margin-top:8px"><button type="button" data-mpo="v">${tr('Vertical','Portrait')}</button><button type="button" data-mpo="h">${tr('Horizontal','Landscape')}</button></div>
+  <div class="ex-rep" style="margin-top:8px">
+    <div><span id="mpr-cl">${tr('Columnas','Columns')}</span><div class="paso"><button type="button" data-mpm="c" data-d="-1" aria-label="${tr('Una columna menos','One column fewer')}">−</button><output id="mpr-c" aria-labelledby="mpr-cl" aria-live="polite"></output><button type="button" data-mpm="c" data-d="1" aria-label="${tr('Una columna más','One more column')}">+</button></div></div>
+    <div><span id="mpr-rl">${tr('Filas','Rows')}</span><div class="paso"><button type="button" data-mpm="r" data-d="-1" aria-label="${tr('Una fila menos','One row fewer')}">−</button><output id="mpr-r" aria-labelledby="mpr-rl" aria-live="polite"></output><button type="button" data-mpm="r" data-d="1" aria-label="${tr('Una fila más','One more row')}">+</button></div></div>
+  </div>
+  <div id="mpr-res" aria-live="polite"></div>
+  <p class="mp-mas"><button type="button" class="enlace" id="mpr-mas">${tr('Margen, plantilla en PDF y dónde pinchar el compás','Margin, PDF template and where to put the compass')}</button></p>`;
+  const q=s=>el.querySelector(s),gp=()=>store.set(PPK,PP);
+  const pintar=()=>{q('#mpr-c').textContent=EX.c;q('#mpr-r').textContent=EX.r;
+    el.querySelectorAll('[data-mpp]').forEach(b=>{const on=b.dataset.mpp===PP.p;b.className=on?'on':'';b.setAttribute('aria-pressed',on);});
+    q('#mpr-medidas').hidden=PP.p!=='med';
+    if(PP.p==='med'){if(document.activeElement!==q('#mpr-w'))q('#mpr-w').value=num(PP.w/10).replace(',','.');if(document.activeElement!==q('#mpr-h'))q('#mpr-h').value=num(PP.h/10).replace(',','.');}
+    const P=window.papelActual(),ori=P?P.G.ori:PP.ori;
+    el.querySelectorAll('[data-mpo]').forEach(b=>{const on=b.dataset.mpo===ori;b.className=on?'on':'';b.setAttribute('aria-pressed',on);});
+    q('#mpr-res').innerHTML=P?`<ul>${P.med.map(([t,v],i)=>`<li${i?'':' class="mp-main"'}>${t}: <b>${v}</b></li>`).join('')}</ul><p class="mp-nota">${tr(`Con ${cm(PP.m)} de margen, el dibujo mide ${num(P.G.dw/10)} × ${cm(P.G.dh)}.`,`With a ${cm(PP.m)} margin, the drawing is ${num(P.G.dw/10)} × ${cm(P.G.dh)}.`)}</p>`
+      :`<p class="mp-nota"><b>${tr('No cabe.','It does not fit.')}</b> ${tr('Prueba un papel más grande o un margen menor.','Try a larger sheet or a smaller margin.')}</p>`;};
+  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.mpp){PP.p=b.dataset.mpp;if(PP.p==='med'&&!PP.wSet){const [x,y]=PAPEL.A4;PP.w=x;PP.h=y;PP.wSet=1;}gp();}
+    else if(b.dataset.mpo){PP.ori=b.dataset.mpo;gp();}
+    else if(b.dataset.mpm){const k=b.dataset.mpm;EX[k]=Math.max(1,Math.min(10,EX[k]+ +b.dataset.d));exGuardar();}
+    else if(b.id==='mpr-mas'){location.hash='#a/'+PAT.id+'/imprimir';setTimeout(()=>{const d=$('ts-papel');if(d)d.scrollIntoView({block:'start',behavior:'smooth'});},350);return;}
+    else return;
+    pintar();};
+  for(const [id,k] of [['#mpr-w','w'],['#mpr-h','h']])q(id).addEventListener('input',e=>{const v=parseFloat(String(e.target.value).replace(',','.'));if(!(v>=5))return;PP[k]=v*10;gp();pintar();});
+  pintar();};
 function pintarPapel(R){if(!$('tab-imprimir').classList.contains('show'))return;
   $('pp-c').textContent=EX.c;$('pp-r').textContent=EX.r;
   document.querySelectorAll('#pp-papel [data-pp]').forEach(b=>{const on=b.dataset.pp===PP.p;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
@@ -4428,6 +4463,7 @@ velar();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.21",["📏 When you start tracing, “What paper will you draw on?”: choose paper, orientation and modules and you get the starting radius or side before the first step"]],
     ["2.20",["🕌 Two new tile patterns from the Ladies’ Tower (El Partal): no. 36, with green and blue straps, and no. 37, a wheel of twelve","🎨 Two-color straps: in no. 36 each strap has its own color, and you can change it in Color","✅ No. 29 checked against the scanned book pages: the drawing and the colors match"]],
     ["2.19",["🧩 On paper › Actual-size template: if the paper is larger than A4, you can also get it split into A4 sheets to join, with a 1 cm overlap and each sheet’s row and column","🧪 Behind the scenes: each version is only published if every test passes"]],
     ["2.18",["✔️ Draw: “Check before you go on” in the construction steps, something you can verify with ruler or compass before moving on; also the piece count, the strap width and the crossings","🖋 Draw › Inking: which lines to go over in ink (thick, solid) and which pencil to rub out (thin, dashed); for straps, how to stop the one that goes under","🪜 A path to get started: seven tile patterns from easiest to hardest, with what each one teaches and the Learn constructions worth practicing first"]],
@@ -4470,6 +4506,7 @@ velar();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.21",["📏 Al empezar a trazar, «¿En qué papel vas a dibujar?»: elige papel, orientación y módulos y verás el radio o el lado de partida antes del primer paso"]],
     ["2.20",["🕌 Dos alicatados nuevos de la Torre de las Damas (El Partal): el n.º 36, de cintas verdes y azules, y el n.º 37, una rueda de doce","🎨 Cintas de dos colores: en el n.º 36 cada cinta lleva su color y se puede cambiar en Colorear","✅ N.º 29 revisado con las páginas escaneadas del libro: el trazado y los colores coinciden"]],
     ["2.19",["🧩 En papel › Plantilla a tamaño real: si el papel es mayor que un A4, sale también troceada en hojas A4 para pegar, con 1 cm de solape y la fila y la columna de cada hoja","🧪 Por dentro: cada versión solo se publica si pasan todas las pruebas"]],
     ["2.18",["✔️ Trazar: «Comprueba antes de seguir» en los pasos de construcción, con algo que se puede mirar con la regla o el compás antes de avanzar; también el recuento de piezas, el ancho de la cinta y los cruces","🖋 Trazar › Entintar: qué líneas se repasan con tinta (gruesas y continuas) y qué lápiz se borra (fino y a rayas); en los de cinta, cómo cortar la que pasa por debajo","🪜 Recorrido para empezar: siete alicatados del más fácil al más difícil, con lo que enseña cada uno y las construcciones de Aprender que conviene practicar antes"]],

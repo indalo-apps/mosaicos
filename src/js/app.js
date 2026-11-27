@@ -586,6 +586,7 @@ const MEDPASO={
     4:[['Radio de los cuartos de circunferencia','Radius of the quarter circles',Math.SQRT2]]}};
 function medPaso(){const el=document.getElementById('stepm');if(!el)return;
   if(MODO.c||!window.papelActual){el.hidden=true;return;}
+  if(step===0&&window.papelRapido){window.papelRapido(el);el.hidden=false;return;}
   const P=window.papelActual();if(!P){el.hidden=true;return;}
   const kl=PAT.k||1,cmv=v=>window.cmPapel(v*kl*P.G.k);
   const val=v=>{if(v==='rw')return window.cmPapel(PAT.rw*P.G.k);if(typeof v==='string'&&v.startsWith('G.')){const G=PAT.G||{},n=v.slice(2);return cmv(n==='s2'?2*G.s:G[n]);}return cmv(v);};
@@ -719,7 +720,7 @@ document.addEventListener('click',e=>{const t=e.target;
 });
 document.querySelector('.tabs').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();
   const E=['trazado','teselar','colorear','imprimir'],i=E.findIndex(n=>document.getElementById('tab-'+n).classList.contains('show')),n=E[(i+(e.key==='ArrowRight'?1:3))%4];tab(n);document.querySelector(`[data-tab="${n}"]`).focus();});
-document.addEventListener('keydown',e=>{if(e.target.closest&&(e.target.closest('.tabs')||e.target.closest('#svg')))return;if(!document.getElementById('tab-trazado').classList.contains('show')||document.querySelector('.dlg:not([hidden])')||document.getElementById('ik-sheet'))return;
+document.addEventListener('keydown',e=>{if(e.target.closest&&(e.target.closest('.tabs')||e.target.closest('#svg')||e.target.closest('input,textarea,select')))return;if(!document.getElementById('tab-trazado').classList.contains('show')||document.querySelector('.dlg:not([hidden])')||document.getElementById('ik-sheet'))return;
   if(e.key==='ArrowRight'&&step<pasos().length){step++;show();}else if(e.key==='ArrowLeft'&&step>0){step--;show();}});
 function tab(n,sinHash){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('show',x.id==='tab-'+n));
   document.querySelectorAll('[data-tab]').forEach(b=>{const on=b.dataset.tab===n;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;});

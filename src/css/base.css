@@ -379,3 +379,11 @@ html{scroll-padding-top:var(--fijo,0px)}
 .presets{grid-template-columns:repeat(2,minmax(0,1fr))}.preset{min-width:0;overflow-wrap:anywhere}
 /* Ordenador: la portada del alicatado algo más baja, para que «Empezar» quede a la vista en una pantalla de 800 px */
 @media (min-width:700px){.ficha{margin-bottom:10px}.ficha-img svg{min-height:118px}.ficha-datos{padding:10px 18px;gap:4px}}
+
+/* v2.17: progreso de cada alicatado (icono y texto) y casillas del taller */
+.pat-hecho{display:flex;flex-direction:row!important;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:calc(12.5px * var(--esc,1));font-weight:600;color:var(--ink)}
+.pat-hecho>span{display:inline-flex;flex-direction:row!important;align-items:center;gap:3px;padding:0!important}
+.pat .pat-hecho svg.ic,#v-alicatados .pat .pat-hecho svg.ic{width:1.15em;height:1.15em;margin:0;aspect-ratio:auto;border-radius:0;background:none;flex:none;stroke-width:2.6}
+.pat.on .pat-hecho{color:inherit}
+.hecho-fila,.vela-fila{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);min-height:44px}
+.hecho-fila label{font-weight:600}

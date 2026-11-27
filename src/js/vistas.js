@@ -24,7 +24,7 @@ function ficha(p){const pal=Object.values(p.paletas)[0],w=2*p.W,h=w/3.2;
   const n=(p.pasos||[]).length,nB=(p.pasosB||[]).length,tipos=p.nombres.length;
   const pasos=p.id==='lazo8'?tr('Paso a paso','Step by step'):tr(`${n} pasos`,`${n} steps`)+(nB?tr(' · también con cuadrícula',' · also with a grid'):'');
   const fila=(ic,t,cl)=>`<li${cl?` class="${cl}"`:''}>${icono(ic)}<span>${t}</span></li>`;
-  $('ficha').innerHTML=`<div class="ficha-img">${img}</div><ul class="ficha-datos">`+fila('libro',`${libro} · ${ref}`)+fila('lugar',`${p.lugar}`,'f-lugar')+fila('pasos',pasos)+fila('piezas',tr(`${tipos} tipos de pieza`,`${tipos} kinds of piece`))+'</ul>';
+  $('ficha').innerHTML=`<div class="ficha-img">${img}</div><ul class="ficha-datos">`+fila('libro',`${libro} · ${ref}`)+fila('lugar',`${p.lugar}`,'f-lugar')+fila('pasos',pasos)+fila('piezas',tr(`${tipos} tipos de pieza`,`${tipos} kinds of piece`))+(textosHecho(p).length?fila('hecho',textosHecho(p).join(' · '),'f-hecho'):'')+'</ul>';
   $('ficha').hidden=false;}
 // Tono de cada monumento (v2.9): verde para el Alcázar y azul para la Alhambra, siempre acompañado de su nombre
 const tono=col=>{if(col)document.documentElement.dataset.monu=col;else delete document.documentElement.dataset.monu;};
@@ -49,8 +49,9 @@ function inicio(){mostrar('inicio');cab('Mosaicos',tr('Lacería con regla y comp
   if(!$('im-alcazar').firstChild)$('im-alcazar').innerHTML=banda(PATS.zaguan2,0,2,24,9);
   if(!$('im-alhambra').firstChild&&PATS.barca)$('im-alhambra').innerHTML=banda(PATS.barca,0,0,24,9);
   const na=deCol('alcazar').length,nh=deCol('alhambra').length;
-  $('n-alcazar').textContent=tr(`${na} alicatados`,`${na} tile patterns`);
-  $('n-alhambra').textContent=tr(`${nh} ${nh===1?'alicatado':'alicatados'} · se irán añadiendo más`,`${nh} tile ${nh===1?'pattern':'patterns'} · more coming`);
+  const enPapel=col=>{const k=deCol(col).filter(p=>(HECHO.d[p.id]||{}).p).length;return k?tr(` · ${k} en papel`,` · ${k} on paper`):'';};
+  $('n-alcazar').textContent=tr(`${na} alicatados`,`${na} tile patterns`)+enPapel('alcazar');
+  $('n-alhambra').textContent=tr(`${nh} ${nh===1?'alicatado':'alicatados'}`,`${nh} tile ${nh===1?'pattern':'patterns'}`)+(enPapel('alhambra')||tr(' · se irán añadiendo más',' · more coming'));
   $('n-aprender').textContent=tr(`${CONS.L.length} construcciones`,`${CONS.L.length} constructions`);
   const n=misDibujos().length;$('n-mis').textContent=n?tr(`${n} ${n===1?'guardado':'guardados'}`,`${n} saved`):tr('Aún no hay ninguno','None yet');}
 // ---- Aprender a trazar
@@ -79,11 +80,10 @@ function alicatado(id,etapa){if(!PATS[id]){location.hash='#alicatados';return;}i
   window.tabEtapa(etapa,true);if(etapa==='colorear')draw();store.set(ULT,'a/'+id+'/'+etapa);}
 // ---- Mis dibujos
 // v2.15: abrir un alicatado guarda su estado (vista, paso…); «Coloreado» solo si los colores no son los de partida
-function pintado(p,g){if(!g)return false;const f=fresh(p);
-  return Object.keys(g.over||{}).length>0||JSON.stringify(g.cols||f.cols)!==JSON.stringify(f.cols)||(g.ribbon||f.ribbon)!==f.ribbon||(g.outline||f.outline)!==f.outline;}
+const pintado=pintadoPat; // v2.17: la misma regla sirve para el progreso de la galería (progreso.js)
 function misDibujos(){const out=[];let E={};try{E=JSON.parse(localStorage.getItem('laceria-estado-v2')||'{}').p||{};}catch(e){}
   let PRr={};try{PRr=JSON.parse(localStorage.getItem('laceria-practica-v1')||'{}')||{};}catch(e){}
-  for(const p of Object.values(PATS)){const col=pintado(p,E[p.id]),rep=(PRr[p.id]||[]).length>0;if(col||rep)out.push({p,col,rep});}
+  for(const p of Object.values(PATS)){const col=pintado(p,E[p.id]),rep=(PRr[p.id]||[]).length>0,pap=!!(HECHO.d[p.id]||{}).p;if(col||rep||pap)out.push({p,col,rep,pap});}
   for(const c of CONS.L)if((PRr['c-'+c.id]||[]).length)out.push({c,rep:true});return out;}
 function mis(){mostrar('mis');cab(tr('Mis dibujos','My drawings'),tr('Guardados en este dispositivo','Saved on this device'),'#inicio','');const L=misDibujos();
   let E={};try{E=JSON.parse(localStorage.getItem('laceria-estado-v2')||'{}').p||{};}catch(e){}
@@ -91,7 +91,7 @@ function mis(){mostrar('mis');cab(tr('Mis dibujos','My drawings'),tr('Guardados 
     if(x.c)return `<li><a href="#c/${x.c.id}">${mini(x.c)}<span>${lt(x.c.nombre)}</span><small>${tr('Repasado a mano','Traced by hand')}</small></a></li>`;
     const g=E[x.p.id],d=datos(x.p),[a,b,w]=x.p.vistas.mod,pal=Object.values(x.p.paletas)[0];
     const sv=renderLazo(d,{x0:a,y0:b,w,h:w,cols:g&&g.cols||pal.cols,over:{},ribbon:g&&g.ribbon||pal.ribbon,outline:g&&g.outline||pal.outline,rw:g&&g.rw||x.p.rw,ow:x.p.ow,interlace:false}).replace('width="100%"','aria-hidden="true" focusable="false"');
-    return `<li><a href="#a/${x.p.id}/${x.col?'colorear':'trazado'}">${sv}<span>${x.p.nombre}</span><small>${x.col?tr('Coloreado','Colored'):tr('Repasado a mano','Traced by hand')}</small></a></li>`;}).join('')+'</ul>'
+    return `<li><a href="#a/${x.p.id}/${x.col?'colorear':'trazado'}">${sv}<span>${x.p.nombre}</span><small>${[x.col&&tr('Coloreado','Colored'),x.rep&&tr('Repasado a mano','Traced by hand'),x.pap&&tr('Dibujado en papel','Drawn on paper')].filter(Boolean).join(' · ')}</small></a></li>`;}).join('')+'</ul>'
     :`<p>${tr('Todavía no has coloreado ni repasado ningún dibujo. Empieza por un alicatado o por «Aprender a trazar».','You have not colored or traced anything yet. Start with a tile pattern or with “Learn to draw”.')}</p>`;}
 // ---- Teselar
 const TS={marcar:true,color:false};

@@ -438,7 +438,7 @@ function datosPat(p){const d=dificultad(p),DIF=[tr('Fácil','Easy'),tr('Media','
   const pt=`<span class="dif" aria-hidden="true">${'●'.repeat(d+1)}${'○'.repeat(2-d)}</span>`;
   return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(p.nombres.length+' piezas',p.nombres.length+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
 const ordenLibro=p=>p.coleccion==='alhambra'?p.num:parseInt(p.pags)||0;
-function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${yaMini(p)?miniatura(p):`<span class="mini-hueco" data-mini="${p.id}"></span>`}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}</span></button>`).join('');
+function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${yaMini(p)?miniatura(p):`<span class="mini-hueco" data-mini="${p.id}"></span>`}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}${chipsHecho(p)}</span></button>`).join('');
   const huecos=[...$('galeria').querySelectorAll('[data-mini]')],sig=()=>{const h=huecos.shift();if(!h)return;if(h.isConnected){const t=document.createElement('span');t.innerHTML=miniatura(PATS[h.dataset.mini]);h.replaceWith(t.firstChild);}setTimeout(sig,0);};setTimeout(sig,30);}
 function cabecera(){$('titulo').innerHTML=PAT.nombre+`<span class="sub">${PAT.lugar} · ${monu(PAT)}</span>`;document.title=PAT.nombre+' · Lacería';$('intro').innerHTML=PAT.intro;$('pie').textContent=PAT.pie;
   document.querySelectorAll('[data-pat]').forEach(b=>{const on=b.dataset.pat===PAT.id;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});}
@@ -581,6 +581,7 @@ function medPaso(){const el=document.getElementById('stepm');if(!el)return;
 function show(){
   const PS=pasos(),N=PS.length;if(step>N)step=N;if(step<0)step=0;
   try{localStorage.setItem(clave(),step)}catch(e){}
+  if(!MODO.c&&step===N)HECHO.marca(PAT.id,'t');pintarHecho(!MODO.c&&step===N);
   const obj={h:tr('El objetivo','The goal'),t:MODO.c?tr('Esta es la figura que vas a construir. Pulsa «Empezar» para ver el primer paso.','This is the figure you are going to construct. Tap “Start” to see the first step.'):tr(`Este es el mosaico que vas a dibujar, con los colores de ${PAT.coleccion==='alhambra'?'la Alhambra':'el Alcázar'}. Pulsa «Empezar» para ver el primer paso.`,`This is the mosaic you are going to draw, in the ${PAT.coleccion==='alhambra'?'Alhambra':'Alcázar'} colors. Tap “Start” to see the first step.`),c:matchMedia('(pointer:coarse)').matches?tr('También puedes deslizar el dibujo para cambiar de paso.','You can also swipe the drawing to change step.'):''} // v2.15: con ratón no se desliza; ahí ya está el aviso de las flechas del teclado;
   const s=step===0?obj:PS[step-1];
   const etq=step===0?tr('Objetivo','Goal'):tr(`Paso ${step} de ${N}`,`Step ${step} of ${N}`);

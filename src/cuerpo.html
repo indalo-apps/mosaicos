@@ -44,7 +44,9 @@
       <div class="ops metodo" id="metodo" role="group" aria-label="Método de trazado" hidden><button data-met="A">📐 Con compás</button><button data-met="B">▦ Con cuadrícula</button></div>
       <div class="dots" id="dots"></div>
       <div class="card"><div aria-live="polite" aria-atomic="true"><div class="stepn" id="stepn"></div><h2 class="steph" id="steph"></h2><p id="stept"></p><p class="tip" id="stepc"></p></div><div class="row" style="justify-content:flex-start;gap:8px;margin-top:14px"><button id="prev">← Anterior</button><button id="next" class="on">Siguiente →</button><button id="gocolor" class="on" hidden>Ir a colorear →</button><button id="replay" title="Repetir la animación" aria-label="Repetir la animación">↻</button></div><div class="medpapel" id="stepm" hidden></div>
+        <div class="row hecho-fila" id="tz-hecho-fila" hidden><label for="tz-hecho">Ya lo he dibujado en papel</label><input type="checkbox" id="tz-hecho"></div>
         <div class="practica"><button id="pr-on" aria-pressed="false">✏️ Repasar a mano</button><button id="pr-undo" hidden>↶ Deshacer</button><button id="pr-clear" hidden>Borrar mi dibujo</button></div>
+        <div class="row vela-fila" id="vela-fila" hidden><label for="vela">Mantener la pantalla encendida mientras trazo</label><input type="checkbox" id="vela" checked></div>
         <p class="hint" id="pr-hint" hidden>Repasa el dibujo con el dedo, el lápiz o el ratón. Tu trazo se guarda y sigue ahí al cambiar de paso. Si usas un lápiz, el dedo no pinta.</p>
       </div>
       <p class="hint solo-teclado">También puedes avanzar con las flechas del teclado.</p>
@@ -135,6 +137,7 @@
         <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
         <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
         <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
+        <div class="row hecho-fila"><label for="pp-hecho">Ya lo he dibujado en papel</label><input type="checkbox" id="pp-hecho"></div>
       </section>
     <div class="caminos">
       <button class="camino" data-imp="lamina"><h2>📄 Lámina para pintar</h2><p>PDF en A5, A4 o A3, solo en línea, para la acuarela o los lápices. Con la lista de pinturas si eliges una marca.</p></button>

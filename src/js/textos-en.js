@@ -137,7 +137,8 @@ const ES_EN={
  'Resolución':'Resolution','Pinturas de la casa':'Paints from the brand','📋 Copiar la lista de la compra':'📋 Copy the shopping list',
  'Elige la marca de acuarela: la paleta se pasa a sus colores, con el nombre y la referencia de cada uno para comprarlos. El pincel mostrará su carta. Los colores en pantalla son aproximados.':'Choose a watercolor brand: the palette switches to its colors, with the name and reference of each one so you can buy them. The brush will show its chart. On-screen colors are approximate.','Ninguna':'None','Con qué pintar':'What to paint with',
  'Elige tu caja de acuarelas: el pincel mostrará sus colores con su nombre y verás con qué pintura va cada pieza. Los colores en pantalla son aproximados.':'Choose your watercolor set: the brush will show its colors with their names and you will see which paint goes on each piece. On-screen colors are approximate.',
- '🎨 Pasar mis colores a la carta':'🎨 Switch my colors to the chart','Añadir la lista de pinturas de la carta':'Add the list of paints from the chart','⬇️ Descargar':'⬇️ Download','Copiar SVG':'Copy SVG','Actualizando a la versión nueva…':'Updating to the new version…'
+ '🎨 Pasar mis colores a la carta':'🎨 Switch my colors to the chart','Añadir la lista de pinturas de la carta':'Add the list of paints from the chart','⬇️ Descargar':'⬇️ Download','Copiar SVG':'Copy SVG','Actualizando a la versión nueva…':'Updating to the new version…',
+ 'Ya lo he dibujado en papel':'I have drawn it on paper','Mantener la pantalla encendida mientras trazo':'Keep the screen on while I draw'
 };
 function traducirPagina(){
   const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const L=[];while(w.nextNode())L.push(w.currentNode);

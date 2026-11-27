@@ -4,6 +4,7 @@
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.22",["🎨 New icon: the 8-pointed star with its ruler-and-compass construction lines, on a light background"]],
     ["2.21",["📏 When you start tracing, “What paper will you draw on?”: choose paper, orientation and modules and you get the starting radius or side before the first step"]],
     ["2.20",["🕌 Two new tile patterns from the Ladies’ Tower (El Partal): no. 36, with green and blue straps, and no. 37, a wheel of twelve","🎨 Two-color straps: in no. 36 each strap has its own color, and you can change it in Color","✅ No. 29 checked against the scanned book pages: the drawing and the colors match"]],
     ["2.19",["🧩 On paper › Actual-size template: if the paper is larger than A4, you can also get it split into A4 sheets to join, with a 1 cm overlap and each sheet’s row and column","🧪 Behind the scenes: each version is only published if every test passes"]],
@@ -47,6 +48,7 @@
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.22",["🎨 Icono nuevo: la estrella de 8 con sus trazos de regla y compás, en fondo claro"]],
     ["2.21",["📏 Al empezar a trazar, «¿En qué papel vas a dibujar?»: elige papel, orientación y módulos y verás el radio o el lado de partida antes del primer paso"]],
     ["2.20",["🕌 Dos alicatados nuevos de la Torre de las Damas (El Partal): el n.º 36, de cintas verdes y azules, y el n.º 37, una rueda de doce","🎨 Cintas de dos colores: en el n.º 36 cada cinta lleva su color y se puede cambiar en Colorear","✅ N.º 29 revisado con las páginas escaneadas del libro: el trazado y los colores coinciden"]],
     ["2.19",["🧩 En papel › Plantilla a tamaño real: si el papel es mayor que un A4, sale también troceada en hojas A4 para pegar, con 1 cm de solape y la fila y la columna de cada hoja","🧪 Por dentro: cada versión solo se publica si pasan todas las pruebas"]],

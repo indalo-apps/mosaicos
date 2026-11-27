@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.19">
+<meta name="app-version" content="2.20">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1194,9 +1194,11 @@ function renderLazo(D, o) {
   const ribbonAttrs = `fill="none" stroke-linejoin="miter" stroke-miterlimit="8"`;
   s += `<g pointer-events="none">`;
   if (o.ow > 0) paths.forEach(d => { s += `<path d="${d}" ${ribbonAttrs} stroke="${o.outline}" stroke-width="${f(W)}"/>`; });
-  paths.forEach(d => { s += `<path d="${d}" ${ribbonAttrs} stroke="${o.ribbon}" stroke-width="${f(o.rw)}"/>`; });
+  // v2.20: una cinta con tipo (D.S[i][2]) toma el color de ese tipo; si no, el de la cinta
+  const colCinta = c => (c != null && o.cols && o.cols[c]) || o.ribbon;
+  paths.forEach((d, i) => { s += `<path d="${d}" ${ribbonAttrs} stroke="${colCinta(D.S[i][2])}" stroke-width="${f(o.rw)}"/>`; });
   if (o.interlace) {
-    D.O.forEach(([x, y, dx, dy, sn]) => {
+    D.O.forEach(([x, y, dx, dy, sn, cc]) => {
       if (x < cb.x0 - 2 || x > cb.x0 + cb.w + 2 || y < cb.y0 - 2 || y > cb.y0 + cb.h + 2) return;
       const cs = Math.sqrt(Math.max(0, 1 - sn * sn));
       const L = W / sn + W * cs / sn + 0.02;
@@ -1204,7 +1206,7 @@ function renderLazo(D, o) {
       if (o.ow > 0) s += `<line ${a} stroke="${o.outline}" stroke-width="${f(W)}"/>`;
       // la cinta clara un poco más larga que su contorno tapa la costura del extremo
       const e = 0.03, a2 = `x1="${f(x - dx * (L / 2 + e))}" y1="${f(y - dy * (L / 2 + e))}" x2="${f(x + dx * (L / 2 + e))}" y2="${f(y + dy * (L / 2 + e))}"`;
-      s += `<line ${a2} stroke="${o.ribbon}" stroke-width="${f(o.rw)}"/>`;
+      s += `<line ${a2} stroke="${colCinta(cc)}" stroke-width="${f(o.rw)}"/>`;
     });
   }
   s += `</g>`;
@@ -1639,7 +1641,7 @@ function zona(pat,prep,x0,y0,x1,y1){
     for(const [a,b] of pares){sig.set(v+':'+a,b);sig.set(v+':'+b,a);}
     if(l.length===4&&pares.length===2&&!libres.length)cruces.push(v);});
   // cintas: cadenas de aristas
-  const enCinta=new Array(E.length).fill(-1),S=[],recorr=[];
+  const enCinta=new Array(E.length).fill(-1),recorr=[];let S=[];
   const otro=(e,v)=>E[e][0]===v?E[e][1]:E[e][0];
   E.forEach((_,e0)=>{if(enCinta[e0]>=0)return;const id=S.length;
     // hacia atrás hasta un extremo libre (o hasta dar la vuelta si la cinta es cerrada)
@@ -1671,8 +1673,19 @@ function zona(pat,prep,x0,y0,x1,y1){
       const otra=recorr[lista[l.find(i=>i!==enc)][1]],k2=otra.vs.indexOf(c),a2=V[otra.vs[(k2-1+otra.vs.length)%otra.vs.length]],b2=V[otra.vs[(k2+1)%otra.vs.length]];
       let ex=b2[0]-a2[0],ey=b2[1]-a2[1];const L2=Math.hypot(ex,ey);ex/=L2;ey/=L2;
       const sn=Math.abs(dx*ey-dy*ex);
-      O.push([R(V[c][0]),R(V[c][1]),R(dx),R(dy),R(sn)]);}
+      O.push(pat.cinta?[R(V[c][0]),R(V[c][1]),R(dx),R(dy),R(sn),pat.cinta([V[c][0],V[c][1],b[0],b[1]])]:[R(V[c][0]),R(V[c][1]),R(dx),R(dy),R(sn)]);}
   }
+  // v2.20: cintas de varios colores. pat.cinta(tramo) dice de qué tipo es cada tramo (un índice de nombres/cols, como las piezas).
+  // Cada cinta lleva el tipo como tercer dato; si cambia a lo largo de la cinta (pasa en los bordes de la zona, donde las cintas
+  // se cortan), se parte en trozos del mismo tipo.
+  if(pat.cinta){const S2=[];
+    for(const [cl,pts] of S){const n=pts.length/2,m=cl?n:n-1,k=[];
+      for(let i=0;i<m;i++){const j=(i+1)%n;k.push(pat.cinta([pts[2*i],pts[2*i+1],pts[2*j],pts[2*j+1]]));}
+      if(k.every(v=>v===k[0])){S2.push([cl,pts,k[0]]);continue;}
+      const ini=cl?k.findIndex((v,i)=>v!==k[(i-1+m)%m]):0;let cur=[],cc=null;
+      for(let t=0;t<m;t++){const i=(ini+t)%m,j=(i+1)%n;if(k[i]!==cc){if(cur.length)S2.push([0,cur,cc]);cur=[pts[2*i],pts[2*i+1]];cc=k[i];}cur.push(pts[2*j],pts[2*j+1]);}
+      if(cur.length)S2.push([0,cur,cc]);}
+    S=S2;}
   return {F,S,O};
 }
 return {preparar,zona,area,centro,firma,teselar,fundir,cortar};
@@ -2131,6 +2144,72 @@ P.jambas31=escalar({id:'jambas31',coleccion:'alhambra',num:31,nombre:'Ruedas de 
 Object.assign(P.jambas31,{Gj:{r1,AB,CD,EF,w,A,B},TR,modulo:{m:2*P.jambas31.k,cx:P.jambas31.k,cy:P.jambas31.k,giro:0}});
 })();
 
+// ===== LA ALHAMBRA · Torre de las Damas, El Partal: alicatados A (n.º 36) y B (n.º 37) =====
+// Los dos se trazan en un cuadrado de lado 2 (la unidad es medio lado) que se repite por traslación. T: los ejes de las cintas con el
+// punto medio en el triángulo (0,0), (1,0), (1,1), con las coordenadas exactas de sus cruces (y hacia arriba, como en el libro);
+// el resto sale por las ocho simetrías del cuadrado. Se sacaron del paso 10 (n.º 36) y del paso 7 (n.º 37) del libro, tramo a tramo
+// sobre las rectas de la construcción, y se comprobaron con las páginas de color.
+const D4c=[[1,0,0,1],[0,-1,1,0],[-1,0,0,-1],[0,1,-1,0],[1,0,0,-1],[-1,0,0,1],[0,1,1,0],[0,-1,-1,0]];
+function simetrizar(T){const L=[],vis=new Set();for(const [a,b,c,d] of D4c)for(const [x1,y1,x2,y2] of T){const p=[a*x1+b*y1,c*x1+d*y1],q=[a*x2+b*y2,c*x2+d*y2];
+  const k=[p,q].map(v=>v.map(n=>(n+0).toFixed(6)).join(',')).sort().join('|');if(vis.has(k))continue;vis.add(k);L.push([...p,...q]);}return L;}
+const areaD=Q=>{let S=0;for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];S+=p[0]*q[1]-q[0]*p[1];}return S/2;};
+const entrantesD=Q=>{const s=Math.sign(areaD(Q));let r=0;for(let i=0;i<Q.length;i++){const a=Q[(i+Q.length-1)%Q.length],b=Q[i],c=Q[(i+1)%Q.length],cr=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]);if(Math.sign(cr)===-s&&Math.abs(cr)>1e-9)r++;}return r;};
+// ¿está el punto (u, v) del módulo sobre alguno de estos tramos?
+const sobre=(L,u,v)=>L.some(([x1,y1,x2,y2])=>{const dx=x2-x1,dy=y2-y1,l2=dx*dx+dy*dy,t=((u-x1)*dx+(v-y1)*dy)/l2;return t>-1e-4&&t<1+1e-4&&Math.abs((u-x1)*dy-(v-y1)*dx)/Math.sqrt(l2)<1e-4;});
+const enModulo=(k,x,y)=>[((x/k)%2+2)%2-1,1-((y/k)%2+2)%2];   // de la app (y hacia abajo, módulo de 0 a 2) al libro (centro 0, y hacia arriba)
+
+// n.º 36. Circunferencia de radio √2 con dos cuadrados inscritos (el de lados paralelos a los ejes es el módulo). Rectas del trazado:
+// a e = 3/√2 − 2 (las barras del paso 4 y la estrella del paso 8), √2 − 1 (octógono estrellado del paso 2), 1/√2 (paso 3),
+// 5/√2 − 3 y 3 − 3/√2 (paso 5) y, a 22,5°, 4 − 5/√2 (los cuadrados del paso 7, en la circunferencia de radio AB = 4√2 − 5).
+// La cinta mide A/4, con A = 2e (paso 11: cuerda y calle en proporción 1/3). Las cintas verdes son las de los tramos VERDE.
+(function(){const s2=Math.SQRT2,e=3/s2-2,AB=4*s2-5,rB=e/Math.sin(rad(22.5)),A=2*e,w=A/4;
+const T36=[[0.87867965644,-0.363961030679,0.87867965644,0.363961030679],[0.87867965644,0.535533905933,0.87867965644,1],[0.092854570978,-0.092854570978,0.707106781187,0.161577025208],[0.502734477519,0,0.606854196949,0.251367238759],[1,0.828427124746,0.828427124746,1],[0,0.131316193606,0.614252210208,0.385747789792],[0.614252210208,0.385747789792,0.535533905933,0.464466094067],[0.707106781187,-0.050252531694,1,0.242640687119],[0.606854196949,0.251367238759,0.35548695819,0.35548695819],[0.464466094067,0.535533905933,0.87867965644,0.535533905933],[0.87867965644,0.363961030679,0.363961030679,0.87867965644],[1,0.585786437627,0.585786437627,1],[0.707106781187,0.050252531694,0.707106781187,0.161577025208]];
+const VERDE=simetrizar([0,3,8,10,11].map(i=>T36[i]));   // el octógono grande, la estrella que rodea la rueda y las diagonales de las esquinas
+const modulo=()=>simetrizar(T36);
+P.damas36=escalar({id:'damas36',coleccion:'alhambra',num:36,pags:'177 a 183',nombre:'Cintas verdes y azules',lugar:'Torre de las Damas · Alicatado A · El Partal',tipo:'cinta',
+  W:2,H:2,
+  lineas(){return modulo().map(([x1,y1,x2,y2])=>[x1+1,1-y1,x2+1,1-y2]);},
+  clase(Q){const n=Q.length,a=Math.abs(areaD(Q))/this.k/this.k;
+    if(n===12)return entrantesD(Q)===6?0:1;if(n===16)return 3;if(n===6)return 2;
+    if(n===3)return a>0.008?8:10;
+    if(n===4)return entrantesD(Q)?7:9;
+    if(n===8){const r=entrantesD(Q);return r===1?4:r===2?6:5;}
+    return 0;},
+  cinta(pts){const [u,v]=enModulo(this.k,(pts[0]+pts[2])/2,(pts[1]+pts[3])/2);return sobre(VERDE,u,v)?11:12;},
+  nombres:['Pieza grande del borde','Pieza grande junto a la rueda','Alfardón (hexágono alargado)','Estrella de ocho del centro','Pieza del borde','Octógono de la esquina','Punta con muesca','Punta de flecha','Triángulo','Almendrilla','Triángulo pequeño','Cinta verde','Cinta azul'],
+  paletas:{
+    'Alhambra':{cols:[...Array(11).fill('#fbfaf5'),'#45b994','#26406f'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Azul y oro':{cols:[...Array(11).fill('#fbf7ee'),'#d4a83c','#1d2a55'],ribbon:'#fbf7ee',outline:'#1c1c1c'},
+    'Terracota':{cols:[...Array(11).fill('#fbf4ec'),'#d98e6e','#5a3022'],ribbon:'#fbf4ec',outline:'#3a2a20'},
+    'Para colorear':{cols:Array(13).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
+});
+Object.assign(P.damas36,{rw:+(w*P.damas36.k).toFixed(4),ow:0.06,cintas:[11,12],G36:{e,AB,rB,A,w},modBase:modulo,T:T36,VERDE,
+  modulo:{m:2*P.damas36.k,cx:P.damas36.k,cy:P.damas36.k,giro:0}});
+})();
+
+// n.º 37. Circunferencia de radio 1 dividida en doce: lados de los dos hexágonos (a √3/2), estrella {12/5} (a cos 75°/√3) y, en las
+// esquinas, la estrella de ocho de dos cuadrados inscrita en la circunferencia de radio rc = √2·(1 − √3/2), que pasa por el cruce de las
+// prolongaciones de los hexágonos (rectas a 45° a 1 − √3/2 y a (2 − rc)/√2 del centro). La cinta mide A/4, con A = 2·cos 75°/√3.
+(function(){const s3=Math.sqrt(3),h=s3/2,dE=Math.cos(rad(75))/s3,rc=Math.SQRT2*(1-h),A=2*dE,w=A/4;
+const T37=[[1,0.42264973081,0.5,0.711324865405],[0.105662432703,0.183012701892,0.788675134595,0.366025403784],[0.866025403784,0.866025403784,0.944505905234,0.866025403784],[1,0,0.788675134595,0.366025403784],[0.211324865405,0,0.711324865405,0.5],[0.866025403784,0.07735026919,0.866025403784,0.676556712803],[0.866025403784,-0.07735026919,0.183012701892,0.105662432703],[1,0.810531309018,0.944505905234,0.866025403784],[0.866025403784,0.676556712803,1,0.810531309018]];
+const modulo=()=>simetrizar(T37);
+P.damas37=escalar({id:'damas37',coleccion:'alhambra',num:37,pags:'184 a 187',nombre:'Rueda de doce',lugar:'Torre de las Damas · Alicatado B · El Partal',tipo:'cinta',
+  W:2,H:2,
+  lineas(){return modulo().map(([x1,y1,x2,y2])=>[x1+1,1-y1,x2+1,1-y2]);},
+  clase(Q){const n=Q.length,a=Math.abs(areaD(Q))/this.k/this.k;
+    if(n>=20)return 0;if(n===16)return 4;if(n===10)return 2;if(n===4)return 7;
+    return a>0.11?1:a>0.085?3:a>0.065?5:6;},
+  nombres:['Sino (estrella de doce)','Zafate','Pieza de la esquina','Pieza del borde con muesca','Estrella de ocho de la esquina','Hexágono del borde','Candilejo','Almendrilla'],
+  paletas:{
+    'Alhambra':{cols:['#141414','#141414','#141414','#141414','#141414','#141414','#2b7363','#2b7363'],ribbon:'#fbfaf5',outline:'#1c1c1c'},
+    'Azul y blanco':{cols:['#1e3a78','#1e3a78','#1e3a78','#1e3a78','#1e3a78','#1e3a78','#9ab6dc','#9ab6dc'],ribbon:'#ffffff',outline:'#1e3a78'},
+    'Terracota':{cols:['#5a3022','#5a3022','#5a3022','#5a3022','#5a3022','#5a3022','#d98e6e','#d98e6e'],ribbon:'#fbf4ec',outline:'#3a2a20'},
+    'Para colorear':{cols:Array(8).fill('#ffffff'),ribbon:'#ffffff',outline:'#222222'}}
+});
+Object.assign(P.damas37,{rw:+(w*P.damas37.k).toFixed(4),ow:0.06,G37:{h,dE,rc,A,w},modBase:modulo,T:T37,
+  modulo:{m:2*P.damas37.k,cx:P.damas37.k,cy:P.damas37.k,giro:0}});
+})();
+
 // ---------- Textos y pasos del trazado ----------
 const T={u:'<em>El Real Alcázar de Sevilla con regla y compás</em>'};
 const ln=(s,attr)=>`<line x1="${+s[0].toFixed(3)}" y1="${+s[1].toFixed(3)}" x2="${+s[2].toFixed(3)}" y2="${+s[3].toFixed(3)}"${attr?' '+attr:''}/>`;
@@ -2524,6 +2603,85 @@ Object.assign(P.zaguan2,{vt:[0,0,12,12],
     {h:'Color',t:'Azul para los sinos, negro para los zafates de la rueda grande y verde y melado para los de las pequeñas. Los zafates arpados y los cuadraditos son negros; los otros zafates intermedios, violáceos. Los candilejos y las almendrillas, blancos.',c:'Las ruedas de ocho alternan el verde y el melado alrededor de la central.',tipo:'color',vt:vtG}]});
 })();
 
+(function(){const p=P.damas36,{e,AB,rB,A,w}=p.G36,k=p.k,s2=Math.SQRT2,X=v=>k+v*k,Y=v=>k-v*k; // y hacia arriba, como en el libro
+  const T=L=>L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]);
+  const ln=(L,col,wd,d)=>guia(T(L),col,wd,d),an=(L,col,wd)=>animar(T(L),col,wd);
+  const pol=(n,r,a0)=>Array.from({length:n},(_,i)=>{const g=rad(a0+360*i/n);return[r*Math.cos(g),r*Math.sin(g)];});
+  const une=(V,paso)=>V.map((v,i)=>[...v,...V[(i+paso)%V.length]]);
+  const circ=(L,r,col,wd)=>circulos(L.map(([x,y])=>[X(x),Y(y)]),r*k,col,wd);
+  // rectas a la distancia d del centro, con las direcciones dadas, recortadas a la caja [−b, b]²
+  const rectas=(d,dirs,b)=>{const L=[];for(const a of dirs){const t=rad(a),u=[Math.cos(t),Math.sin(t)],n=[-u[1],u[0]];for(const sg of d?[1,-1]:[1]){const q=recta([n[0]*d*sg,n[1]*d*sg],u,[-b,-b,b,b]);if(q)L.push(q);}}return L;};
+  const EJ=[0,90],DG=[45,135],G22=[22.5,67.5,112.5,157.5],R=s2,r8=Math.hypot(1,s2-1);
+  const sqA=une(pol(4,s2,45),1),sqB=une(pol(4,s2,0),1),oct=pol(8,r8,22.5);
+  const Ap=[-1,1],Bp=[-(5/s2-3),5/s2-3];
+  const vt=[X(-1.5),Y(1.5),3*k,3*k],vtM=[-0.04*k,-0.04*k,2.08*k,2.08*k],vtG=[-0.5,-0.5,4*k+1,4*k+1];
+  Object.assign(p,{vt,
+  resumen:'Estrechas cintas verdes y azules que, sobre fondo blanco, se entrelazan formando octógonos y estrellas de ocho puntas. Ocupa dos rincones de la Torre de las Damas, a izquierda y derecha del arco de acceso.',
+  pie:'Todo sale de una circunferencia dividida en ocho y de los dos cuadrados inscritos en ella: con sus diagonales, sus lados y las paralelas que pasan por sus cruces se trazan las rectas de la rueda central. El módulo es el cuadrado de lados paralelos a los ejes y se repite por traslación.',
+  pasos:[
+    {h:'Dos cuadrados',t:'Parte de una circunferencia dividida en ocho partes. Uniendo los puntos de división en orden alterno, obtienes dos cuadrados inscritos.',c:'Es la división en ocho de «Aprender a trazar». El cuadrado de lados paralelos a los ejes será el módulo.',anim:'draw',
+     guia(){return ln([[-R,0,R,0],[0,-R,0,R],[-1,-1,1,1],[-1,1,1,-1]],RO,0.04,'0.3 0.2')+circ([[0,0]],R,'#2b4f73',0.06)+an([...sqA,...sqB],RO,0.08);}},
+    {h:'El octógono estrellado',t:'Los dos cuadrados se cortan en los ocho vértices de un octógono. Une sus vértices opuestos para trazar sus diagonales y dibuja el octógono estrellado uniendo los vértices de tres en tres.',c:'Las diagonales del octógono están giradas 22,5° respecto de los ejes.',anim:'draw',
+     guia(){return ln(une(oct,1),RO,0.04,'0.3 0.2')+ln(oct.slice(0,4).map((v,i)=>[...v,...oct[i+4]]),'#2b4f73',0.05)+an(une(oct,3),RO,0.07);}},
+    {h:'Paralelas a los lados',t:'Traza rectas paralelas a los lados de los dos cuadrados. Pasan por los puntos donde las diagonales de cada cuadrado cortan a los lados del otro.',c:'Quedan a 0,71 del centro (√2/2), con el medio lado del módulo como unidad.',anim:'draw',
+     guia(){return an([...rectas(1/s2,EJ,R),...rectas(1/s2,DG,R)],'#2b4f73',0.07);}},
+    {h:'Las barras',t:'Traza rectas paralelas a las diagonales de los cuadrados. Pasan por los puntos donde las rectas del paso anterior cortan a los lados del octógono estrellado. Une sus extremos: salen cuatro barras que se cruzan en el centro.',c:'Cada barra mide de ancho A = 2 · 0,121: es la medida que dará el ancho de la cinta.',anim:'draw',
+     guia(){return an([...rectas(e,EJ,1),...rectas(e,DG,1)],RO,0.07);}},
+    {h:'Más paralelas',t:'Traza nuevas paralelas a los lados de los dos cuadrados. Esta vez pasan por los puntos donde se cortan las rectas de los pasos 3 y 4.',c:'Son las que cierran los cuadrados de las esquinas y el octógono grande que rodea la rueda.',anim:'draw',
+     guia(){return an([...rectas(5/s2-3,EJ,1),...rectas(3-3/s2,EJ,1),...rectas(5/s2-3,DG,1),...rectas(3-3/s2,DG,1),...rectas(3/s2-1,DG,1),...rectas(2-1/s2,DG,1)],'#2b4f73',0.06);}},
+    {h:'Dos circunferencias',t:'Dibuja dos circunferencias concéntricas con la inicial. La mayor tiene como radio la distancia AB; la menor pasa por las puntas de la estrella de ocho que forman las barras del paso 4.',c:'A es una esquina del módulo y B, el cruce de las rectas del paso 5 que tiene más cerca sobre la diagonal.',anim:'fade',
+     guia(){const pt=(q,t)=>`<circle cx="${X(q[0]).toFixed(3)}" cy="${Y(q[1]).toFixed(3)}" r="0.22" fill="#1b1b1b"/><text x="${(X(q[0])+0.35).toFixed(3)}" y="${(Y(q[1])-0.35).toFixed(3)}" font-size="1.1" fill="#1b1b1b">${t}</text>`;
+       return ln([[...Ap,...Bp]],'#1b1b1b',0.06)+circ([[0,0]],AB,RO,0.08)+circ([[0,0]],rB,'#1d4ed8',0.08)+'<g class="solo-paso">'+pt(Ap,'A')+pt(Bp,'B')+'</g>';}},
+    {h:'La estrella de ocho central',t:'Con las diagonales del octógono (paso 2), divide la circunferencia mayor en ocho partes. Dibuja los dos cuadrados inscritos en ella: forman la estrella de ocho puntas central.',c:'Esta estrella está girada 22,5° respecto de los cuadrados del paso 1.',anim:'draw',
+     guia(){return an(une(pol(8,AB,22.5),2),RO,0.07);}},
+    {h:'La estrella pequeña',t:'Con las diagonales de los cuadrados iniciales, divide la circunferencia menor en ocho partes. Dibuja el octógono estrellado inscrito y prolonga sus lados hasta las rectas del paso 3.',c:'Sus lados prolongados son las rectas largas que forman la rueda.',anim:'draw',
+     guia(){return ln(une(pol(8,rB,0),3),'#1d4ed8',0.05)+an(rectas(e,G22,1/s2),RO,0.06);}},
+    {h:'Todas las líneas',t:'Con las líneas dibujadas en los pasos anteriores ya tienes todas las necesarias para obtener el motivo principal del alicatado.',c:'Repasa que no te falte ninguna: el paso siguiente solo elige tramos de estas rectas.'},
+    {h:'El esquema lineal',t:'Remarca los trazos adecuados para terminar el esquema lineal. Estas líneas son los ejes de las cintas verdes y azules.',c:'En el centro, ocho rectas largas forman una estrella; alrededor, el octógono grande y, en las esquinas, cuadrados.',tipo:'remarcar',vt:vtM},
+    {h:'La cinta',t:'La proporción entre cuerda (el ancho de la cinta) y calle (el espacio entre cintas) es de 1/3. Para conseguirla, divide la distancia A en ocho partes iguales y traza paralelas al eje a 1/8 de A a cada lado.',c:'A es el ancho de las barras del paso 4: la cinta mide A/4.',tipo:'cinta',vt:vtM},
+    {h:'El efecto de lazo',t:'Remarca los tramos que terminan el diseño y prolonga algunos lados para que unas cintas parezcan pasar sobre otras, en un ritmo alterno.',c:'Cada cinta pasa por encima en un cruce y por debajo en el siguiente.',tipo:'cinta',entrelazar:true,vt:vtM},
+    {h:'Color',t:'Aplica el color: verde y azul para las cintas y blanco para las piezas que forman el fondo.',c:'Son verdes el octógono grande, la estrella que rodea la rueda y las diagonales de las esquinas; el resto de las cintas, azules.',tipo:'color',vt:vtM},
+    {h:'Repetir el módulo',t:'El módulo se repite por traslación en sentido horizontal y vertical.',c:'En el muro, los extremos del panel tienen variantes (estrellas giradas, cuadrados enlazados en ocho y rectángulos) que aquí no se dibujan.',tipo:'color',vt:vtG}]});
+})();
+
+(function(){const p=P.damas37,{h,dE,rc,A,w}=p.G37,k=p.k,s3=Math.sqrt(3),X=v=>k+v*k,Y=v=>k-v*k;
+  const T=L=>L.map(([x1,y1,x2,y2])=>[X(x1),Y(y1),X(x2),Y(y2)]);
+  const ln=(L,col,wd,d)=>guia(T(L),col,wd,d),an=(L,col,wd)=>animar(T(L),col,wd);
+  const pol=(n,r,a0,c=[0,0])=>Array.from({length:n},(_,i)=>{const g=rad(a0+360*i/n);return[c[0]+r*Math.cos(g),c[1]+r*Math.sin(g)];});
+  const une=(V,paso)=>V.map((v,i)=>[...v,...V[(i+paso)%V.length]]);
+  const circ=(L,r,col,wd)=>circulos(L.map(([x,y])=>[X(x),Y(y)]),r*k,col,wd);
+  const rectas=(d,dirs,b)=>{const L=[];for(const a of dirs){const t=rad(a),u=[Math.cos(t),Math.sin(t)],n=[-u[1],u[0]];for(const sg of [1,-1]){const q=recta([n[0]*d*sg,n[1]*d*sg],u,[-b,-b,b,b]);if(q)L.push(q);}}return L;};
+  const P12=Array.from({length:12},(_,j)=>{const g=rad(90-30*(j+1));return[Math.cos(g),Math.sin(g)];});   // P12[j] es el punto j+1 (el 12, arriba)
+  const tri=j=>une([P12[j],P12[(j+4)%12],P12[(j+8)%12]],1);
+  const ESQ=[[1,1],[-1,1],[1,-1],[-1,-1]];
+  const arcos=(col,wd)=>{const r=+k.toFixed(3),Q=(x,y)=>`${+X(x).toFixed(3)} ${+Y(y).toFixed(3)}`;
+    return `<g class="draw" fill="none" stroke="${col}" stroke-width="${wd}" stroke-linecap="round">`+[[0,1],[1,0],[0,-1],[-1,0]].map(([cx,cy])=>{
+      const a=Math.atan2(cy,cx),p1=[cx+Math.cos(a+rad(90)),cy+Math.sin(a+rad(90))],p2=[cx+Math.cos(a-rad(90)),cy+Math.sin(a-rad(90))];
+      return `<path pathLength="1" d="M${Q(...p1)} A${r} ${r} 0 0 0 ${Q(...p2)}"/>`;}).join('')+'</g>';};
+  const vt=[X(-1.08),Y(1.08),2.16*k,2.16*k],vtM=[-0.04*k,-0.04*k,2.08*k,2.08*k],vtG=[-0.5,-0.5,4*k+1,4*k+1];
+  Object.assign(p,{vt,
+  resumen:'Una rueda de lazo de doce brazos, menos frecuente en la Alhambra que las de ocho o dieciséis. El sino y los zafates son negros; las almendrillas y los candilejos, verde turquesa, y la lacería es una cinta blanca. Reviste los pilares de los arcos laterales, a este y oeste, del interior de la Torre de las Damas.',
+  pie:'Todo sale de una circunferencia inscrita en un cuadrado y dividida en doce: dos hexágonos, cuatro triángulos equiláteros y una estrella de doce puntas. En las esquinas, una estrella de ocho completa el dibujo cuando se juntan cuatro módulos.',
+  pasos:[
+    {h:'La circunferencia en doce',t:'Parte de una circunferencia inscrita en un cuadrado y divídela en doce partes iguales. Para ello traza cuatro semicircunferencias de radio igual al de la circunferencia, con centro en los puntos medios de los lados del cuadrado.',c:'Es la división en doce de «Aprender a trazar», hecha desde los lados del cuadrado.',anim:'draw',
+     guia(){return ln([[-1,-1,1,-1],[1,-1,1,1],[1,1,-1,1],[-1,1,-1,-1]],'#2b2b2b',0.06)+ln([[-1,0,1,0],[0,-1,0,1]],RO,0.04,'0.3 0.2')+circ([[0,0]],1,'#2b4f73',0.06)+arcos(RO,0.07);}},
+    {h:'Dos hexágonos',t:'Dibuja dos hexágonos regulares: uniendo los puntos pares sale el primero, y con los impares, el segundo. Prolonga los lados de los hexágonos hasta los bordes del cuadrado.',c:'El primero tiene un vértice arriba (el punto 12); el segundo, uno a la derecha (el punto 3).',anim:'draw',
+     guia(){return ln([...une(pol(6,1,90),1),...une(pol(6,1,0),1)],RO,0.07)+an(rectas(h,[0,30,60,90,120,150],1),'#2b4f73',0.05);}},
+    {h:'Cuatro triángulos',t:'Dibuja cuatro triángulos equiláteros uniendo los puntos 1-5-9, 2-6-10, 3-7-11 y 4-8-12. Al superponerse forman una estrella.',c:'Los lados de los triángulos quedan a la mitad del radio del centro.',anim:'draw',
+     guia(){return an([0,1,2,3].flatMap(tri),RO,0.07);}},
+    {h:'La estrella de doce',t:'Traza una nueva estrella de doce puntas uniendo los puntos donde se cortan los lados de los triángulos, de cinco en cinco. Prolonga sus lados hasta las líneas trazadas en el paso 2.',c:'Los puntos están en la circunferencia de radio 1/√3 (0,58). Sus lados prolongados, dos a dos paralelos, son los brazos de la rueda.',anim:'draw',
+     guia(){return ln(une(pol(12,1/s3,0),5),'#1d4ed8',0.05)+an(rectas(dE,[15,45,75,105,135,165],h),RO,0.07);}},
+    {h:'Las esquinas',t:'Los trazos anteriores ya permiten dibujar la rueda central. Para completar las esquinas, dibuja circunferencias con centro en los vértices del cuadrado que pasen por los puntos donde se cortan las líneas del paso 2.',c:'Su radio es √2 · (1 − √3/2): unas 0,19 veces el radio.',anim:'fade',
+     guia(){return circ(ESQ,rc,RO,0.08);}},
+    {h:'Las estrellas de las esquinas',t:'Inscribe en cada circunferencia de las esquinas la estrella de ocho puntas formada por dos cuadrados. Prolonga los lados de cada estrella.',c:'Al juntarse cuatro módulos, cada cuarto de estrella completa una estrella de ocho: un sino negro.',anim:'draw',
+     guia(){return ln(ESQ.flatMap(c=>[...une(pol(4,rc,0,c),1),...une(pol(4,rc,45,c),1)]),'#1d4ed8',0.05)+an([...rectas(1-h,[45,135],1),...rectas((2-rc)/Math.SQRT2,[45,135],1)],RO,0.07);}},
+    {h:'El esquema lineal',t:'Remarca los trazos adecuados para completar el esquema lineal de la composición. Estas líneas son los ejes de las cintas.',c:'Los brazos de la rueda se doblan sobre los lados de los hexágonos; en las esquinas queda un cuarto de estrella de ocho.',tipo:'remarcar',vt:vtM},
+    {h:'La cinta',t:'También aquí la proporción entre el ancho de la cinta y el espacio entre cintas es de 1/3. Como en el alicatado anterior, traza paralelas a ambos lados de los ejes a una distancia igual a 1/8 de A.',c:'A es la distancia entre dos brazos paralelos de la estrella de doce: la cinta mide A/4.',tipo:'cinta',vt:vtM},
+    {h:'El entrelazado',t:'Remarca los trazos adecuados para conseguir el efecto de entrelazado, de modo que cada cinta pase por encima o por debajo al cruzarse con otra.',c:'En el pilar, un marco exterior completa los sinos de las esquinas; aquí se dibuja solo el módulo que se repite.',tipo:'cinta',entrelazar:true,vt:vtM},
+    {h:'Repetir el módulo',t:'El panel que reviste cada pilar está compuesto por cuatro ruedas enlazadas entre sí. El módulo se repite por traslación.',c:'Donde se juntan cuatro módulos aparece la estrella de ocho completa.',tipo:'color',vt:vtG},
+    {h:'Color',t:'El sino y los zafates están esmaltados en negro; las almendrillas y los candilejos, en verde turquesa. La lacería es una cinta blanca.',c:'Prueba otras combinaciones en la pestaña Colorear.',tipo:'color',vt:vtM}]});
+})();
+
 // Dibuja un paso del trazado de un patrón nuevo
 function dibujarPaso(p,n,render,lista){const PS=lista||p.pasos,s=PS[n-1],vt=s.vt||p.vt,[x0,y0,w,h]=vt,pad=w*0.03;
   // p.giro: el alicatado está girado en el muro; los pasos lo enseñan derecho, como en el libro (salvo s.sinGiro)
@@ -2845,7 +3003,42 @@ const PAT_EN={
    {h:'The corners',t:'Centered on each corner draw a quarter circle with a radius equal to the diagonal of one square. Join the ends of each arc with a 45° line.',c:'These lines close the points of the eight-pointed stars at the corners.'},
    {h:'Ink',t:'Ink only the strokes of the design: an eight-pointed star around each corner, a six-pointed one at the middle of each side and a four-pointed one in the center. The lines link into one continuous network.',c:'The points of the four-pointed star touch the central circle.'},
    {h:'The pieces',t:'Six different pieces appear: the eight-, six- and four-pointed stars, the large piece, the V piece and a small four-sided piece.',c:'The module repeats by translation. When it repeats, the eight- and four-pointed stars alternate their colors.'},
-   {h:'Strap and color',t:'Give the strap its width with two parallels to each line and alternate the crossings over and under. In the zaguán the six-pointed stars and the small pieces are blue and the large pieces, black. The eight-pointed stars alternate black and honey, and the four-pointed ones, honey and green.',c:'Try other combinations in the Color tab.'}]}
+   {h:'Strap and color',t:'Give the strap its width with two parallels to each line and alternate the crossings over and under. In the zaguán the six-pointed stars and the small pieces are blue and the large pieces, black. The eight-pointed stars alternate black and honey, and the four-pointed ones, honey and green.',c:'Try other combinations in the Color tab.'}]},
+ damas36:{nombre:'Green and blue straps',lugar:'Ladies’ Tower · Tile pattern A · El Partal',
+  nombres:['Large edge piece','Large piece by the wheel','Alfardón (long hexagon)','Central eight-pointed star','Edge piece','Corner octagon','Notched point','Arrowhead','Triangle','Almendrilla','Small triangle','Green strap','Blue strap'],
+  resumen:'Narrow green and blue straps that interlace on a white ground, forming octagons and eight-pointed stars. It fills two corners of the Ladies’ Tower, to the left and right of the entrance arch.',
+  pie:'Everything comes from a circle divided into eight and the two squares inscribed in it: their diagonals, their sides and the parallels through their crossings give the lines of the central wheel. The module is the square with sides parallel to the axes, and it repeats by translation.',
+  pasos:[
+   {h:'Two squares',t:'Start from a circle divided into eight equal parts. Joining every other division point gives two inscribed squares.',c:'It is the division into eight from “Learn to construct”. The square with sides parallel to the axes will be the module.'},
+   {h:'The star octagon',t:'The two squares cross at the eight vertices of an octagon. Join its opposite vertices to draw its diagonals, and draw the star octagon by joining every third vertex.',c:'The diagonals of the octagon are turned 22.5° from the axes.'},
+   {h:'Parallels to the sides',t:'Draw lines parallel to the sides of the two squares. They pass through the points where the diagonals of each square cut the sides of the other.',c:'They lie 0.71 from the center (√2/2), taking half the side of the module as the unit.'},
+   {h:'The bars',t:'Draw lines parallel to the diagonals of the squares. They pass through the points where the lines of the previous step cut the sides of the star octagon. Join their ends: you get four bars crossing at the center.',c:'Each bar is A = 2 · 0.121 wide: this measure will give the width of the strap.'},
+   {h:'More parallels',t:'Draw new parallels to the sides of the two squares. This time they pass through the points where the lines of steps 3 and 4 cross.',c:'They close the squares at the corners and the large octagon around the wheel.'},
+   {h:'Two circles',t:'Draw two circles concentric with the first one. The larger has radius AB; the smaller passes through the points of the eight-pointed star made by the bars of step 4.',c:'A is a corner of the module and B, the nearest crossing of the lines of step 5 on the diagonal.'},
+   {h:'The central eight-pointed star',t:'With the diagonals of the octagon (step 2), divide the larger circle into eight parts. Draw the two squares inscribed in it: they make the central eight-pointed star.',c:'This star is turned 22.5° from the squares of step 1.'},
+   {h:'The small star',t:'With the diagonals of the starting squares, divide the smaller circle into eight parts. Draw the inscribed star octagon and extend its sides to the lines of step 3.',c:'Its extended sides are the long lines that make the wheel.'},
+   {h:'All the lines',t:'With the lines drawn in the previous steps you already have all you need to get the main motif of the tile pattern.',c:'Check that none is missing: the next step only picks stretches of these lines.'},
+   {h:'The line scheme',t:'Ink the right strokes to finish the line scheme. These lines are the axes of the green and blue straps.',c:'In the center, eight long lines make a star; around it, the large octagon and, at the corners, squares.'},
+   {h:'The strap',t:'The ratio between chord (the width of the strap) and street (the space between straps) is 1/3. To get it, divide the distance A into eight equal parts and draw parallels to the axis at 1/8 of A on each side.',c:'A is the width of the bars of step 4: the strap measures A/4.'},
+   {h:'The knot effect',t:'Ink the stretches that finish the design and extend some sides so that some straps seem to pass over others, in an alternating rhythm.',c:'Each strap goes over at one crossing and under at the next.'},
+   {h:'Color',t:'Apply the color: green and blue for the straps and white for the pieces that make the ground.',c:'The large octagon, the star around the wheel and the corner diagonals are green; the rest of the straps, blue.'},
+   {h:'Repeat the module',t:'The module repeats by translation horizontally and vertically.',c:'On the wall the ends of the panel have variants (turned stars, squares linked in eights and rectangles) that are not drawn here.'}]},
+ damas37:{nombre:'Wheel of twelve',lugar:'Ladies’ Tower · Tile pattern B · El Partal',
+  nombres:['Sino (twelve-pointed star)','Zafate','Corner piece','Notched edge piece','Corner eight-pointed star','Edge hexagon','Candilejo','Almendrilla'],
+  resumen:'A twelve-armed knot wheel, rarer in the Alhambra than those of eight or sixteen. The sino and the zafates are black; the almendrillas and candilejos, turquoise green, and the strapwork is a white strap. It covers the piers of the side arches, east and west, inside the Ladies’ Tower.',
+  pie:'Everything comes from a circle inscribed in a square and divided into twelve: two hexagons, four equilateral triangles and a twelve-pointed star. At the corners, an eight-pointed star completes the design when four modules meet.',
+  pasos:[
+   {h:'The circle in twelve',t:'Start from a circle inscribed in a square and divide it into twelve equal parts. To do so, draw four semicircles with the same radius as the circle, centered on the midpoints of the sides of the square.',c:'It is the division into twelve from “Learn to construct”, done from the sides of the square.'},
+   {h:'Two hexagons',t:'Draw two regular hexagons: joining the even points gives the first, and the odd ones, the second. Extend the sides of the hexagons to the edges of the square.',c:'The first has a vertex at the top (point 12); the second, one on the right (point 3).'},
+   {h:'Four triangles',t:'Draw four equilateral triangles joining points 1-5-9, 2-6-10, 3-7-11 and 4-8-12. Overlapping, they make a star.',c:'The sides of the triangles lie half the radius from the center.'},
+   {h:'The twelve-pointed star',t:'Draw a new twelve-pointed star joining every fifth point where the sides of the triangles cross. Extend its sides to the lines drawn in step 2.',c:'The points lie on the circle of radius 1/√3 (0.58). Their extended sides, parallel in pairs, are the arms of the wheel.'},
+   {h:'The corners',t:'The previous strokes already let you draw the central wheel. To complete the corners, draw circles centered on the vertices of the square that pass through the points where the lines of step 2 cross.',c:'Their radius is √2 · (1 − √3/2): about 0.19 times the radius.'},
+   {h:'The corner stars',t:'Inscribe in each corner circle the eight-pointed star made of two squares. Extend the sides of each star.',c:'When four modules meet, each quarter star completes an eight-pointed star: a black sino.'},
+   {h:'The line scheme',t:'Ink the right strokes to complete the line scheme of the composition. These lines are the axes of the straps.',c:'The arms of the wheel bend on the sides of the hexagons; at the corners a quarter of an eight-pointed star is left.'},
+   {h:'The strap',t:'Here too the ratio between the width of the strap and the space between straps is 1/3. As in the previous pattern, draw parallels on both sides of the axes at a distance equal to 1/8 of A.',c:'A is the distance between two parallel arms of the twelve-pointed star: the strap measures A/4.'},
+   {h:'The interlacing',t:'Ink the right strokes to get the interlacing effect, so that each strap goes over or under when it crosses another.',c:'On the pier, an outer frame completes the sinos at the corners; here only the repeating module is drawn.'},
+   {h:'Repeat the module',t:'The panel on each pier is made of four wheels linked together. The module repeats by translation.',c:'Where four modules meet, the full eight-pointed star appears.'},
+   {h:'Color',t:'The sino and the zafates are glazed black; the almendrillas and candilejos, turquoise green. The strapwork is a white strap.',c:'Try other combinations in the Color tab.'}]},
 };
 if(EN){
   for(const [id,e] of Object.entries(PAT_EN)){const p=PATS[id];if(!p)continue;
@@ -2863,6 +3056,13 @@ const palNombre=n=>EN?(PAL_EN[n]||n):n;
 // antes de pasar al paso siguiente. No vienen de los libros: salen de la propia construcción (lo que tiene que cumplirse si está bien hecha).
 // COMPROBAR[id][paso] = [español, inglés]; COMPROBAR_B, para el segundo método (con cuadrícula).
 const COMPROBAR={
+  damas36:{1:['Los dos cuadrados son iguales y sus ocho vértices reparten la circunferencia en partes iguales.','The two squares are equal and their eight vertices divide the circle into equal parts.'],
+    4:['Las cuatro barras tienen el mismo ancho y se cruzan justo en el centro.','The four bars are equally wide and cross exactly at the center.'],
+    6:['La circunferencia menor pasa por las ocho puntas de la estrella que forman las barras.','The smaller circle passes through the eight points of the star made by the bars.'],
+    7:['Las ocho puntas de la estrella central están sobre las diagonales del octógono del paso 2.','The eight points of the central star lie on the diagonals of the octagon from step 2.']},
+  damas37:{1:['Las cuatro semicircunferencias pasan por el centro y cortan la circunferencia en doce puntos iguales.','The four semicircles pass through the center and cut the circle at twelve equal points.'],
+    3:['Los cuatro triángulos son iguales y sus lados quedan a la mitad del radio del centro.','The four triangles are equal and their sides lie half the radius from the center.'],
+    5:['Cada circunferencia de esquina pasa por el cruce de dos lados prolongados de los hexágonos.','Each corner circle passes through the crossing of two extended sides of the hexagons.']},
   lazo8:{1:['5 + 7 + 5 + 7 + 5 suman 29 cuadros por lado, y los nueve cuadrados de 5 × 5 quedan alineados en tres filas y tres columnas.','5 + 7 + 5 + 7 + 5 add up to 29 squares per side, and the nine 5 × 5 squares line up in three rows and three columns.'],
     2:['Cada punta del rombo sobresale un cuadro del cuadrado, justo en mitad de su lado.','Each tip of the rhombus sticks out one square beyond the square, right at the middle of its side.'],
     3:['Cada diagonal, al prolongarla, pasa justo por la punta de un rombo vecino.','Each diagonal, once extended, passes exactly through the tip of a neighboring rhombus.'],
@@ -3116,7 +3316,10 @@ document.addEventListener('input',e=>{
   const t=e.target;if(!editando&&t.closest&&t.closest('#tab-colorear')&&(t.dataset.t||['ribbon','outline','rw'].includes(t.id))){snap();editando=true;}
   if(t.dataset.t){st.cols[+t.dataset.t]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
   else if(t.id==='brushc'){st.brush=t.value;document.querySelectorAll('.sw').forEach(s=>{s.classList.remove('sel');s.setAttribute('aria-pressed','false');});}
-  else if(t.id==='ribbon'||t.id==='outline'){st[t.id]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
+  else if(t.id==='ribbon'||t.id==='outline'){st[t.id]=t.value;
+    // v2.20: en los alicatados con cintas de varios colores, «Color de la cinta» las pinta todas del mismo color
+    if(t.id==='ribbon'&&PAT.cintas)for(const i of PAT.cintas){st.cols[i]=t.value;const e=$('t'+i);if(e)e.value=t.value;}
+    $('svg').innerHTML=renderLazo(D,opts());}
   else if(t.id==='rw'){st.rw=+t.value;$('svg').innerHTML=renderLazo(D,opts());}
 });
 document.addEventListener('input',()=>guardar());
@@ -3361,11 +3564,12 @@ const yaMini=p=>{if(MINI[p.id])return true;try{return !!localStorage.getItem('mo
 function contarGaleria(){}
 // Galería (v2.8): en el orden del libro, y cada tarjeta con su página o número, los pasos, las piezas y la dificultad (con texto, no solo con color)
 function nPasos(p){return p.pasos?p.pasos.length:(window.LAZO_PASOS||6);}
+const tiposPieza=p=>p.nombres.length-(p.cintas?p.cintas.length:0); // v2.20: las cintas de color no cuentan como piezas
 function dificultad(p){const n=nPasos(p)+p.nombres.length/2;return n<=7?0:n<=11?1:2;}
 function datosPat(p){const d=dificultad(p),DIF=[tr('Fácil','Easy'),tr('Media','Medium'),tr('Difícil','Hard')];
   const ref=p.coleccion==='alhambra'?tr(`n.º ${p.num}`,`no. ${p.num}`)+(p.pags?tr(` · págs. ${String(p.pags).replace(/ a /,'–')}`,` · pp. ${String(p.pags).replace(/ (a|y) /,'–')}`):''):tr(`págs. ${String(p.pags).replace(/ a /,'–')}`,`pp. ${String(p.pags).replace(/ (a|y) /,'–')}`);
   const pt=`<span class="dif" aria-hidden="true">${'●'.repeat(d+1)}${'○'.repeat(2-d)}</span>`;
-  return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(p.nombres.length+' piezas',p.nombres.length+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
+  return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(tiposPieza(p)+' piezas',tiposPieza(p)+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
 const ordenLibro=p=>p.coleccion==='alhambra'?p.num:parseInt(p.pags)||0;
 function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${yaMini(p)?miniatura(p):`<span class="mini-hueco" data-mini="${p.id}"></span>`}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}${chipsHecho(p)}</span></button>`).join('');
   const huecos=[...$('galeria').querySelectorAll('[data-mini]')],sig=()=>{const h=huecos.shift();if(!h)return;if(h.isConnected){const t=document.createElement('span');t.innerHTML=miniatura(PATS[h.dataset.mini]);h.replaceWith(t.firstChild);}setTimeout(sig,0);};setTimeout(sig,30);}
@@ -3459,6 +3663,18 @@ function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')|
 // ---------- Medidas en papel en cada paso (v2.9): en cm, según el papel y los módulos elegidos en Teselar › En papel ----------
 // [texto, texto en inglés, medida en unidades del libro]; 'rw' = ancho de la cinta
 const MEDPASO={
+  damas36:{1:[['Radio de la circunferencia','Radius of the circle',Math.SQRT2],['Lado del cuadrado (el módulo)','Side of the square (the module)',2]],
+    3:[['Distancia de las paralelas al centro','Distance of the parallels from the center',Math.SQRT1_2]],
+    4:[['Distancia de cada recta al centro','Distance of each line from the center',3*Math.SQRT1_2-2],['Ancho de cada barra (A)','Width of each bar (A)',6*Math.SQRT1_2-4]],
+    5:[['Distancia de las paralelas al centro','Distance of the parallels from the center',5*Math.SQRT1_2-3],['Y de las otras','And of the others',3-3*Math.SQRT1_2]],
+    6:[['Radio AB','Radius AB',4*Math.SQRT2-5],['Radio de la circunferencia menor','Radius of the smaller circle',(3*Math.SQRT1_2-2)/Math.sin(Math.PI/8)]],
+    11:[['A (ancho de las barras del paso 4)','A (width of the bars of step 4)',6*Math.SQRT1_2-4],['Ancho de la cinta (A/4)','Strap width (A/4)','rw']]},
+  damas37:{1:[['Lado del cuadrado','Side of the square',2],['Radio de la circunferencia y de las semicircunferencias','Radius of the circle and of the semicircles',1]],
+    2:[['Lado de los hexágonos','Side of the hexagons',1],['Distancia de sus lados al centro','Distance of their sides from the center',Math.sqrt(3)/2]],
+    3:[['Distancia de los lados de los triángulos al centro','Distance of the sides of the triangles from the center',0.5]],
+    4:[['Puntos de la estrella, desde el centro','Points of the star, from the center',1/Math.sqrt(3)],['Cada recta, desde el centro','Each line, from the center',Math.cos(5*Math.PI/12)/Math.sqrt(3)]],
+    5:[['Radio de las circunferencias de las esquinas','Radius of the corner circles',Math.SQRT2*(1-Math.sqrt(3)/2)]],
+    8:[['A (entre dos brazos paralelos)','A (between two parallel arms)',2*Math.cos(5*Math.PI/12)/Math.sqrt(3)],['Ancho de la cinta (A/4)','Strap width (A/4)','rw']]},
   jambas31:{1:[['Lado del cuadrado','Side of the square',2],['Radio de la circunferencia','Radius of the circle',1]],
     3:[['Distancia de las rectas al centro','Distance of the lines from the center',1-Math.SQRT1_2]],
     5:[['Radio AB','Radius AB',Math.hypot(0.5,Math.SQRT1_2-0.5)],['Radio CD','Radius CD',Math.SQRT1_2-Math.hypot(0.5,Math.SQRT1_2-0.5)],['Radio EF','Radius EF',Math.hypot(0.5,Math.SQRT1_2-0.5)-(1-Math.SQRT1_2)]],
@@ -3825,7 +4041,9 @@ function tsConstruir(c,r,marcar,conColor,fondo){
 // ---- En papel (v2.8; v2.9 en cm, con la figura de partida, plantilla a tamaño real y medidas en Trazar)
 // Figura de partida de cada alicatado, en unidades del libro: [texto, texto en inglés, medida]. La primera es la principal.
 // FIG: cómo dibujarla en el papel sobre el primer módulo: circunferencias (r) y cuadrados (lado, giro respecto al módulo derecho), centrados en el módulo.
-const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
+const BASE={damas36:[['Lado del cuadrado (el módulo)','Side of the square (the module)',2],['Radio de la circunferencia inicial','Radius of the starting circle',Math.SQRT2]],
+  damas37:[['Lado del cuadrado','Side of the square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]],
+  lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
   zaguan:[['Lado de cada cuadro (el ancho de la cinta)','Side of each square (the strap width)',1]],
   toledanos:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
   cenador6:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
@@ -3842,7 +4060,7 @@ const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid s
   reyes29:[['Radio de la circunferencia (y lado del hexágono)','Radius of the circle (and side of the hexagon)',1]],
   reyes28:[['Lado del cuadrado de cada módulo','Side of the square of each module',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]],
   taca:[['Lado del cuadrado inicial','Side of the starting square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]]};
-const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1}],reyes28:[{lado:2},{r:1}],reyes29:[{r:1}],jambas31:[{r:1}],barca:[{r:1}],zaguan2:[{r:2}]}; // si el cuadrado de partida es el propio módulo, ya va resaltado
+const FIG={damas36:[{r:Math.SQRT2}],damas37:[{r:1}],felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1}],reyes28:[{lado:2},{r:1}],reyes29:[{r:1}],jambas31:[{r:1}],barca:[{r:1}],zaguan2:[{r:2}]}; // si el cuadrado de partida es el propio módulo, ya va resaltado
 const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
 const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
 // todas las medidas, en centímetros (internamente se guardan en milímetros)
@@ -4210,6 +4428,7 @@ velar();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.20",["🕌 Two new tile patterns from the Ladies’ Tower (El Partal): no. 36, with green and blue straps, and no. 37, a wheel of twelve","🎨 Two-color straps: in no. 36 each strap has its own color, and you can change it in Color","✅ No. 29 checked against the scanned book pages: the drawing and the colors match"]],
     ["2.19",["🧩 On paper › Actual-size template: if the paper is larger than A4, you can also get it split into A4 sheets to join, with a 1 cm overlap and each sheet’s row and column","🧪 Behind the scenes: each version is only published if every test passes"]],
     ["2.18",["✔️ Draw: “Check before you go on” in the construction steps, something you can verify with ruler or compass before moving on; also the piece count, the strap width and the crossings","🖋 Draw › Inking: which lines to go over in ink (thick, solid) and which pencil to rub out (thin, dashed); for straps, how to stop the one that goes under","🪜 A path to get started: seven tile patterns from easiest to hardest, with what each one teaches and the Learn constructions worth practicing first"]],
     ["2.17",["🔆 Draw: the screen no longer turns off while you draw (untick “Keep the screen on” to change it)","✅ Progress for every tile pattern: the gallery and its cover show “All steps done”, “Colored” and “Drawn on paper”, with icon and text","✍️ “I have drawn it on paper”: a checkbox on the last Draw step and in On paper; Home counts them and they show up in My drawings"]],
@@ -4251,6 +4470,7 @@ velar();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.20",["🕌 Dos alicatados nuevos de la Torre de las Damas (El Partal): el n.º 36, de cintas verdes y azules, y el n.º 37, una rueda de doce","🎨 Cintas de dos colores: en el n.º 36 cada cinta lleva su color y se puede cambiar en Colorear","✅ N.º 29 revisado con las páginas escaneadas del libro: el trazado y los colores coinciden"]],
     ["2.19",["🧩 En papel › Plantilla a tamaño real: si el papel es mayor que un A4, sale también troceada en hojas A4 para pegar, con 1 cm de solape y la fila y la columna de cada hoja","🧪 Por dentro: cada versión solo se publica si pasan todas las pruebas"]],
     ["2.18",["✔️ Trazar: «Comprueba antes de seguir» en los pasos de construcción, con algo que se puede mirar con la regla o el compás antes de avanzar; también el recuento de piezas, el ancho de la cinta y los cruces","🖋 Trazar › Entintar: qué líneas se repasan con tinta (gruesas y continuas) y qué lápiz se borra (fino y a rayas); en los de cinta, cómo cortar la que pasa por debajo","🪜 Recorrido para empezar: siete alicatados del más fácil al más difícil, con lo que enseña cada uno y las construcciones de Aprender que conviene practicar antes"]],
     ["2.17",["🔆 Trazar: la pantalla ya no se apaga mientras dibujas (se puede quitar con la casilla «Mantener la pantalla encendida»)","✅ Progreso de cada alicatado: la galería y su portada marcan «Trazado completo», «Coloreado» y «Dibujado en papel», con icono y texto","✍️ «Ya lo he dibujado en papel»: una casilla en el último paso de Trazar y en «En papel»; Inicio cuenta cuántos llevas y salen en Mis dibujos"]],

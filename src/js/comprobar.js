@@ -3,6 +3,13 @@
 // antes de pasar al paso siguiente. No vienen de los libros: salen de la propia construcción (lo que tiene que cumplirse si está bien hecha).
 // COMPROBAR[id][paso] = [español, inglés]; COMPROBAR_B, para el segundo método (con cuadrícula).
 const COMPROBAR={
+  damas36:{1:['Los dos cuadrados son iguales y sus ocho vértices reparten la circunferencia en partes iguales.','The two squares are equal and their eight vertices divide the circle into equal parts.'],
+    4:['Las cuatro barras tienen el mismo ancho y se cruzan justo en el centro.','The four bars are equally wide and cross exactly at the center.'],
+    6:['La circunferencia menor pasa por las ocho puntas de la estrella que forman las barras.','The smaller circle passes through the eight points of the star made by the bars.'],
+    7:['Las ocho puntas de la estrella central están sobre las diagonales del octógono del paso 2.','The eight points of the central star lie on the diagonals of the octagon from step 2.']},
+  damas37:{1:['Las cuatro semicircunferencias pasan por el centro y cortan la circunferencia en doce puntos iguales.','The four semicircles pass through the center and cut the circle at twelve equal points.'],
+    3:['Los cuatro triángulos son iguales y sus lados quedan a la mitad del radio del centro.','The four triangles are equal and their sides lie half the radius from the center.'],
+    5:['Cada circunferencia de esquina pasa por el cruce de dos lados prolongados de los hexágonos.','Each corner circle passes through the crossing of two extended sides of the hexagons.']},
   lazo8:{1:['5 + 7 + 5 + 7 + 5 suman 29 cuadros por lado, y los nueve cuadrados de 5 × 5 quedan alineados en tres filas y tres columnas.','5 + 7 + 5 + 7 + 5 add up to 29 squares per side, and the nine 5 × 5 squares line up in three rows and three columns.'],
     2:['Cada punta del rombo sobresale un cuadro del cuadrado, justo en mitad de su lado.','Each tip of the rhombus sticks out one square beyond the square, right at the middle of its side.'],
     3:['Cada diagonal, al prolongarla, pasa justo por la punta de un rombo vecino.','Each diagonal, once extended, passes exactly through the tip of a neighboring rhombus.'],

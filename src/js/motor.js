@@ -117,7 +117,7 @@ function zona(pat,prep,x0,y0,x1,y1){
     for(const [a,b] of pares){sig.set(v+':'+a,b);sig.set(v+':'+b,a);}
     if(l.length===4&&pares.length===2&&!libres.length)cruces.push(v);});
   // cintas: cadenas de aristas
-  const enCinta=new Array(E.length).fill(-1),S=[],recorr=[];
+  const enCinta=new Array(E.length).fill(-1),recorr=[];let S=[];
   const otro=(e,v)=>E[e][0]===v?E[e][1]:E[e][0];
   E.forEach((_,e0)=>{if(enCinta[e0]>=0)return;const id=S.length;
     // hacia atrás hasta un extremo libre (o hasta dar la vuelta si la cinta es cerrada)
@@ -149,8 +149,19 @@ function zona(pat,prep,x0,y0,x1,y1){
       const otra=recorr[lista[l.find(i=>i!==enc)][1]],k2=otra.vs.indexOf(c),a2=V[otra.vs[(k2-1+otra.vs.length)%otra.vs.length]],b2=V[otra.vs[(k2+1)%otra.vs.length]];
       let ex=b2[0]-a2[0],ey=b2[1]-a2[1];const L2=Math.hypot(ex,ey);ex/=L2;ey/=L2;
       const sn=Math.abs(dx*ey-dy*ex);
-      O.push([R(V[c][0]),R(V[c][1]),R(dx),R(dy),R(sn)]);}
+      O.push(pat.cinta?[R(V[c][0]),R(V[c][1]),R(dx),R(dy),R(sn),pat.cinta([V[c][0],V[c][1],b[0],b[1]])]:[R(V[c][0]),R(V[c][1]),R(dx),R(dy),R(sn)]);}
   }
+  // v2.20: cintas de varios colores. pat.cinta(tramo) dice de qué tipo es cada tramo (un índice de nombres/cols, como las piezas).
+  // Cada cinta lleva el tipo como tercer dato; si cambia a lo largo de la cinta (pasa en los bordes de la zona, donde las cintas
+  // se cortan), se parte en trozos del mismo tipo.
+  if(pat.cinta){const S2=[];
+    for(const [cl,pts] of S){const n=pts.length/2,m=cl?n:n-1,k=[];
+      for(let i=0;i<m;i++){const j=(i+1)%n;k.push(pat.cinta([pts[2*i],pts[2*i+1],pts[2*j],pts[2*j+1]]));}
+      if(k.every(v=>v===k[0])){S2.push([cl,pts,k[0]]);continue;}
+      const ini=cl?k.findIndex((v,i)=>v!==k[(i-1+m)%m]):0;let cur=[],cc=null;
+      for(let t=0;t<m;t++){const i=(ini+t)%m,j=(i+1)%n;if(k[i]!==cc){if(cur.length)S2.push([0,cur,cc]);cur=[pts[2*i],pts[2*i+1]];cc=k[i];}cur.push(pts[2*j],pts[2*j+1]);}
+      if(cur.length)S2.push([0,cur,cc]);}
+    S=S2;}
   return {F,S,O};
 }
 return {preparar,zona,area,centro,firma,teselar,fundir,cortar};

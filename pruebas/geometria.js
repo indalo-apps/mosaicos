@@ -139,6 +139,34 @@ const LIBRO={
       ok(p.TR.every(([x,y,X,Y])=>enRecta(x,y,X,Y)),'N.º 31: cada trazo está en una recta de los pasos 7, 8, 9 o 12');
       ok(cerca(w,2*CD*Math.cos(3*Math.PI/8),1e-12),'N.º 31: el ancho de los zafates es el de la estrella {16/6} y el lado de los cuadrados del paso 12');},
     simetria:{centro:p=>[p.k,p.k],estrella:16,giros:[[4,p=>1.9*p.k]]}},
+  damas36:{pasos:14,modulo:2,
+    extra(p){const {e,AB,rB,A,w}=p.G36,s2=Math.SQRT2;
+      // las rectas de la construcción: paralelas a los ejes y diagonales (pasos 2 a 5) y, giradas 22,5°, las de los pasos 7 y 8
+      const R=[],fam=(angs,ds)=>{for(const a of angs)for(const d of ds){const t=rad(a);R.push([-Math.sin(t),Math.cos(t),d],[-Math.sin(t),Math.cos(t),-d]);}};
+      fam([0,90],[e,s2-1,5/s2-3,2-s2,1/s2,3-3/s2]);fam([45,135],[e,s2-1,5/s2-3,2-s2,1/s2,3-3/s2,1,3/s2-1,2-1/s2]);fam([22.5,67.5,112.5,157.5],[e,4-5/s2]);
+      const enRecta=(x,y,X,Y)=>R.some(([a,b,d])=>Math.abs(a*x+b*y-d)<1e-9&&Math.abs(a*X+b*Y-d)<1e-9);
+      ok(p.T.every(([x,y,X,Y])=>enRecta(x,y,X,Y)),'N.º 36: cada trazo está en una recta de los pasos 2 a 8');
+      ok(p.modBase().every(([x,y,X,Y])=>Math.max(Math.abs(x),Math.abs(y),Math.abs(X),Math.abs(Y))<=1+1e-9),'N.º 36: el esquema no se sale del módulo');
+      ok(cerca(AB,Math.hypot(-1+(5/s2-3),1-(5/s2-3)),1e-12),'N.º 36: AB va de la esquina del módulo al cruce B de las rectas del paso 5');
+      ok(cerca(rB*Math.sin(rad(22.5)),e,1e-12),'N.º 36: la circunferencia menor pasa por las puntas de la estrella de las barras');
+      ok(cerca(A,2*e,1e-12)&&cerca(w,A/4,1e-12)&&cerca(p.rw,w*p.k,1e-3),'N.º 36: la cinta mide A/4 (cuerda y calle en proporción 1/3)');
+      // cada cinta, de un solo color dentro de lo que se ve; los cambios solo pueden estar en el borde de la zona calculada
+      const D=p.D,dentro=(x,y)=>x>=0&&x<=4*p.W&&y>=0&&y<=3*p.H;
+      ok(D.S.every(([cl,pts,c])=>c===11||c===12),'N.º 36: cada cinta es verde o azul');
+      const ext=new Map();for(const [cl,pts,c] of D.S)if(!cl)for(const i of [0,pts.length-2]){const k=pts[i].toFixed(2)+','+pts[i+1].toFixed(2);(ext.get(k)||ext.set(k,[]).get(k)).push(c);}
+      ok([...ext.entries()].every(([k,cs])=>new Set(cs).size===1||!dentro(...k.split(',').map(Number))),'N.º 36: las cintas no cambian de color a la vista');
+      const nv=D.S.filter(s=>s[2]===11).length,na=D.S.filter(s=>s[2]===12).length;ok(nv>0&&na>0,'N.º 36: hay cintas verdes y azules');},
+    simetria:{centro:p=>[p.k,p.k],estrella:8,giros:[[4,p=>0.95*p.k],[8,p=>0.4*p.k]]}},
+  damas37:{pasos:11,modulo:2,
+    extra(p){const {h,dE,rc,A,w}=p.G37,s3=Math.sqrt(3);
+      const R=[],fam=(angs,ds)=>{for(const a of angs)for(const d of ds){const t=rad(a);R.push([-Math.sin(t),Math.cos(t),d],[-Math.sin(t),Math.cos(t),-d]);}};
+      fam([0,30,60,90,120,150],[h]);fam([15,45,75,105,135,165],[dE]);fam([45,135],[1-h,(2-rc)/Math.SQRT2]);
+      const enRecta=(x,y,X,Y)=>R.some(([a,b,d])=>Math.abs(a*x+b*y-d)<1e-9&&Math.abs(a*X+b*Y-d)<1e-9);
+      ok(p.T.every(([x,y,X,Y])=>enRecta(x,y,X,Y)),'N.º 37: cada trazo está en un lado de los hexágonos, de la estrella de doce o de las estrellas de las esquinas');
+      ok(cerca(dE,Math.cos(rad(75))/s3,1e-12),'N.º 37: la estrella de doce une de cinco en cinco los puntos a 1/√3 del centro');
+      ok(cerca(Math.hypot(1-h,1-h),rc,1e-12),'N.º 37: la circunferencia de la esquina pasa por el cruce de los lados prolongados de los hexágonos');
+      ok(cerca(w,A/4,1e-12)&&cerca(p.rw,w*p.k,1e-3),'N.º 37: la cinta mide A/4 (cuerda y calle en proporción 1/3)');},
+    simetria:{centro:p=>[p.k,p.k],estrella:12,giros:[[4,p=>0.95*p.k],[12,p=>0.6*p.k]]}},
   zaguan2:{pasos:7,modulo:8},
   zaguan:{pasos:4},toledanos:{pasos:4},cenador6:{pasos:4},munecas17:{pasos:5},
   cubos:{pasos:4},alargadas:{pasos:5},alfardones:{pasos:5},octogonos:{pasos:4},
@@ -195,6 +223,8 @@ for(const [id,p] of Object.entries(PATRONES.P)){
 //  · y los colores que da el libro para las piezas cuyo nombre no lo dice (tabla COLORES).
 const COLORES={
   jambas31:[[/^Estrella de dieciséis|^Sino/,'azul'],[/^Candilejo|^Almendrilla/,'blanco']],
+  damas36:[[/^(?!Cinta)/,'blanco']],
+  damas37:[[/^Sino|^Zafate|^Estrella/,'negro'],[/^Almendrilla|^Candilejo/,'verde']],
   reyes28:[[/^Almendrilla/,'blanco']],
   reyes29:[[/^Sino/,'negro'],[/^Hexágono|^Almendrilla|^Pieza blanca/,'blanco']],
   taca:[[/^Sino/,'azul'],[/^Cruz|^Estrella de cuatro|^Pieza pequeña/,'blanco'],[/^Zafate/,['verde','melado','negro']]],
@@ -219,6 +249,8 @@ console.log('\nPiezas y colores');
 for(const [id,p] of Object.entries(PATRONES.P)){const antes=fallos,prep=MOTOR.preparar(p),pal=Object.values(p.paletas)[0];
   const T=p.nombres.map(()=>[]);for(const [k,Q] of prep.piezas)T[k].push({n:Q.length,r:entrantes(Q),a:Math.abs(areaS(Q))});
   p.nombres.forEach((nom,k)=>{const L=T[k],q=L[0];
+    if(p.cintas&&p.cintas.includes(k)){ok(L.length===0,`${id}: «${nom}» es una cinta, no una pieza`);const fam=familia(pal.cols[k]);
+      for(const [re,f] of PALABRA)if(re.test(nom))ok(fam===f,`${id}: «${nom}» va de ${f} en la primera paleta (va de ${fam}, ${pal.cols[k]})`);return;}
     ok(L.length>0,`${id}: hay piezas de «${nom}»`);if(!q)return;
     ok(L.every(x=>x.n===q.n&&x.r===q.r&&cerca(x.a,q.a,0.01*q.a)),`${id}: todas las piezas de «${nom}» son iguales`);
     const m=nom.match(/estrella de (cuatro|seis|ocho|doce)/i),N=m?NUM[m[1].toLowerCase()]:/^sino/i.test(nom)?8:0;

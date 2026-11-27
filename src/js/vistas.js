@@ -158,7 +158,9 @@ function tsConstruir(c,r,marcar,conColor,fondo){
 // ---- En papel (v2.8; v2.9 en cm, con la figura de partida, plantilla a tamaño real y medidas en Trazar)
 // Figura de partida de cada alicatado, en unidades del libro: [texto, texto en inglés, medida]. La primera es la principal.
 // FIG: cómo dibujarla en el papel sobre el primer módulo: circunferencias (r) y cuadrados (lado, giro respecto al módulo derecho), centrados en el módulo.
-const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
+const BASE={damas36:[['Lado del cuadrado (el módulo)','Side of the square (the module)',2],['Radio de la circunferencia inicial','Radius of the starting circle',Math.SQRT2]],
+  damas37:[['Lado del cuadrado','Side of the square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]],
+  lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid square',1]],
   zaguan:[['Lado de cada cuadro (el ancho de la cinta)','Side of each square (the strap width)',1]],
   toledanos:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
   cenador6:[['Lado de cada triángulo de la red','Side of each triangle in the grid',1]],
@@ -175,7 +177,7 @@ const BASE={lazo8:[['Lado de cada cuadro de la cuadrícula','Side of each grid s
   reyes29:[['Radio de la circunferencia (y lado del hexágono)','Radius of the circle (and side of the hexagon)',1]],
   reyes28:[['Lado del cuadrado de cada módulo','Side of the square of each module',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]],
   taca:[['Lado del cuadrado inicial','Side of the starting square',2],['Radio de la circunferencia inscrita','Radius of the inscribed circle',1]]};
-const FIG={felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1}],reyes28:[{lado:2},{r:1}],reyes29:[{r:1}],jambas31:[{r:1}],barca:[{r:1}],zaguan2:[{r:2}]}; // si el cuadrado de partida es el propio módulo, ya va resaltado
+const FIG={damas36:[{r:Math.SQRT2}],damas37:[{r:1}],felipe:[{r:Math.SQRT2}],arrayanes:[{r:1}],taca:[{lado:2,giro:45},{r:1}],reyes28:[{lado:2},{r:1}],reyes29:[{r:1}],jambas31:[{r:1}],barca:[{r:1}],zaguan2:[{r:2}]}; // si el cuadrado de partida es el propio módulo, ya va resaltado
 const PAPEL={A5:[148,210],A4:[210,297],A3:[297,420]},PPK='laceria-papel-v1';
 const PP=Object.assign({p:'A4',w:210,h:297,ori:null,m:15},store.get(PPK,{}));
 // todas las medidas, en centímetros (internamente se guardan en milímetros)

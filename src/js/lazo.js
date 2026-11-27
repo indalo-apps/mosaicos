@@ -49,9 +49,11 @@ function renderLazo(D, o) {
   const ribbonAttrs = `fill="none" stroke-linejoin="miter" stroke-miterlimit="8"`;
   s += `<g pointer-events="none">`;
   if (o.ow > 0) paths.forEach(d => { s += `<path d="${d}" ${ribbonAttrs} stroke="${o.outline}" stroke-width="${f(W)}"/>`; });
-  paths.forEach(d => { s += `<path d="${d}" ${ribbonAttrs} stroke="${o.ribbon}" stroke-width="${f(o.rw)}"/>`; });
+  // v2.20: una cinta con tipo (D.S[i][2]) toma el color de ese tipo; si no, el de la cinta
+  const colCinta = c => (c != null && o.cols && o.cols[c]) || o.ribbon;
+  paths.forEach((d, i) => { s += `<path d="${d}" ${ribbonAttrs} stroke="${colCinta(D.S[i][2])}" stroke-width="${f(o.rw)}"/>`; });
   if (o.interlace) {
-    D.O.forEach(([x, y, dx, dy, sn]) => {
+    D.O.forEach(([x, y, dx, dy, sn, cc]) => {
       if (x < cb.x0 - 2 || x > cb.x0 + cb.w + 2 || y < cb.y0 - 2 || y > cb.y0 + cb.h + 2) return;
       const cs = Math.sqrt(Math.max(0, 1 - sn * sn));
       const L = W / sn + W * cs / sn + 0.02;
@@ -59,7 +61,7 @@ function renderLazo(D, o) {
       if (o.ow > 0) s += `<line ${a} stroke="${o.outline}" stroke-width="${f(W)}"/>`;
       // la cinta clara un poco más larga que su contorno tapa la costura del extremo
       const e = 0.03, a2 = `x1="${f(x - dx * (L / 2 + e))}" y1="${f(y - dy * (L / 2 + e))}" x2="${f(x + dx * (L / 2 + e))}" y2="${f(y + dy * (L / 2 + e))}"`;
-      s += `<line ${a2} stroke="${o.ribbon}" stroke-width="${f(o.rw)}"/>`;
+      s += `<line ${a2} stroke="${colCinta(cc)}" stroke-width="${f(o.rw)}"/>`;
     });
   }
   s += `</g>`;

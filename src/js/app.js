@@ -187,7 +187,10 @@ document.addEventListener('input',e=>{
   const t=e.target;if(!editando&&t.closest&&t.closest('#tab-colorear')&&(t.dataset.t||['ribbon','outline','rw'].includes(t.id))){snap();editando=true;}
   if(t.dataset.t){st.cols[+t.dataset.t]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
   else if(t.id==='brushc'){st.brush=t.value;document.querySelectorAll('.sw').forEach(s=>{s.classList.remove('sel');s.setAttribute('aria-pressed','false');});}
-  else if(t.id==='ribbon'||t.id==='outline'){st[t.id]=t.value;$('svg').innerHTML=renderLazo(D,opts());}
+  else if(t.id==='ribbon'||t.id==='outline'){st[t.id]=t.value;
+    // v2.20: en los alicatados con cintas de varios colores, «Color de la cinta» las pinta todas del mismo color
+    if(t.id==='ribbon'&&PAT.cintas)for(const i of PAT.cintas){st.cols[i]=t.value;const e=$('t'+i);if(e)e.value=t.value;}
+    $('svg').innerHTML=renderLazo(D,opts());}
   else if(t.id==='rw'){st.rw=+t.value;$('svg').innerHTML=renderLazo(D,opts());}
 });
 document.addEventListener('input',()=>guardar());
@@ -432,11 +435,12 @@ const yaMini=p=>{if(MINI[p.id])return true;try{return !!localStorage.getItem('mo
 function contarGaleria(){}
 // Galería (v2.8): en el orden del libro, y cada tarjeta con su página o número, los pasos, las piezas y la dificultad (con texto, no solo con color)
 function nPasos(p){return p.pasos?p.pasos.length:(window.LAZO_PASOS||6);}
+const tiposPieza=p=>p.nombres.length-(p.cintas?p.cintas.length:0); // v2.20: las cintas de color no cuentan como piezas
 function dificultad(p){const n=nPasos(p)+p.nombres.length/2;return n<=7?0:n<=11?1:2;}
 function datosPat(p){const d=dificultad(p),DIF=[tr('Fácil','Easy'),tr('Media','Medium'),tr('Difícil','Hard')];
   const ref=p.coleccion==='alhambra'?tr(`n.º ${p.num}`,`no. ${p.num}`)+(p.pags?tr(` · págs. ${String(p.pags).replace(/ a /,'–')}`,` · pp. ${String(p.pags).replace(/ (a|y) /,'–')}`):''):tr(`págs. ${String(p.pags).replace(/ a /,'–')}`,`pp. ${String(p.pags).replace(/ (a|y) /,'–')}`);
   const pt=`<span class="dif" aria-hidden="true">${'●'.repeat(d+1)}${'○'.repeat(2-d)}</span>`;
-  return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(p.nombres.length+' piezas',p.nombres.length+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
+  return `<span class="pat-datos"><span>${icono('libro')}${ref}</span><span>${icono('pasos')}${tr(nPasos(p)+' pasos',nPasos(p)+' steps')}</span><span>${icono('piezas')}${tr(tiposPieza(p)+' piezas',tiposPieza(p)+' pieces')}</span><span>${pt}${DIF[d]}</span></span>`;}
 const ordenLibro=p=>p.coleccion==='alhambra'?p.num:parseInt(p.pags)||0;
 function pintarGaleria(col){contarGaleria();$('galeria').innerHTML=Object.values(PATS).filter(p=>!col||(p.coleccion||'alcazar')===col).sort((a,b)=>ordenLibro(a)-ordenLibro(b)).map(p=>`<button class="pat${p===PAT?' on':''}" data-pat="${p.id}" aria-pressed="${p===PAT}">${yaMini(p)?miniatura(p):`<span class="mini-hueco" data-mini="${p.id}"></span>`}<span><b>${p.nombre}</b><small>${p.lugar}</small>${datosPat(p)}${chipsHecho(p)}</span></button>`).join('');
   const huecos=[...$('galeria').querySelectorAll('[data-mini]')],sig=()=>{const h=huecos.shift();if(!h)return;if(h.isConnected){const t=document.createElement('span');t.innerHTML=miniatura(PATS[h.dataset.mini]);h.replaceWith(t.firstChild);}setTimeout(sig,0);};setTimeout(sig,30);}
@@ -530,6 +534,18 @@ function marcarPaso(){const raiz=document.querySelector('#tzsvg .capas>.nuevo')|
 // ---------- Medidas en papel en cada paso (v2.9): en cm, según el papel y los módulos elegidos en Teselar › En papel ----------
 // [texto, texto en inglés, medida en unidades del libro]; 'rw' = ancho de la cinta
 const MEDPASO={
+  damas36:{1:[['Radio de la circunferencia','Radius of the circle',Math.SQRT2],['Lado del cuadrado (el módulo)','Side of the square (the module)',2]],
+    3:[['Distancia de las paralelas al centro','Distance of the parallels from the center',Math.SQRT1_2]],
+    4:[['Distancia de cada recta al centro','Distance of each line from the center',3*Math.SQRT1_2-2],['Ancho de cada barra (A)','Width of each bar (A)',6*Math.SQRT1_2-4]],
+    5:[['Distancia de las paralelas al centro','Distance of the parallels from the center',5*Math.SQRT1_2-3],['Y de las otras','And of the others',3-3*Math.SQRT1_2]],
+    6:[['Radio AB','Radius AB',4*Math.SQRT2-5],['Radio de la circunferencia menor','Radius of the smaller circle',(3*Math.SQRT1_2-2)/Math.sin(Math.PI/8)]],
+    11:[['A (ancho de las barras del paso 4)','A (width of the bars of step 4)',6*Math.SQRT1_2-4],['Ancho de la cinta (A/4)','Strap width (A/4)','rw']]},
+  damas37:{1:[['Lado del cuadrado','Side of the square',2],['Radio de la circunferencia y de las semicircunferencias','Radius of the circle and of the semicircles',1]],
+    2:[['Lado de los hexágonos','Side of the hexagons',1],['Distancia de sus lados al centro','Distance of their sides from the center',Math.sqrt(3)/2]],
+    3:[['Distancia de los lados de los triángulos al centro','Distance of the sides of the triangles from the center',0.5]],
+    4:[['Puntos de la estrella, desde el centro','Points of the star, from the center',1/Math.sqrt(3)],['Cada recta, desde el centro','Each line, from the center',Math.cos(5*Math.PI/12)/Math.sqrt(3)]],
+    5:[['Radio de las circunferencias de las esquinas','Radius of the corner circles',Math.SQRT2*(1-Math.sqrt(3)/2)]],
+    8:[['A (entre dos brazos paralelos)','A (between two parallel arms)',2*Math.cos(5*Math.PI/12)/Math.sqrt(3)],['Ancho de la cinta (A/4)','Strap width (A/4)','rw']]},
   jambas31:{1:[['Lado del cuadrado','Side of the square',2],['Radio de la circunferencia','Radius of the circle',1]],
     3:[['Distancia de las rectas al centro','Distance of the lines from the center',1-Math.SQRT1_2]],
     5:[['Radio AB','Radius AB',Math.hypot(0.5,Math.SQRT1_2-0.5)],['Radio CD','Radius CD',Math.SQRT1_2-Math.hypot(0.5,Math.SQRT1_2-0.5)],['Radio EF','Radius EF',Math.hypot(0.5,Math.SQRT1_2-0.5)-(1-Math.SQRT1_2)]],

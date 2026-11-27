@@ -16,6 +16,8 @@ const U='http://localhost:8765/index.html',CAP=process.env.CAPTURAS;
     const malas=new Map();
     for(const r of rutas){await pg.goto(U+r);await pg.waitForTimeout(r.startsWith('#a/')?250:150);
       if(CAP&&(r.endsWith('trazado')||!r.startsWith('#a/')))await pg.screenshot({path:`${CAP}/${loc}_${tema}_${ancho}_${r.replace(/\W/g,'_')}.png`});
+      // v2.21: en GitHub el equipo es más lento y axe medía el contraste a mitad de un fundido de entrada (#aprender): se esperan las animaciones finitas
+      await pg.evaluate(()=>Promise.race([Promise.all(document.getAnimations().filter(a=>{const t=a.effect&&a.effect.getComputedTiming();return t&&isFinite(t.endTime);}).map(a=>a.finished.catch(()=>{}))),new Promise(r=>setTimeout(r,3000))]));
       await pg.evaluate(AX);const v=await pg.evaluate(async()=>(await axe.run(document,{runOnly:['wcag2a','wcag2aa','best-practice']})).violations.map(v=>v.id+'('+v.nodes.length+')'));
       for(const x of v)malas.set(x,(malas.get(x)||[]).concat(r));}
     const ok=!malas.size&&!errs.length;if(!ok)fallos++;

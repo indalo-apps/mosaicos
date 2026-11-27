@@ -11,7 +11,7 @@ const U='http://localhost:8765/index.html',CAP=process.env.CAPTURAS;
     const pg=await b.newPage({locale:loc,colorScheme:tema,viewport:{width:ancho,height:900}});const errs=[];pg.on('pageerror',e=>errs.push(e.message));
     await pg.goto(U+'#inicio');await pg.waitForTimeout(400);
     const {pats,cons}=await pg.evaluate(()=>({pats:Object.keys(PATS),cons:CONS.L.map(c=>c.id)}));
-    const rutas=['#inicio','#aprender','#alicatados','#alhambra','#mis',...cons.slice(0,4).map(c=>'#c/'+c),
+    const rutas=['#inicio','#aprender','#alicatados','#alhambra','#mis','#recorrido',...cons.slice(0,4).map(c=>'#c/'+c),
       ...pats.flatMap(p=>['trazado','teselar','colorear','imprimir'].map(e=>`#a/${p}/${e}`))];
     const malas=new Map();
     for(const r of rutas){await pg.goto(U+r);await pg.waitForTimeout(r.startsWith('#a/')?250:150);

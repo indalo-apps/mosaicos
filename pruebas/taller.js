@@ -4,6 +4,7 @@
 //  · Pantalla encendida: la casilla solo sale si el navegador puede, y se recuerda
 //  · «Comprueba antes de seguir» (v2.18): cada comprobación escrita apunta a un paso que existe; sale en el paso y no en el objetivo
 //  · «Entintar» (v2.18): todos los alicatados enseñan la tinta (gruesa) y el lápiz (a rayas), y cambiar de paso vuelve al trazado
+//  · Plantilla en hojas A4 (v2.19): solo se ofrece si el papel no cabe en un A4, y el PDF trae tantas páginas A4 como hojas anuncia
 //  · «Recorrido para empezar» (v2.18): sus paradas y sus construcciones existen, y marca la siguiente
 // Uso: node pruebas/con-servidor.js pruebas/taller.js       (CAPTURAS=/tmp/capturas para guardar imágenes)
 const {chromium}=require('playwright');
@@ -81,5 +82,12 @@ let mal=0,bien=0;const ok=(c,msg)=>{if(c)bien++;else{mal++;console.log('  ✗',m
     ok(reco.n===7&&reco.sig===0&&!reco.rotos.length,`${loc}: el recorrido tiene 7 paradas, marca la primera como siguiente y no tiene enlaces rotos (${JSON.stringify(reco)})`);
     ok((await pg.locator('#lista-recorrido>li.sig').innerText()).includes(EN?'Next':'Siguiente'),`${loc}: la parada siguiente lo dice con texto`);
     if(CAP)await pg.screenshot({path:`${CAP}/taller_${loc}_recorrido.png`,fullPage:true});
+    // ---- Plantilla en hojas A4
+    await pg.evaluate(()=>localStorage.setItem('laceria-papel-v1',JSON.stringify({p:'A4',ori:'v',m:15})));await ir('#inicio');await pg.reload();await ir('#a/taca/imprimir');
+    ok(await pg.locator('#pp-hojas').isHidden(),`${loc}: con un A4 no se ofrecen hojas para pegar`);
+    await pg.evaluate(()=>localStorage.setItem('laceria-papel-v1',JSON.stringify({p:'med',ori:'v',m:30,w:500,h:700})));await ir('#inicio');await pg.reload();await ir('#a/taca/imprimir');
+    const hj=await pg.evaluate(async()=>{const H=hojasA4Actual(),bl=await plantillaHojas(),t=await bl.text();return {n:H.c*H.f,pag:(t.match(/\/Type \/Page /g)||[]).length,a4:(t.match(/MediaBox \[0 0 (841\.89 595\.28|595\.28 841\.89)\]/g)||[]).length,cubre:H.c*(H.uw-10)+10>=500&&H.f*(H.uh-10)+10>=700,boton:document.getElementById('pp-hojas').textContent};});
+    ok(hj.n===8&&hj.pag===8&&hj.a4===8&&hj.cubre&&hj.boton.includes('8'),`${loc}: 50 × 70 cm sale en 8 hojas A4 que cubren todo el papel (${JSON.stringify(hj)})`);
+    await pg.evaluate(()=>localStorage.removeItem('laceria-papel-v1'));
     await pg.close();}
   await b.close();console.log(`${mal?'✗':'✓'} taller: ${bien} bien, ${mal} mal`);process.exit(mal?1:0);})();

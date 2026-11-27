@@ -1,0 +1,51 @@
+# Cada vez que se sube algo a main: comprueba que index.html está al día con src/, pasa todas las pruebas
+# (geometría de los libros, navegador con axe, usabilidad en el móvil, cotas de «En papel» y taller)
+# y, solo si todo sale bien, publica la app en GitHub Pages. Si algo falla, la web sigue con la versión anterior.
+name: Probar y publicar
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Instalar Playwright y axe
+        run: npm ci
+      - name: Chrome para las pruebas
+        run: |
+          if [ -x /usr/bin/google-chrome ]; then echo "CHROME=/usr/bin/google-chrome" >> "$GITHUB_ENV"
+          else npx playwright install --with-deps chromium && echo "CHROME=$(node -e "console.log(require('playwright').chromium.executablePath())")" >> "$GITHUB_ENV"; fi
+      - name: index.html al día con src/, geometría, navegador, usabilidad, cotas y taller
+        run: npm test
+  publicar:
+    needs: probar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url || steps.despliegue2.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Quitar lo que no hace falta en la web
+        run: rm -rf src herramientas pruebas .github package.json package-lock.json
+      - uses: actions/upload-pages-artifact@v4
+        with: { path: . }
+      - id: despliegue
+        uses: actions/deploy-pages@v4
+        continue-on-error: true  # a veces GitHub aún no encuentra el paquete recién subido
+      - name: Esperar y volver a intentarlo
+        if: steps.despliegue.outcome == 'failure'
+        run: sleep 30
+      - id: despliegue2
+        if: steps.despliegue.outcome == 'failure'
+        uses: actions/deploy-pages@v4

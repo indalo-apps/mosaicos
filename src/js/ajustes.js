@@ -4,6 +4,7 @@
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.19",["🧩 On paper › Actual-size template: if the paper is larger than A4, you can also get it split into A4 sheets to join, with a 1 cm overlap and each sheet’s row and column","🧪 Behind the scenes: each version is only published if every test passes"]],
     ["2.18",["✔️ Draw: “Check before you go on” in the construction steps, something you can verify with ruler or compass before moving on; also the piece count, the strap width and the crossings","🖋 Draw › Inking: which lines to go over in ink (thick, solid) and which pencil to rub out (thin, dashed); for straps, how to stop the one that goes under","🪜 A path to get started: seven tile patterns from easiest to hardest, with what each one teaches and the Learn constructions worth practicing first"]],
     ["2.17",["🔆 Draw: the screen no longer turns off while you draw (untick “Keep the screen on” to change it)","✅ Progress for every tile pattern: the gallery and its cover show “All steps done”, “Colored” and “Drawn on paper”, with icon and text","✍️ “I have drawn it on paper”: a checkbox on the last Draw step and in On paper; Home counts them and they show up in My drawings"]],
     ["2.16",["📏 On paper: the measurements no longer overlap; each one goes where it fits and, if the figure is very small, a short line points to it"]],
@@ -44,6 +45,7 @@
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.19",["🧩 En papel › Plantilla a tamaño real: si el papel es mayor que un A4, sale también troceada en hojas A4 para pegar, con 1 cm de solape y la fila y la columna de cada hoja","🧪 Por dentro: cada versión solo se publica si pasan todas las pruebas"]],
     ["2.18",["✔️ Trazar: «Comprueba antes de seguir» en los pasos de construcción, con algo que se puede mirar con la regla o el compás antes de avanzar; también el recuento de piezas, el ancho de la cinta y los cruces","🖋 Trazar › Entintar: qué líneas se repasan con tinta (gruesas y continuas) y qué lápiz se borra (fino y a rayas); en los de cinta, cómo cortar la que pasa por debajo","🪜 Recorrido para empezar: siete alicatados del más fácil al más difícil, con lo que enseña cada uno y las construcciones de Aprender que conviene practicar antes"]],
     ["2.17",["🔆 Trazar: la pantalla ya no se apaga mientras dibujas (se puede quitar con la casilla «Mantener la pantalla encendida»)","✅ Progreso de cada alicatado: la galería y su portada marcan «Trazado completo», «Coloreado» y «Dibujado en papel», con icono y texto","✍️ «Ya lo he dibujado en papel»: una casilla en el último paso de Trazar y en «En papel»; Inicio cuenta cuántos llevas y salen en Mis dibujos"]],
     ["2.16",["📏 «En papel»: las medidas ya no se montan unas sobre otras; cada una va donde cabe y, si la figura es muy pequeña, una rayita la señala"]],

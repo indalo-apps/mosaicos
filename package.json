@@ -6,9 +6,11 @@
     "construir": "node herramientas/construir.js",
     "geometria": "node pruebas/geometria.js",
     "navegador": "node pruebas/con-servidor.js pruebas/navegador.js",
-    "test": "node herramientas/construir.js --ver && node pruebas/geometria.js && node pruebas/con-servidor.js pruebas/navegador.js pruebas/usabilidad.js pruebas/cotas.js",
+    "test": "node herramientas/construir.js --ver && node pruebas/geometria.js && node pruebas/con-servidor.js pruebas/navegador.js pruebas/usabilidad.js pruebas/cotas.js pruebas/taller.js",
     "cotas": "node pruebas/con-servidor.js pruebas/cotas.js",
-    "usabilidad": "node pruebas/con-servidor.js pruebas/usabilidad.js"
+    "usabilidad": "node pruebas/con-servidor.js pruebas/usabilidad.js",
+    "taller": "node pruebas/con-servidor.js pruebas/taller.js",
+    "version": "node herramientas/version.js"
   },
   "devDependencies": {
     "axe-core": "^4.10.0",

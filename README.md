@@ -53,9 +53,15 @@ Sigue la «Guía común para nuestras apps» (proyecto APPS de Claude): se insta
 
 ## Cómo sacar una versión nueva
 
-1. Subir el número en `<meta name="app-version">` (index.html) y en `CACHE` (sw.js).
-2. Añadir sus novedades arriba del todo en `NOVEDADES` (index.html).
-3. El mensaje del commit empieza por la versión: `v1.2: …`.
+Desde la 2.19, en un paso:
+
+```
+node herramientas/version.js 2.20 --es "✨ Novedad" "🔧 Otra" --en "✨ What’s new" "🔧 Another"
+```
+
+Cambia `<meta name="app-version">` (src/plantilla.html), `CACHE` (sw.js) y `NOVEDADES` (src/js/ajustes.js, en los dos idiomas) y reconstruye `index.html`. El mensaje del commit empieza por la versión: `v2.20: …`.
+
+Al subir a `main`, GitHub Actions (`.github/workflows/publicar.yml`) pasa todas las pruebas y solo publica si salen bien; si alguna falla, la web sigue con la versión anterior. En Settings › Pages la fuente debe ser «GitHub Actions».
 
 La app comprueba la versión al abrirse, al volver a ella y cada 90 segundos, y se recarga sola cuando no hay ninguna ventana abierta. Los datos se guardan con claves `laceria-…` (se mantienen de la 1.x). El coloreado, el paso del trazado y lo repasado a mano se guardan en el móvil, así que no se pierden al actualizar.
 
@@ -82,10 +88,24 @@ node herramientas/construir.js        # junta las partes en index.html
 node pruebas/geometria.js             # más de 1.000 comprobaciones de los alicatados con las medidas del libro
 node pruebas/con-servidor.js pruebas/navegador.js   # todas las pantallas, accesibilidad y errores (necesita Playwright y axe-core)
 node pruebas/con-servidor.js pruebas/cotas.js       # cotas de «En papel» (desde 2.16): ningún texto de medida pisa a otro ni se sale
+node pruebas/con-servidor.js pruebas/taller.js      # el taller (desde 2.17): progreso, pantalla encendida, comprobaciones, tinta, recorrido y hojas A4
 node pruebas/con-servidor.js pruebas/usabilidad.js  # usabilidad en el móvil (desde 2.15): lo fijo arriba, Siguiente, cabecera, 44 px, desbordes, Mis dibujos…
 ```
 
 `npm test` hace todo eso y además avisa si `index.html` no está al día con `src/`. En el móvil, `src/js/movil.js` mide lo que se queda fijo arriba y coloca los botones de Colorear (v2.15).
+
+## El taller (2.17 a 2.19)
+
+Lo que acompaña mientras se dibuja en papel:
+
+- **Pantalla encendida** en Trazar (`src/js/taller.js`, Wake Lock; se puede quitar con su casilla).
+- **Progreso** de cada alicatado (`src/js/progreso.js`): trazado completo, coloreado y dibujado en papel, con icono y texto. Se guarda en `mosaicos-hecho-v1`.
+- **«Comprueba antes de seguir»** (`src/js/comprobar.js`): una comprobación con regla o compás en los pasos de construcción (`COMPROBAR`), más el recuento de piezas, el ancho de la cinta y los cruces. **No vienen de los libros**: salen de la propia construcción.
+- **Entintar** (`PATRONES.dibujarTinta`): el dibujo definitivo en trazo grueso y el lápiz que se borra, fino y a rayas.
+- **Recorrido para empezar** (`#recorrido`, `RECORRIDO` en `src/js/vistas.js`): siete alicatados del más fácil al más difícil.
+- **Plantilla en hojas A4** (`plantillaHojas`): la plantilla a tamaño real troceada para papeles mayores que la impresora, con 1 cm de solape.
+
+Arranque: medido el 27-11-2026 con un procesador cuatro veces más lento, la app abre en unos 0,4 s (1,1 s la primera vez, por calcular las portadas, que luego quedan guardadas). Cargar cada alicatado por separado ahorraría poco y obligaría a dejar el archivo único, así que no se ha hecho.
 
 ## Fuentes
 

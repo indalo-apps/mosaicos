@@ -7,7 +7,7 @@
   Mosaicos · Lacería con regla y compás (Real Alcázar de Sevilla y la Alhambra)
   © 2026 Carlos Moreno Otto. Todos los derechos reservados.
 -->
-<meta name="app-version" content="2.18">
+<meta name="app-version" content="2.19">
 <meta name="theme-color" content="#1f5f5b" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15191a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -825,7 +825,8 @@ const IK = (function(){
         <p class="hint" style="margin:0 0 6px">Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.</p>
         <div class="row"><label for="pp-dib">Con el dibujo</label><input type="checkbox" id="pp-dib" checked></div>
         <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
-        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
+        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button><button id="pp-hojas" hidden>🧩 En hojas A4 para pegar</button></div>
+        <p class="hint" id="pp-hojas-nota" style="margin:6px 0 0" hidden></p>
         <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
         <div class="row hecho-fila"><label for="pp-hecho">Ya lo he dibujado en papel</label><input type="checkbox" id="pp-hecho"></div>
       </section>
@@ -3942,6 +3943,49 @@ async function plantillaPdf(){const R=tsConstruir(EX.c,EX.r,true,false),G=calcPa
   const jpg=await new Promise((ok,mal)=>cv.toBlob(b=>b?ok(b):mal(new Error('jpg')),'image/jpeg',0.92));
   const bytes=new Uint8Array(await jpg.arrayBuffer());cv.width=cv.height=1;
   return pdfJpeg(bytes,W,H,G.PW*72/25.4,G.PH*72/25.4);}
+// v2.19: la misma plantilla, troceada en hojas A4 para pegar (papeles mayores que la impresora).
+// Cada hoja lleva 1 cm de margen sin imprimir y se monta 1 cm sobre la siguiente; se elige la orientación del A4 que gasta menos hojas.
+const HOJA={m:10,sol:10};
+function hojasA4(G){if(!G||!G.ok)return null;if(Math.min(G.PW,G.PH)<=210.5&&Math.max(G.PW,G.PH)<=297.5)return null;let mejor=null;
+  for(const [hw,hh] of [[210,297],[297,210]]){const uw=hw-2*HOJA.m,uh=hh-2*HOJA.m,c=Math.max(1,Math.ceil((G.PW-HOJA.sol)/(uw-HOJA.sol))),f=Math.max(1,Math.ceil((G.PH-HOJA.sol)/(uh-HOJA.sol)));
+    if(!mejor||c*f<mejor.c*mejor.f)mejor={hw,hh,uw,uh,c,f};}
+  return mejor.c*mejor.f>1?mejor:null;}
+window.hojasA4Actual=()=>{const R=tsConstruir(EX.c,EX.r,true,false);return hojasA4(calcPapel(R));};window.plantillaHojas=()=>plantillaHojas();
+function pdfPaginas(P){ // un PDF con una imagen JPEG por página
+  const enc=new TextEncoder(),partes=[],off=[];let pos=0;const n=P.length;
+  const add=b=>{const u=typeof b==='string'?enc.encode(b):b;partes.push(u);pos+=u.length;};
+  const obj=(k,cuerpo,flujo)=>{off[k]=pos;add(`${k} 0 obj\n${cuerpo}\n`);if(flujo){add('stream\n');add(flujo);add('\nendstream\n');}add('endobj\n');};
+  add('%PDF-1.4\n%\xe2\xe3\xcf\xd3\n');
+  obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2,`<< /Type /Pages /Kids [${P.map((_,i)=>`${4+3*i} 0 R`).join(' ')}] /Count ${n} >>`);
+  obj(3,'<< /Creator (Mosaicos - indalo-apps) /Producer (Mosaicos) >>');
+  P.forEach((p,i)=>{const a=4+3*i,cont=`q ${p.wpt.toFixed(2)} 0 0 ${p.hpt.toFixed(2)} 0 0 cm /Im0 Do Q`;
+    obj(a,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${p.wpt.toFixed(2)} ${p.hpt.toFixed(2)}] /Resources << /XObject << /Im0 ${a+1} 0 R >> >> /Contents ${a+2} 0 R >>`);
+    obj(a+1,`<< /Type /XObject /Subtype /Image /Width ${p.wpx} /Height ${p.hpx} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.jpg.length} >>`,p.jpg);
+    obj(a+2,`<< /Length ${cont.length} >>`,enc.encode(cont));});
+  const tot=4+3*n,xref=pos;let x=`xref\n0 ${tot}\n0000000000 65535 f \n`;for(let k=1;k<tot;k++)x+=String(off[k]).padStart(10,'0')+' 00000 n \n';
+  add(x+`trailer\n<< /Size ${tot} /Root 1 0 R /Info 3 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(partes,{type:'application/pdf'});}
+async function plantillaHojas(){const R=tsConstruir(EX.c,EX.r,true,false),G=calcPapel(R),H=hojasA4(G);if(!H)return null;
+  const svg=svgPapel(R,G,{conCotas:true,conDibujo:PP.dib!==false,gris:!!PP.gris,pagina:true}).replace(/<svg([^>]*?) width="[^"]*mm" height="[^"]*mm"/,'<svg$1');
+  const dpi=Math.min(200,9000/(Math.max(G.PW,G.PH)/25.4)),px=dpi/25.4,W=Math.round(G.PW*px),Hh=Math.round(G.PH*px);
+  const img=await cargarImg(svg.replace('<svg ',`<svg width="${W}" height="${Hh}" `));
+  const hp=200/25.4,pw=Math.round(H.hw*hp),ph=Math.round(H.hh*hp),pasoX=H.uw-HOJA.sol,pasoY=H.uh-HOJA.sol,P=[];
+  const cv=document.createElement('canvas');cv.width=pw;cv.height=ph;const cx=cv.getContext('2d');
+  for(let j=0;j<H.f;j++)for(let i=0;i<H.c;i++){cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#fff';cx.fillRect(0,0,pw,ph);
+    const X=i*pasoX,Y=j*pasoY,w=Math.min(H.uw,G.PW-X),h=Math.min(H.uh,G.PH-Y); // trozo del papel grande, en mm
+    cx.drawImage(img,X*px,Y*px,w*px,h*px,HOJA.m*hp,HOJA.m*hp,w*hp,h*hp);
+    cx.scale(hp,hp);cx.strokeStyle='#000';cx.fillStyle='#000';cx.lineWidth=0.25;
+    cx.strokeRect(HOJA.m,HOJA.m,w,h); // hasta dónde llega el trozo de esta hoja
+    cx.setLineDash([2,1.5]);cx.lineWidth=0.3; // raya de solape: el borde de la hoja siguiente se pega aquí
+    if(i<H.c-1&&w>pasoX){cx.beginPath();cx.moveTo(HOJA.m+pasoX,HOJA.m);cx.lineTo(HOJA.m+pasoX,HOJA.m+h);cx.stroke();}
+    if(j<H.f-1&&h>pasoY){cx.beginPath();cx.moveTo(HOJA.m,HOJA.m+pasoY);cx.lineTo(HOJA.m+w,HOJA.m+pasoY);cx.stroke();}
+    cx.setLineDash([]);cx.font='3.2px Inter, Arial, sans-serif';cx.textBaseline='middle';
+    cx.fillText(tr(`Mosaicos · ${PAT.nombre} · fila ${j+1} de ${H.f}, columna ${i+1} de ${H.c} · imprimir al 100 %`,`Mosaicos · ${PAT.nombre} · row ${j+1} of ${H.f}, column ${i+1} of ${H.c} · print at 100%`),HOJA.m,HOJA.m/2+1);
+    cx.fillText(tr('Recorta por el recuadro; la raya de puntos es donde se monta la hoja siguiente','Cut along the frame; the dashed line is where the next sheet overlaps'),HOJA.m,H.hh-HOJA.m/2);
+    const jpg=await new Promise((ok,mal)=>cv.toBlob(b=>b?ok(b):mal(new Error('jpg')),'image/jpeg',0.9));
+    P.push({jpg:new Uint8Array(await jpg.arrayBuffer()),wpx:pw,hpx:ph,wpt:H.hw*72/25.4,hpt:H.hh*72/25.4});}
+  cv.width=cv.height=1;return pdfPaginas(P);}
 // Medidas de la figura de partida para el papel elegido (para «En papel» y para Trazar)
 function medidasPapel(G){const kl=PAT.k||1;return (BASE[PAT.id]||[]).map(([t,te,v])=>[tr(t,te),cm(v*kl*G.k)]);}
 let PAC=null;
@@ -3956,6 +4000,8 @@ function pintarPapel(R){if(!$('tab-imprimir').classList.contains('show'))return;
   const G=calcPapel(R);
   document.querySelectorAll('#pp-ori [data-ori]').forEach(b=>{const on=b.dataset.ori===G.ori;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   $('pp-pdf').disabled=!G.ok;
+  {const H=hojasA4(G),b=$('pp-hojas');b.hidden=!H;$('pp-hojas-nota').hidden=!H;if(H){b.textContent=tr(`🧩 En ${H.c*H.f} hojas A4 para pegar`,`🧩 On ${H.c*H.f} A4 sheets to join`);
+    $('pp-hojas-nota').textContent=tr(`Si tu impresora solo llega a A4: ${H.f} ${H.f===1?'fila':'filas'} de ${H.c} ${H.c===1?'hoja':'hojas'} en ${H.hw>H.hh?'horizontal':'vertical'}, que se montan 1 cm una sobre otra. Cada hoja dice su fila y su columna.`,`If your printer only takes A4: ${H.f} ${H.f===1?'row':'rows'} of ${H.c} ${H.c===1?'sheet':'sheets'} in ${H.hw>H.hh?'landscape':'portrait'}, overlapping each other by 1 cm. Each sheet states its row and column.`);}}
   if(!G.ok){$('pp-vista').innerHTML='';$('pp-res').innerHTML=`<dt>${tr('No cabe','It does not fit')}</dt><dd>${tr('Con ese margen no queda sitio para el dibujo. Prueba un margen menor o un papel más grande.','With that margin there is no room for the drawing. Try a smaller margin or a larger sheet.')}</dd>`;return;}
   const {PW,PH,dw,dh,x0,y0,k}=G,M=PAT.modulo;
   $('pp-vista').innerHTML=svgPapel(R,G);
@@ -3978,6 +4024,10 @@ window.svgPapelActual=(opc)=>{const R=tsConstruir(EX.c,EX.r,TS.marcar,false),G=c
   $('pp-ori').addEventListener('click',e=>{const b=e.target.closest('[data-ori]');if(!b)return;PP.ori=b.dataset.ori;gp();window.pintarImprimir();});
   $('pp-dib').checked=PP.dib!==false;$('pp-gris').checked=PP.gris!==false;PP.gris=PP.gris!==false;
   $('pp-dib').onchange=e=>{PP.dib=e.target.checked;gp();};$('pp-gris').onchange=e=>{PP.gris=e.target.checked;gp();};
+  $('pp-hojas').onclick=async()=>{const b=$('pp-hojas');b.disabled=true;$('pp-msg').textContent=tr('Preparando las hojas…','Preparing the sheets…');
+    try{const blob=await plantillaHojas();$('pp-msg').textContent=blob?await entregar(blob,`mosaicos-plantilla-${PAT.id}-hojas-A4.pdf`):'';}
+    catch(e){console.error(e);$('pp-msg').textContent=tr('No se ha podido crear el PDF.','The PDF could not be created.');}
+    b.disabled=false;};
   $('pp-pdf').onclick=async()=>{const b=$('pp-pdf');b.disabled=true;$('pp-msg').textContent=tr('Preparando la plantilla…','Preparing the template…');
     try{const blob=await plantillaPdf();$('pp-msg').textContent=blob?await entregar(blob,`mosaicos-plantilla-${PAT.id}-${PP.p==='med'?'medida':PP.p}.pdf`):'';}
     catch(e){console.error(e);$('pp-msg').textContent=tr('No se ha podido crear el PDF.','The PDF could not be created.');}
@@ -4160,6 +4210,7 @@ velar();
   const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
   const VERSION=(q('meta[name="app-version"]')||{}).content||'dev';
   const NOVEDADES=EN?[
+    ["2.19",["🧩 On paper › Actual-size template: if the paper is larger than A4, you can also get it split into A4 sheets to join, with a 1 cm overlap and each sheet’s row and column","🧪 Behind the scenes: each version is only published if every test passes"]],
     ["2.18",["✔️ Draw: “Check before you go on” in the construction steps, something you can verify with ruler or compass before moving on; also the piece count, the strap width and the crossings","🖋 Draw › Inking: which lines to go over in ink (thick, solid) and which pencil to rub out (thin, dashed); for straps, how to stop the one that goes under","🪜 A path to get started: seven tile patterns from easiest to hardest, with what each one teaches and the Learn constructions worth practicing first"]],
     ["2.17",["🔆 Draw: the screen no longer turns off while you draw (untick “Keep the screen on” to change it)","✅ Progress for every tile pattern: the gallery and its cover show “All steps done”, “Colored” and “Drawn on paper”, with icon and text","✍️ “I have drawn it on paper”: a checkbox on the last Draw step and in On paper; Home counts them and they show up in My drawings"]],
     ["2.16",["📏 On paper: the measurements no longer overlap; each one goes where it fits and, if the figure is very small, a short line points to it"]],
@@ -4200,6 +4251,7 @@ velar();
     ["1.2",["⬇️ Export: SVG, PNG and laser cutting files"]],
     ["1.1",["📲 Installs on your phone like an app","📶 Works offline","🔄 Updates itself"]],
   ]:[
+    ["2.19",["🧩 En papel › Plantilla a tamaño real: si el papel es mayor que un A4, sale también troceada en hojas A4 para pegar, con 1 cm de solape y la fila y la columna de cada hoja","🧪 Por dentro: cada versión solo se publica si pasan todas las pruebas"]],
     ["2.18",["✔️ Trazar: «Comprueba antes de seguir» en los pasos de construcción, con algo que se puede mirar con la regla o el compás antes de avanzar; también el recuento de piezas, el ancho de la cinta y los cruces","🖋 Trazar › Entintar: qué líneas se repasan con tinta (gruesas y continuas) y qué lápiz se borra (fino y a rayas); en los de cinta, cómo cortar la que pasa por debajo","🪜 Recorrido para empezar: siete alicatados del más fácil al más difícil, con lo que enseña cada uno y las construcciones de Aprender que conviene practicar antes"]],
     ["2.17",["🔆 Trazar: la pantalla ya no se apaga mientras dibujas (se puede quitar con la casilla «Mantener la pantalla encendida»)","✅ Progreso de cada alicatado: la galería y su portada marcan «Trazado completo», «Coloreado» y «Dibujado en papel», con icono y texto","✍️ «Ya lo he dibujado en papel»: una casilla en el último paso de Trazar y en «En papel»; Inicio cuenta cuántos llevas y salen en Mis dibujos"]],
     ["2.16",["📏 «En papel»: las medidas ya no se montan unas sobre otras; cada una va donde cabe y, si la figura es muy pequeña, una rayita la señala"]],

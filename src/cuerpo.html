@@ -140,7 +140,8 @@
         <p class="hint" style="margin:0 0 6px">Un PDF del tamaño del papel con los márgenes, los módulos, la figura de partida y una raya de 5 cm para comprobar la escala. Imprímelo al 100 %.</p>
         <div class="row"><label for="pp-dib">Con el dibujo</label><input type="checkbox" id="pp-dib" checked></div>
         <div class="row"><label for="pp-gris">Dibujo en gris claro, para repasarlo</label><input type="checkbox" id="pp-gris" checked></div>
-        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button></div>
+        <div class="ops"><button id="pp-pdf">📄 Plantilla en PDF</button><button id="pp-hojas" hidden>🧩 En hojas A4 para pegar</button></div>
+        <p class="hint" id="pp-hojas-nota" style="margin:6px 0 0" hidden></p>
         <p class="msg" id="pp-msg" role="status" aria-live="polite"></p>
         <div class="row hecho-fila"><label for="pp-hecho">Ya lo he dibujado en papel</label><input type="checkbox" id="pp-hecho"></div>
       </section>
